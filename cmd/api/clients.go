@@ -142,7 +142,7 @@ func (app *application) homePageHandler(w http.ResponseWriter, r *http.Request) 
 
 func (app *application) listClientsHandler(w http.ResponseWriter, r *http.Request) {
 
-	clients, metadata, err := app.rimans.Clients.GetAll()
+	clients, metadata, err := app.riman.Clients.GetAll()
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return

@@ -125,7 +125,7 @@ func (app *application) authenticate(next http.Handler) http.Handler {
 
 		r = app.contextSetUser(r, user)
 
-		client, err := app.rimans.Clients.GetForRimanToken(riman.ScopeAuthentication, token)
+		client, err := app.riman.Clients.GetForRimanToken(riman.ScopeAuthentication, token)
 		if err != nil {
 			switch {
 			case errors.Is(err, data.ErrRecordNotFound):
@@ -311,7 +311,7 @@ func (app *application) authenticateClient(next http.Handler) http.Handler {
 			return
 		}
 
-		client, err := app.rimans.Clients.GetForRimanToken(riman.ScopeAuthentication, token)
+		client, err := app.riman.Clients.GetForRimanToken(riman.ScopeAuthentication, token)
 		if err != nil {
 			switch {
 			case errors.Is(err, data.ErrRecordNotFound):
