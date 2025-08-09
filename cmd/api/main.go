@@ -6,18 +6,20 @@ import (
 	"expvar"
 	"flag"
 	"fmt"
-	"github.com/go-rod/rod"
-	"github.com/go-rod/rod/lib/proto"
-	"github.com/joho/godotenv"
-	"github.com/pistolricks/kbeauty-api/internal/data"
-	"github.com/pistolricks/kbeauty-api/internal/mailer"
-	"github.com/pistolricks/kbeauty-api/internal/vcs"
 	"log/slog"
 	"os"
 	"runtime"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/go-rod/rod"
+	"github.com/go-rod/rod/lib/proto"
+	"github.com/joho/godotenv"
+	"github.com/pistolricks/kbeauty-api/internal/data"
+	"github.com/pistolricks/kbeauty-api/internal/mailer"
+	"github.com/pistolricks/kbeauty-api/internal/riman"
+	"github.com/pistolricks/kbeauty-api/internal/vcs"
 )
 
 type Envars struct {
@@ -70,6 +72,7 @@ type application struct {
 	browser *rod.Browser
 	cookies []*proto.NetworkCookie
 	models  data.Models
+	riman   riman.Extended
 	mailer  mailer.Mailer
 	wg      sync.WaitGroup
 }
@@ -204,6 +207,7 @@ func main() {
 		logger: logger,
 		envars: vars,
 		models: data.NewModels(db),
+		riman:  riman.NewExtended(db),
 		mailer: mailer.New(cfg.smtp.host, cfg.smtp.port, cfg.smtp.username, cfg.smtp.password, cfg.smtp.sender),
 	}
 

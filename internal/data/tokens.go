@@ -25,20 +25,6 @@ type Token struct {
 	Scope     string    `json:"-"`
 }
 
-func generateRidToken(userID int64, ttl time.Duration, scope string, plainText string) (*Token, error) {
-	token := &Token{
-		UserID:    userID,
-		Expiry:    time.Now().Add(ttl),
-		Scope:     scope,
-		Plaintext: plainText,
-	}
-
-	hash := sha256.Sum256([]byte(token.Plaintext))
-	token.Hash = hash[:]
-
-	return token, nil
-}
-
 func generateToken(userID int64, ttl time.Duration, scope string) (*Token, error) {
 	token := &Token{
 		UserID: userID,
@@ -68,16 +54,6 @@ func ValidateTokenPlaintext(v *validator.Validator, tokenPlaintext string) {
 
 type TokenModel struct {
 	DB *sql.DB
-}
-
-func (m TokenModel) NewRid(userID int64, ttl time.Duration, scope string, plainText string) (*Token, error) {
-	token, err := generateRidToken(userID, ttl, scope, plainText)
-	if err != nil {
-		return nil, err
-	}
-
-	err = m.Insert(token)
-	return token, err
 }
 
 func (m TokenModel) New(userID int64, ttl time.Duration, scope string) (*Token, error) {

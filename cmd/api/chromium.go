@@ -2,14 +2,16 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"regexp"
+	"strconv"
+	"strings"
+
 	goshopify "github.com/bold-commerce/go-shopify/v4"
 	"github.com/go-rod/rod"
 	"github.com/go-rod/rod/lib/devices"
 	"github.com/go-rod/rod/lib/launcher"
 	"github.com/go-rod/rod/lib/proto"
-	"os"
-	"strconv"
-	"strings"
 )
 
 func (app *application) RimanLogin(loginUrl string, rimanStoreName string, username string, password string) (*rod.Page, *rod.Browser, []*proto.NetworkCookie) {
@@ -170,25 +172,15 @@ type StateObject = struct {
 
 /* TODO: REMOVE HARD CODED EMAIL */
 
+func IsValidPhoneNumber(phone_number string) bool {
+	e164Regex := `^\+[1-9]\d{1,14}$`
+	re := regexp.MustCompile(e164Regex)
+	phone_number = strings.ReplaceAll(phone_number, " ", "")
+
+	return re.Find([]byte(phone_number)) != nil
+}
+
 func (app *application) insertShippingInfo(browser *rod.Browser, page *rod.Page, checkoutUrl string, order goshopify.Order) {
-
-	/*
-		p := browser.MustPage(checkoutUrl)
-
-		newCookies, err := browser.GetCookies()
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		networkCookie := networkCookies(newCookies)
-
-		p.MustSetCookies(networkCookie...)
-
-		wait := p.MustWaitNavigation()
-		p.MustNavigate(checkoutUrl)
-		wait()
-	*/
 
 	page.MustNavigate(checkoutUrl)
 

@@ -16,21 +16,21 @@ func (app *application) routes() http.Handler {
 
 	router.HandlerFunc(http.MethodGet, "/v1/healthcheck", app.healthcheckHandler)
 
-	router.HandlerFunc(http.MethodGet, "/v1/riman/products", app.RimanApiListProductsHandler)
-	router.HandlerFunc(http.MethodGet, "/v1/shopify/products", app.ShopifyApiListProductsHandler)
-	router.HandlerFunc(http.MethodGet, "/v1/orders", app.listShopifyOrdersHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/riman/products", app.requireClient(app.RimanApiListProductsHandler))
+	router.HandlerFunc(http.MethodGet, "/v1/shopify/products", app.requireClient(app.ShopifyApiListProductsHandler))
+	router.HandlerFunc(http.MethodGet, "/v1/orders", app.requireClient(app.listShopifyOrdersHandler))
 
 	router.HandlerFunc(http.MethodPost, "/v1/attributes/metafield", app.updateOrderMetaField)
 
-	router.HandlerFunc(http.MethodGet, "/v1/process/orders", app.processShopifyOrders)
-	router.HandlerFunc(http.MethodPost, "/v1/process/order", app.processShopifyOrder)
+	router.HandlerFunc(http.MethodGet, "/v1/process/orders", app.requireClient(app.processShopifyOrders))
+	router.HandlerFunc(http.MethodPost, "/v1/process/order", app.requireClient(app.processShopifyOrder))
 
 	router.HandlerFunc(http.MethodGet, "/v1/riman/orders", app.listRimanOrders)
 	router.HandlerFunc(http.MethodGet, "/v1/riman/shipment", app.getShipmentHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/riman/tracking", app.trackingHandler)
 
 	router.HandlerFunc(http.MethodPost, "/v1/riman/login", app.clientLoginHandler)
-	router.HandlerFunc(http.MethodGet, "/v1/riman/home", app.homePageHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/riman/home", app.requireClient(app.homePageHandler))
 	//	router.HandlerFunc(http.MethodPost, "/v1/riman/login", app.createRimanTokenHandler)
 
 	router.HandlerFunc(http.MethodPost, "/v1/users/register", app.registerUserHandler)
@@ -54,5 +54,5 @@ func (app *application) routes() http.Handler {
 
 	router.Handler(http.MethodGet, "/debug/vars", expvar.Handler())
 
-	return app.metrics(app.recoverPanic(app.enableCORS(app.rateLimit(app.authenticate(router)))))
+	return app.metrics(app.recoverPanic(app.enableCORS(app.rateLimit(app.authenticate(app.authenticateClient(router))))))
 }

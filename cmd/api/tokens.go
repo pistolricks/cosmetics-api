@@ -3,60 +3,12 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/pistolricks/kbeauty-api/internal/data"
-	"github.com/pistolricks/kbeauty-api/internal/riman"
-	"github.com/pistolricks/kbeauty-api/internal/validator"
 	"net/http"
-	"os"
 	"time"
+
+	"github.com/pistolricks/kbeauty-api/internal/data"
+	"github.com/pistolricks/kbeauty-api/internal/validator"
 )
-
-func (app *application) createRimanTokenHandler(w http.ResponseWriter, r *http.Request) {
-
-	var input struct {
-		RimanStoreName string `json:"rimanStoreName"`
-		UserName       string `json:"userName"`
-		Password       string `json:"password"`
-		LoginUrl       string `json:"loginUrl"`
-	}
-
-	err := app.readJSON(w, r, &input)
-	if err != nil {
-		app.badRequestResponse(w, r, err)
-		return
-	}
-
-	credentials := riman.Credentials{
-		UserName: input.UserName,
-		Password: input.Password,
-	}
-
-	v := validator.New()
-	data.ValidatePasswordPlaintext(v, credentials.Password)
-
-	if !v.Valid() {
-		app.failedValidationResponse(w, r, v.Errors)
-		return
-	}
-
-	app.envars.Username = credentials.UserName
-	app.envars.Password = credentials.Password
-	app.envars.LoginUrl = input.LoginUrl
-	app.envars.RimanStoreName = input.RimanStoreName
-
-	err = os.Setenv("RIMAN_STORE_NAME", input.RimanStoreName)
-	err = os.Setenv("LOGIN_URL", input.LoginUrl)
-	err = os.Setenv("USERNAME", credentials.UserName)
-	err = os.Setenv("Password", credentials.Password)
-
-	post, err := riman.Login(credentials)
-
-	err = app.writeJSON(w, http.StatusOK, envelope{"auth": post, "rid": app.envars.Username, "store": app.envars.RimanStoreName, "url": app.envars.LoginUrl}, nil)
-	if err != nil {
-		app.serverErrorResponse(w, r, err)
-	}
-
-}
 
 func (app *application) createAuthenticationTokenHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
@@ -106,33 +58,7 @@ func (app *application) createAuthenticationTokenHandler(w http.ResponseWriter, 
 		return
 	}
 
-	credentials := riman.Credentials{
-		UserName: user.UserName,
-		Password: input.Password,
-	}
-
-	fmt.Println("CREDENTIALS")
-	fmt.Println(credentials)
-
-	res, err := riman.Login(credentials)
-	if err != nil {
-		app.serverErrorResponse(w, r, err)
-		return
-	}
-
-	fmt.Println("RIMAN LOGIN")
-	fmt.Println(res)
-
-	token, err := app.models.Tokens.NewRid(user.ID, 24*time.Hour, data.ScopeAuthentication, res.Jwt)
-	if err != nil {
-		app.serverErrorResponse(w, r, err)
-		return
-	}
-
-	fmt.Println("TOKEN")
-	fmt.Println(token)
-
-	err = app.writeJSON(w, http.StatusCreated, envelope{"user": user, "authentication_token": token, "auth": res}, nil)
+	err = app.writeJSON(w, http.StatusCreated, envelope{"user": user}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
