@@ -11,6 +11,31 @@ import (
 	"github.com/pistolricks/kbeauty-api/internal/validator"
 )
 
+type RimanBillingAddress struct {
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	Address1  string `json:"address1"`
+	Address2  string `json:"address2"`
+	City      string `json:"city"`
+	State     string `json:"state"`
+	Zip       string `json:"zip"`
+	Phone     string `json:"phone"`
+}
+
+type RimanCreditCard struct {
+	CardName   string `json:"cardName"`
+	CardNumber string `json:"cardNumber"`
+	ExpMonth   string `json:"expMonth"`
+	ExpYear    string `json:"expYear"`
+	CVV        string `json:"cvv"`
+}
+
+type State struct {
+	Code  string      `json:"code"`
+	Name  string      `json:"name"`
+	Name2 interface{} `json:"-"`
+}
+
 func (app *application) findCookieValue() *string {
 	for i := range app.cookies {
 		if app.cookies[i].Name == "token" {
@@ -79,7 +104,20 @@ func (app *application) clientLoginHandler(w http.ResponseWriter, r *http.Reques
 	app.cookies = cookies
 	fmt.Println(browser)
 
-	err = app.writeJSON(w, http.StatusOK, envelope{"page": app.page, "browser": app.browser, "cookies": cookies}, nil)
+	client, err := app.riman.Clients.GetByClientUsername(input.UserName)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.invalidCredentialsResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	app.client = client
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"client": client, "page": app.page, "browser": app.browser, "cookies": cookies}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -120,6 +158,8 @@ func (app *application) homePageHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	app.client = client
+
 	cookie := app.findCookieValue()
 	if cookie == nil {
 		app.invalidCredentialsResponse(w, r)
@@ -138,6 +178,8 @@ func (app *application) homePageHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	app.session = session
+
 	fmt.Println("SESSION CLIENT ID")
 	fmt.Println(session.ClientID)
 
@@ -145,7 +187,6 @@ func (app *application) homePageHandler(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
-
 }
 
 func (app *application) listClientsHandler(w http.ResponseWriter, r *http.Request) {

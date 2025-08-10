@@ -64,6 +64,9 @@ type config struct {
 	}
 }
 
+type CreditCard struct {
+}
+
 type application struct {
 	config  config
 	logger  *slog.Logger
@@ -73,6 +76,8 @@ type application struct {
 	cookies []*proto.NetworkCookie
 	models  data.Models
 	riman   riman.Extended
+	client  *riman.Client
+	session *riman.Session
 	mailer  mailer.Mailer
 	wg      sync.WaitGroup
 }

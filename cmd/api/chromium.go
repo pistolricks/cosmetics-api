@@ -216,9 +216,56 @@ func (app *application) insertShippingInfo(browser *rod.Browser, page *rod.Page,
 	page.MustElement("#postalCode0").MustSelectAllText().MustInput(zip)
 
 	page.MustElement("#phoneNumber0").MustSelectAllText().MustInput(phone)
-	email := os.Getenv("ACCOUNT_EMAIL")
+	email := app.client.Email
 	page.MustElement("#email0").MustSelectAllText().MustInput(email)
 
 	/* Need to add Province/State */
 	// page.MustElement("#state0").MustSelectAllText().MustInput(province)
+}
+
+func (app *application) insertBillingInfo(page *rod.Page) bool {
+
+	// nameOnCard := os.Getenv("NAME_ON_CARD")
+	// cardNumber := os.Getenv("CARD_NUMBER")
+	// cardMonth := os.Getenv("CARD_MONTH")
+	// cardYear := os.Getenv("CARD_YEAR")
+	// cardCvv := os.Getenv("CARD_CVV")
+
+	billingFirstName := os.Getenv("BILLING_FIRST_NAME")
+	billingLastName := os.Getenv("BILLING_LAST_NAME")
+	billingAddress1 := os.Getenv("BILLING_ADDRESS_1")
+	// billingAddress2 := os.Getenv("BILLING_ADDRESS_2")
+	billingCity := os.Getenv("BILLING_CITY")
+	// billingState := os.Getenv("BILLING_STATE")
+	billingZip := os.Getenv("BILLING_ZIP")
+	billingPhone := os.Getenv("BILLING_PHONE")
+
+	el := page.MustElement("#mat-checkbox-7-input")
+
+	// check if it is checked
+	if el.MustProperty("checked").Bool() {
+		el.MustClick()
+	}
+
+	page.MustElement("#firstName0").MustSelectAllText().MustInput(billingFirstName)
+	page.MustElement("#lastName0").MustSelectAllText().MustInput(billingLastName)
+
+	// Name on Card
+	page.MustElement("#address10").MustSelectAllText().MustInput(billingAddress1)
+	// page.MustElement("#address20").MustSelectAllText().MustInput(billingAddress2)
+
+	page.MustElement("#city0").MustSelectAllText().MustInput(billingCity)
+	// page.MustElement("#state0").MustSelect(provinceCode)
+	_ = page.MustElement("#state0").Select([]string{`[value="California"]`}, true, rod.SelectorTypeCSSSector)
+
+	page.MustElement("#postalCode0").MustSelectAllText().MustInput(billingZip)
+
+	page.MustElement("#phoneNumber0").MustSelectAllText().MustInput(billingPhone)
+	email := app.client.Email
+	page.MustElement("#email0").MustSelectAllText().MustInput(email)
+
+	/* Need to add Province/State */
+	// page.MustElement("#state0").MustSelectAllText().MustInput(province)
+
+	return true
 }
