@@ -16,6 +16,12 @@ import (
 
 func (app *application) RimanLogin(loginUrl string, rimanStoreName string, username string, password string) (*rod.Page, *rod.Browser, []*proto.NetworkCookie) {
 	// --allow-third-party-cookies
+
+	if app.browser != nil {
+		p := app.browser
+		p.MustClose()
+	}
+
 	path, _ := launcher.LookPath()
 
 	// homeUrl := fmt.Sprintf("https://mall.riman.com/%s/home", rimanStoreName)
