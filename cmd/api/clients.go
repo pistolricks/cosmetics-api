@@ -141,7 +141,7 @@ func (app *application) homePageHandler(w http.ResponseWriter, r *http.Request) 
 	fmt.Println("SESSION CLIENT ID")
 	fmt.Println(session.ClientID)
 
-	err = app.writeJSON(w, http.StatusOK, envelope{"session": session, "client": client}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"session": session, "client": client, "errors": err}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
