@@ -20,8 +20,8 @@ type Session struct {
 	ClientID  int64     `json:"-"`
 	Expiry    time.Time `json:"expiry"`
 	Scope     string    `json:"-"`
-	CartKey   string    `json:"-"`
-	Data      []byte    `json:"-"`
+	CartKey   string    `json:"cart_key"`
+	Data      []byte    `json:"data"`
 }
 
 func ValidateSessionPlaintext(v *validator.Validator, tokenPlaintext string) {
