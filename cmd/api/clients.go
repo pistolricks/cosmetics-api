@@ -133,9 +133,13 @@ func (app *application) homePageHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	session, err := app.riman.Session.NewRimanSession(client.ID, 24*time.Hour, riman.ScopeAuthentication, app.envars.Token, *cartKey, envelope{"cookies": cookies})
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
 
-	fmt.Println("SESSION")
-	fmt.Println(session)
+	fmt.Println("SESSION CLIENT ID")
+	fmt.Println(session.ClientID)
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"session": session, "client": client, "cookie": cookie}, nil)
 	if err != nil {

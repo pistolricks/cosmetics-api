@@ -4,6 +4,7 @@
     <inspection_tool class="GoDfaErrorMayBeNotNil" enabled="true" level="WARNING" enabled_by_default="true">
       <methods>
         <method importPath="resty.dev/v3" receiver="*Request" name="Post" />
+        <method importPath="github.com/pistolricks/kbeauty-api/internal/riman" receiver="SessionModel" name="NewRimanSession" />
       </methods>
     </inspection_tool>
   </profile>

@@ -5,7 +5,6 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"time"
 
 	"github.com/pistolricks/kbeauty-api/internal/validator"
@@ -49,10 +48,7 @@ func generateRimanSession(clientID int64, ttl time.Duration, scope string, plain
 		CartKey:   cartKey,
 		Data:      jsonData,
 	}
-	fmt.Println("SESSION TOKEN")
-	fmt.Println(clientID)
-	fmt.Println(cartKey)
-	fmt.Println(data)
+
 	hash := sha256.Sum256([]byte(token.Plaintext))
 	token.Hash = hash[:]
 
