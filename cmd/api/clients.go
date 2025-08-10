@@ -90,11 +90,10 @@ func (app *application) homePageHandler(w http.ResponseWriter, r *http.Request) 
 
 	rimanStoreName := app.envars.RimanStoreName // os.Getenv("RIMAN_STORE_NAME")
 	rimanRid := app.envars.Username             // os.Getenv("USERNAME")
-	rimanUrl := app.envars.LoginUrl             // os.Getenv("LOGIN_URL")
 	currentPage := app.page
 	currentBrowser := app.browser
 
-	page, browser, cookies := app.HomePage(rimanStoreName, currentPage, currentBrowser)
+	_, _, cookies := app.HomePage(rimanStoreName, currentPage, currentBrowser)
 
 	fmt.Println(cookies)
 
@@ -121,6 +120,12 @@ func (app *application) homePageHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	cookie := app.findCookieValue()
+	if cookie == nil {
+		app.invalidCredentialsResponse(w, r)
+		return
+	}
+
 	cartKey := app.findCartKeyValue()
 	if cartKey == nil {
 		app.invalidCredentialsResponse(w, r)
@@ -132,7 +137,7 @@ func (app *application) homePageHandler(w http.ResponseWriter, r *http.Request) 
 	fmt.Println("SESSION")
 	fmt.Println(session)
 
-	err = app.writeJSON(w, http.StatusOK, envelope{"session": session, "client": client, "page": page, "browser": browser, "cookies": cookies, "rid": rimanRid, "store": rimanStoreName, "url": rimanUrl}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"session": session, "client": client, "cookie": cookie}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
