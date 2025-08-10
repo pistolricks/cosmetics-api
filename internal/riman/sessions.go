@@ -4,9 +4,10 @@ import (
 	"context"
 	"crypto/sha256"
 	"database/sql"
+	"encoding/json"
+	"fmt"
 	"time"
 
-	"github.com/go-rod/rod/lib/proto"
 	"github.com/pistolricks/kbeauty-api/internal/validator"
 )
 
@@ -15,13 +16,13 @@ const (
 )
 
 type Session struct {
-	Plaintext string                 `json:"token"`
-	Hash      []byte                 `json:"-"`
-	UserID    int64                  `json:"-"`
-	Expiry    time.Time              `json:"expiry"`
-	Scope     string                 `json:"-"`
-	CartKey   string                 `json:"-"`
-	Data      []*proto.NetworkCookie `json:"-"`
+	Plaintext string    `json:"token"`
+	Hash      []byte    `json:"-"`
+	ClientID  int64     `json:"-"`
+	Expiry    time.Time `json:"expiry"`
+	Scope     string    `json:"-"`
+	CartKey   string    `json:"-"`
+	Data      []byte    `json:"-"`
 }
 
 func ValidateSessionPlaintext(v *validator.Validator, tokenPlaintext string) {
@@ -33,23 +34,32 @@ type SessionModel struct {
 	DB *sql.DB
 }
 
-func generateRimanSession(clientID int64, ttl time.Duration, scope string, plainText string, cartKey string, data []*proto.NetworkCookie) (*Session, error) {
+func generateRimanSession(clientID int64, ttl time.Duration, scope string, plainText string, cartKey string, data map[string]any) (*Session, error) {
+
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+
 	token := &Session{
-		UserID:    clientID,
+		ClientID:  clientID,
 		Expiry:    time.Now().Add(ttl),
 		Scope:     scope,
 		Plaintext: plainText,
 		CartKey:   cartKey,
-		Data:      data,
+		Data:      jsonData,
 	}
-
+	fmt.Println("SESSION TOKEN")
+	fmt.Println(clientID)
+	fmt.Println(cartKey)
+	fmt.Println(data)
 	hash := sha256.Sum256([]byte(token.Plaintext))
 	token.Hash = hash[:]
 
 	return token, nil
 }
 
-func (m SessionModel) NewRimanSession(clientID int64, ttl time.Duration, scope string, plainText string, cartKey string, data []*proto.NetworkCookie) (*Session, error) {
+func (m SessionModel) NewRimanSession(clientID int64, ttl time.Duration, scope string, plainText string, cartKey string, data map[string]any) (*Session, error) {
 	token, err := generateRimanSession(clientID, ttl, scope, plainText, cartKey, data)
 	if err != nil {
 		return nil, err
@@ -61,10 +71,10 @@ func (m SessionModel) NewRimanSession(clientID int64, ttl time.Duration, scope s
 
 func (m SessionModel) Insert(session *Session) error {
 	query := `
-        INSERT INTO sessions (hash, user_id, expiry, scope, cart_key, data)  
+        INSERT INTO sessions (hash, client_id, expiry, scope, cart_key, data)  
         VALUES ($1, $2, $3, $4, $5, $6)`
 
-	args := []any{session.Hash, session.UserID, session.Expiry, session.Scope, session.CartKey, session.Data}
+	args := []any{session.Hash, session.ClientID, session.Expiry, session.Scope, session.CartKey, session.Data}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()

@@ -40,7 +40,7 @@ func (app *application) RimanLogin(loginUrl string, rimanStoreName string, usern
 	return page, browser, cookies
 }
 
-func (app *application) HomePage(rimanStoreName string, page *rod.Page, browser *rod.Browser, cookies []*proto.NetworkCookie) (*rod.Page, *rod.Browser, []*proto.NetworkCookie, error) {
+func (app *application) HomePage(rimanStoreName string, page *rod.Page, browser *rod.Browser) (*rod.Page, *rod.Browser, []*proto.NetworkCookie) {
 	// networkCookie := networkCookies(cookies)
 
 	homeUrl := fmt.Sprintf("https://mall.riman.com/%s/home", rimanStoreName)
@@ -54,16 +54,9 @@ func (app *application) HomePage(rimanStoreName string, page *rod.Page, browser 
 	app.page = page
 	app.browser = browser
 
-	newCookies, err := browser.GetCookies()
-	if err != nil {
-		fmt.Println(err)
-		app.cookies = newCookies
-		return page, browser, newCookies, err
-	}
+	cookies := browser.MustGetCookies()
 
-	app.cookies = newCookies
-
-	return page, browser, newCookies, err
+	return page, browser, cookies
 }
 
 func (app *application) ProcessOrders(rimanStoreName string, page *rod.Page, browser *rod.Browser, cookies []*proto.NetworkCookie, orders []goshopify.Order) {

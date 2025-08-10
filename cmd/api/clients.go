@@ -79,37 +79,7 @@ func (app *application) clientLoginHandler(w http.ResponseWriter, r *http.Reques
 	app.cookies = cookies
 	fmt.Println(browser)
 
-	/* ADD SESSION HERE */
-
-	client, err := app.riman.Clients.GetByClientUsername(input.UserName)
-	if err != nil {
-		switch {
-		case errors.Is(err, data.ErrRecordNotFound):
-			app.invalidCredentialsResponse(w, r)
-		default:
-			app.serverErrorResponse(w, r, err)
-		}
-		return
-	}
-
-	token := app.findCookieValue()
-	if token == nil {
-		app.invalidCredentialsResponse(w, r)
-		return
-	}
-
-	cartKey := app.findCartKeyValue()
-	if cartKey == nil {
-		app.invalidCredentialsResponse(w, r)
-		return
-	}
-
-	fmt.Println("TOKEN")
-	fmt.Println(token)
-
-	session, err := app.riman.Session.NewRimanSession(client.ID, 24*time.Hour, riman.ScopeAuthentication, app.envars.Token, *cartKey, cookies)
-
-	err = app.writeJSON(w, http.StatusOK, envelope{"session": session, "page": app.page, "browser": app.browser, "cookies": app.cookies}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"page": app.page, "browser": app.browser, "cookies": cookies}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -123,17 +93,46 @@ func (app *application) homePageHandler(w http.ResponseWriter, r *http.Request) 
 	rimanUrl := app.envars.LoginUrl             // os.Getenv("LOGIN_URL")
 	currentPage := app.page
 	currentBrowser := app.browser
-	currentCookies := app.cookies
 
-	page, browser, cookies, _ := app.HomePage(rimanStoreName, currentPage, currentBrowser, currentCookies)
+	page, browser, cookies := app.HomePage(rimanStoreName, currentPage, currentBrowser)
 
 	fmt.Println(cookies)
 
+	app.cookies = cookies
+
 	token := app.findCookieValue()
+	if token == nil {
+		app.invalidCredentialsResponse(w, r)
+		return
+	}
 	fmt.Println("TOKEN")
 	fmt.Println(token)
 
-	err := app.writeJSON(w, http.StatusOK, envelope{"page": page, "browser": browser, "cookies": cookies, "rid": rimanRid, "store": rimanStoreName, "url": rimanUrl}, nil)
+	/* ADD SESSION HERE */
+
+	client, err := app.riman.Clients.GetByClientUsername(rimanRid)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.invalidCredentialsResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	cartKey := app.findCartKeyValue()
+	if cartKey == nil {
+		app.invalidCredentialsResponse(w, r)
+		return
+	}
+
+	session, err := app.riman.Session.NewRimanSession(client.ID, 24*time.Hour, riman.ScopeAuthentication, app.envars.Token, *cartKey, envelope{"cookies": cookies})
+
+	fmt.Println("SESSION")
+	fmt.Println(session)
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"session": session, "client": client, "page": page, "browser": browser, "cookies": cookies, "rid": rimanRid, "store": rimanStoreName, "url": rimanUrl}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}

@@ -254,11 +254,12 @@ func (m ClientModel) GetForRimanToken(tokenScope, tokenPlaintext string) (*Clien
 	query := `
         SELECT clients.id, clients.created_at, clients.first_name, clients.middle_name, clients.last_name, clients.suffix, clients.email, clients.mobile, clients.username, clients.riman_user_id, clients.status, clients.organization_type, clients.signup_date, clients.anniversary_date, clients.account_type, clients.sponsor_username, clients.member_id, clients.rank, clients.enrollment_date, clients.personal_orders_volume, clients.personal_clients_volume, clients.total_personal_volume, clients.current_month_sp, clients.current_month_bp, clients.last_order_date, clients.last_order_id, clients.last_order_sp, clients.last_order_bp, clients.lifetime_spend, clients.most_recent_12_month_spend, clients.data
         FROM clients
-        INNER JOIN rimans
-        ON clients.id = rimans.client_id
-        WHERE rimans.hash = $1
-        AND rimans.scope = $2 
-        AND rimans.expiry > $3`
+        INNER JOIN sessions
+        ON clients.id = sessions.client_id
+        WHERE sessions.hash = $1
+        AND sessions.scope = $2 
+        AND sessions.expiry > $3
+		`
 
 	args := []any{tokenHash[:], tokenScope, time.Now()}
 

@@ -30,7 +30,7 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/riman/tracking", app.trackingHandler)
 
 	router.HandlerFunc(http.MethodPost, "/v1/riman/login", app.clientLoginHandler)
-	router.HandlerFunc(http.MethodGet, "/v1/riman/home", app.requireClient(app.homePageHandler))
+	router.HandlerFunc(http.MethodGet, "/v1/riman/home", app.homePageHandler)
 	//	router.HandlerFunc(http.MethodPost, "/v1/riman/login", app.createRimanTokenHandler)
 
 	router.HandlerFunc(http.MethodPost, "/v1/users/register", app.registerUserHandler)

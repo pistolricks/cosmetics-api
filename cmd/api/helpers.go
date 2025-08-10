@@ -4,13 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/julienschmidt/httprouter"
-	"github.com/pistolricks/kbeauty-api/internal/validator"
 	"io"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
+
+	"github.com/julienschmidt/httprouter"
+	"github.com/pistolricks/kbeauty-api/internal/validator"
 )
 
 func (app *application) readStringParam(key string, r *http.Request) string {
