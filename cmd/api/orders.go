@@ -3,12 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
+	"net/http"
+
 	goshopify "github.com/bold-commerce/go-shopify/v4"
 	"github.com/joho/godotenv"
 	"github.com/pistolricks/kbeauty-api/internal/data"
 	"github.com/pistolricks/kbeauty-api/internal/riman"
 	"github.com/pistolricks/kbeauty-api/internal/shopify"
-	"net/http"
 )
 
 /* ORDER STATUS */
@@ -35,6 +36,24 @@ import (
 // partially_refunded
 // any
 // unpaid
+
+func (app *application) orderUpdateHandler(w http.ResponseWriter, r *http.Request) {
+	/*
+		shopApp := goshopify.App{
+			ApiKey:      app.envars.ShopifyKey,
+			ApiSecret:   app.envars.ShopifySecret,
+			RedirectUrl: "https://example.com/callback",
+			Scope:       "write_orders",
+		}
+
+		client, err := goshopify.NewClient(shopApp, app.envars.StoreName, app.envars.ShopifyToken)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+	
+	*/
+}
 
 func (app *application) listShopifyOrdersByStatusHandler(w http.ResponseWriter, r *http.Request) {
 	shopApp := goshopify.App{

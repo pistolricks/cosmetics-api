@@ -11,6 +11,11 @@ import (
 	"github.com/pistolricks/kbeauty-api/internal/validator"
 )
 
+type LatLng struct {
+	Lat float64 `json:"lat"`
+	Lng float64 `json:"lng"`
+}
+
 type RimanBillingAddress struct {
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`

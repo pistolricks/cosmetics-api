@@ -23,6 +23,9 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodPost, "/v1/attributes/metafield", app.updateOrderMetaField)
 
 	router.HandlerFunc(http.MethodGet, "/v1/process/orders", app.processShopifyOrders)
+
+	router.HandlerFunc(http.MethodGet, "/v1/process/order/cart", app.getCartHandler)
+
 	router.HandlerFunc(http.MethodPost, "/v1/process/order", app.processShopifyOrder)
 
 	router.HandlerFunc(http.MethodGet, "/v1/process/order/billing", app.inputBillingHandler)

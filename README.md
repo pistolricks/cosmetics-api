@@ -1,5 +1,8 @@
 # KBeauty API
 
+
+SCOPES https://shopify.dev/docs/api/admin-rest/usage/access-scopes
+
 Using headless chromium to automate orders.
 
 ## read_assigned_fulfillment_orders
