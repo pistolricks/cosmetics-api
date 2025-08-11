@@ -50,20 +50,6 @@ func (app *application) RimanLogin(loginUrl string, rimanStoreName string, usern
 func (app *application) HomePage(rimanStoreName string, page *rod.Page, browser *rod.Browser) (*rod.Page, *rod.Browser, []*proto.NetworkCookie) {
 	// networkCookie := networkCookies(cookies)
 
-	latStr := os.Getenv("LAT")
-	lngStr := os.Getenv("LNG")
-
-	// Convert string coordinates to float64
-	lat, err := strconv.ParseFloat(latStr, 64)
-	if err != nil {
-		fmt.Println("Error parsing latitude:", err)
-	}
-
-	lng, err := strconv.ParseFloat(lngStr, 64)
-	if err != nil {
-		fmt.Println("Error parsing longitude:", err)
-	}
-
 	homeUrl := fmt.Sprintf("https://mall.riman.com/%s/home", rimanStoreName)
 
 	// page.MustSetCookies(networkCookie...)
@@ -76,23 +62,6 @@ func (app *application) HomePage(rimanStoreName string, page *rod.Page, browser 
 	app.browser = browser
 
 	cookies := browser.MustGetCookies()
-
-	accuracy := 100.0 // Define accuracy in meters
-
-	override := &proto.EmulationSetGeolocationOverride{
-		Latitude:  &lat,
-		Longitude: &lng,
-		Accuracy:  &accuracy, // Accuracy is optional but recommended.
-	}
-
-	_, err = page.Call(context.Background(), "", "Emulation.setGeolocationOverride", override)
-	if err != nil {
-		fmt.Println("Failed to set geolocation:", err)
-	}
-
-	if err != nil {
-		fmt.Println("Failed to set geolocation:", err)
-	}
 
 	return page, browser, cookies
 }
@@ -304,6 +273,37 @@ func (app *application) insertBillingInfo(page *rod.Page) bool {
 
 	/* Need to add Province/State */
 	// page.MustElement("#state0").MustSelectAllText().MustInput(province)
+
+	return true
+}
+
+func (app *application) emulateGPS(page *rod.Page) bool {
+	latStr := os.Getenv("LAT")
+	lngStr := os.Getenv("LNG")
+
+	// Convert string coordinates to float64
+	lat, err := strconv.ParseFloat(latStr, 64)
+	if err != nil {
+		fmt.Println("Error parsing latitude:", err)
+	}
+
+	lng, err := strconv.ParseFloat(lngStr, 64)
+	if err != nil {
+		fmt.Println("Error parsing longitude:", err)
+	}
+
+	accuracy := 100.0 // Define accuracy in meters
+
+	override := &proto.EmulationSetGeolocationOverride{
+		Latitude:  &lat,
+		Longitude: &lng,
+		Accuracy:  &accuracy, // Accuracy is optional but recommended.
+	}
+
+	_, err = page.Call(context.Background(), "", "Emulation.setGeolocationOverride", override)
+	if err != nil {
+		fmt.Println("Failed to set geolocation:", err)
+	}
 
 	return true
 }
