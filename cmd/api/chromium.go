@@ -27,7 +27,9 @@ func (app *application) RimanLogin(loginUrl string, rimanStoreName string, usern
 
 	// homeUrl := fmt.Sprintf("https://mall.riman.com/%s/home", rimanStoreName)
 
-	u := launcher.New().
+	u := launcher.
+		NewUserMode().
+		UserDataDir("path").
 		Headless(false).
 		Devtools(true).
 		NoSandbox(true).
