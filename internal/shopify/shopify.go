@@ -1,19 +1,22 @@
 package shopify
 
 import (
-	"os"
-
-	shopApi "github.com/vinhluan/go-shopify-graphql"
+	goshopify "github.com/bold-commerce/go-shopify/v4"
 )
 
-func Client() *shopApi.Client {
-	c := shopApi.NewDefaultClient()
+type ShopConfig struct {
+	App       *goshopify.App
+	Client    *goshopify.Client
+	ShopName  string
+	ShopToken string
+}
 
-	// Or if you are a fan of options
-	c = shopApi.NewClient(os.Getenv("STORE_NAME"),
-		shopApi.WithToken(os.Getenv("STORE_PASSWORD")),
-		shopApi.WithVersion("2023-07"),
-		shopApi.WithRetries(5))
+type ShopClient struct {
+	Orders OrderClient
+}
 
-	return c
+func NewShopClient(config *ShopConfig) ShopClient {
+	return ShopClient{
+		Orders: OrderClient{Config: config},
+	}
 }

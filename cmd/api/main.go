@@ -13,12 +13,16 @@ import (
 	"sync"
 	"time"
 
+	goshopify "github.com/bold-commerce/go-shopify/v4"
 	"github.com/go-rod/rod"
+	"github.com/go-rod/rod/lib/launcher"
 	"github.com/go-rod/rod/lib/proto"
 	"github.com/joho/godotenv"
+	"github.com/pistolricks/kbeauty-api/internal/chromium"
 	"github.com/pistolricks/kbeauty-api/internal/data"
 	"github.com/pistolricks/kbeauty-api/internal/mailer"
 	"github.com/pistolricks/kbeauty-api/internal/riman"
+	"github.com/pistolricks/kbeauty-api/internal/shopify"
 	"github.com/pistolricks/kbeauty-api/internal/vcs"
 )
 
@@ -68,18 +72,20 @@ type CreditCard struct {
 }
 
 type application struct {
-	config  config
-	logger  *slog.Logger
-	envars  *Envars
-	page    *rod.Page
-	browser *rod.Browser
-	cookies []*proto.NetworkCookie
-	models  data.Models
-	riman   riman.Extended
-	client  *riman.Client
-	session *riman.Session
-	mailer  mailer.Mailer
-	wg      sync.WaitGroup
+	config   config
+	logger   *slog.Logger
+	envars   *Envars
+	page     *rod.Page
+	browser  *rod.Browser
+	cookies  []*proto.NetworkCookie
+	models   data.Models
+	riman    riman.Extended
+	shopify  shopify.ShopClient
+	chromium chromium.ChromeConnector
+	client   *riman.Client
+	session  *riman.Session
+	mailer   mailer.Mailer
+	wg       sync.WaitGroup
 }
 
 func main() {
@@ -207,13 +213,44 @@ func main() {
 
 	fmt.Println(vars)
 
+	path, _ := launcher.LookPath()
+
+	u := launcher.
+		NewUserMode().
+		UserDataDir("path").
+		Headless(false).
+		NoSandbox(true).
+		Bin(path).
+		MustLaunch()
+
+	browser := rod.New().ControlURL(u).MustConnect().NoDefaultDevice()
+
+	sa := goshopify.App{
+		ApiKey:      shopifyKey,
+		ApiSecret:   shopifySecret,
+		RedirectUrl: "https://example.com/callback",
+		Scope:       "read_orders,write_orders",
+	}
+
+	client, err := goshopify.NewClient(sa, storeName, shopifyToken)
+	if err != nil {
+		logger.Error(err.Error())
+		os.Exit(1)
+	}
+
+	shopConfig := &shopify.ShopConfig{App: &sa, Client: client, ShopName: storeName, ShopToken: shopifyToken}
+
+	chromeConfig := &chromium.ChromeConfig{Browser: browser}
+
 	app := &application{
-		config: cfg,
-		logger: logger,
-		envars: vars,
-		models: data.NewModels(db),
-		riman:  riman.NewExtended(db),
-		mailer: mailer.New(cfg.smtp.host, cfg.smtp.port, cfg.smtp.username, cfg.smtp.password, cfg.smtp.sender),
+		config:   cfg,
+		logger:   logger,
+		envars:   vars,
+		models:   data.NewModels(db),
+		riman:    riman.NewExtended(db),
+		shopify:  shopify.NewShopClient(shopConfig),
+		chromium: chromium.NewChromeConnector(chromeConfig),
+		mailer:   mailer.New(cfg.smtp.host, cfg.smtp.port, cfg.smtp.username, cfg.smtp.password, cfg.smtp.sender),
 	}
 
 	err = app.serve()

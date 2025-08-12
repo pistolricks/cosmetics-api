@@ -2,39 +2,48 @@ package shopify
 
 import (
 	"context"
-	"fmt"
 
-	"github.com/vinhluan/go-shopify-graphql"
+	goshopify "github.com/bold-commerce/go-shopify/v4"
+
 	"github.com/vinhluan/go-shopify-graphql/model"
 )
 
-func ListAllOrders() ([]*model.Order, error) {
-
-	// Get all collections
-	collections, err := Client().Order.ListAll(context.Background())
-	if err != nil {
-		panic(err)
-	}
-
-	// Print out the result
-	for _, c := range collections {
-		fmt.Println(c.ID)
-	}
-
-	return collections, err
+type OrderClient struct {
+	Config *ShopConfig
 }
 
-func ListOrders() ([]*model.Order, error) {
+/*
+https://cart-api.riman.com/api/v2/order
+{
+    "mainId": 47387,
+    "mainOrderType": 4,
+    "countryCode": "US",
+    "salesCampaignFK": null,
+    "cartKey": "7fe33b2a-b99c-4244-9707-b397bea92eff"
+}
+*/
 
-	// Define options to fetch up to 250 orders, a common limit for Shopify API pagination.
-	options := shopify.ListOptions{First: 1}
+func (client OrderClient) UpdateOrderNote(orderId uint64, note string) (*goshopify.Order, error) {
 
-	orders, err := Client().Order.List(context.Background(), options)
-	if err != nil {
-		// Return the error to the caller for proper handling instead of panicking.
-		return nil, err
+	o := goshopify.Order{
+		Id:   orderId, // orderId,
+		Note: note,
 	}
 
-	return orders, nil
+	order, err := client.Config.Client.Order.Update(context.Background(), o)
+	if err != nil {
+		return order, err
+	}
 
+	expected := goshopify.Order{Id: orderId}
+	if o.Id != expected.Id {
+		return order, err
+	}
+
+	return order, err
+}
+
+func ListAllOrders() ([]*model.Order, error) {
+
+	return nil, nil
 }

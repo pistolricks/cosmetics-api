@@ -37,22 +37,32 @@ import (
 // any
 // unpaid
 
+type NoteUpdate struct {
+	OrderId uint64 `json:"order_id"`
+	Note    string `json:"note"`
+}
+
 func (app *application) orderUpdateHandler(w http.ResponseWriter, r *http.Request) {
-	/*
-		shopApp := goshopify.App{
-			ApiKey:      app.envars.ShopifyKey,
-			ApiSecret:   app.envars.ShopifySecret,
-			RedirectUrl: "https://example.com/callback",
-			Scope:       "write_orders",
-		}
 
-		client, err := goshopify.NewClient(shopApp, app.envars.StoreName, app.envars.ShopifyToken)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
+	var input struct {
+		OrderId uint64 `json:"order_id"`
+		Note    string `json:"note"`
+	}
 
-	*/
+	err := app.readJSON(w, r, &input)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	orderNote := NoteUpdate{input.OrderId, input.Note}
+
+	order, err := app.shopify.Orders.UpdateOrderNote(orderNote.OrderId, orderNote.Note)
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"order": order, "error": err}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
 }
 
 func (app *application) listShopifyOrdersByStatusHandler(w http.ResponseWriter, r *http.Request) {
@@ -156,7 +166,7 @@ func (app *application) processShopifyOrder(w http.ResponseWriter, r *http.Reque
 	}
 
 	app.background(func() {
-		app.ProcessOrders(rimanStoreName, app.page, app.browser, app.cookies, orders)
+		app.chromium.Chrome.ProcessOrders(app.background, app.client.Email, rimanStoreName, app.cookies, orders)
 	})
 
 	currentBrowser := app.browser
@@ -233,7 +243,7 @@ func (app *application) processShopifyOrders(w http.ResponseWriter, r *http.Requ
 	}
 
 	app.background(func() {
-		app.ProcessOrders(rimanStoreName, app.page, app.browser, app.cookies, orders)
+		app.chromium.Chrome.ProcessOrders(app.background, app.client.Email, rimanStoreName, app.cookies, orders)
 	})
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"orders": orders, "count": count}, nil)
@@ -311,12 +321,6 @@ func (app *application) listAllShopifyOrders(w http.ResponseWriter, r *http.Requ
 }
 
 func (app *application) listShopifyOrders(w http.ResponseWriter, r *http.Request) {
-	collection, err := shopify.ListOrders()
-
-	err = app.writeJSON(w, http.StatusOK, envelope{"orders": collection}, nil)
-	if err != nil {
-		app.serverErrorResponse(w, r, err)
-	}
 
 }
 

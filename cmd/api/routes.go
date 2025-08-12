@@ -17,7 +17,7 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/healthcheck", app.healthcheckHandler)
 
 	router.HandlerFunc(http.MethodGet, "/v1/riman/products", app.RimanApiListProductsHandler)
-	router.HandlerFunc(http.MethodGet, "/v1/shopify/products", app.ShopifyApiListProductsHandler)
+
 	router.HandlerFunc(http.MethodGet, "/v1/orders", app.listShopifyOrdersHandler)
 
 	router.HandlerFunc(http.MethodPost, "/v1/attributes/metafield", app.updateOrderMetaField)
@@ -30,14 +30,19 @@ func (app *application) routes() http.Handler {
 
 	router.HandlerFunc(http.MethodGet, "/v1/process/order/billing", app.inputBillingHandler)
 
+	router.HandlerFunc(http.MethodGet, "/v1/shopify/products", app.ShopifyApiListProductsHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/shopify/orders/update", app.orderUpdateHandler)
+
+	router.HandlerFunc(http.MethodGet, "/v1/riman/test/event", app.getEventHandler)
+
 	router.HandlerFunc(http.MethodGet, "/v1/riman/orders", app.listRimanOrders)
 	router.HandlerFunc(http.MethodGet, "/v1/riman/shipment", app.getShipmentHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/riman/tracking", app.trackingHandler)
 
-	router.HandlerFunc(http.MethodPost, "/v1/riman/login", app.clientLoginHandler)
-	router.HandlerFunc(http.MethodPost, "/v1/riman/logout", app.apiRimanLogoutHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/riman/login", app.chromeLoginHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/riman/home", app.chromeHomePageHandler)
 
-	router.HandlerFunc(http.MethodGet, "/v1/riman/home", app.homePageHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/riman/logout", app.apiRimanLogoutHandler)
 
 	//	router.HandlerFunc(http.MethodPost, "/v1/riman/login", app.createRimanTokenHandler)
 
