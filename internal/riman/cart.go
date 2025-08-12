@@ -2,8 +2,6 @@ package riman
 
 import (
 	"fmt"
-
-	"resty.dev/v3"
 )
 
 type Cart struct {

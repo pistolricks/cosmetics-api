@@ -3,8 +3,6 @@ package main
 import (
 	"net/http"
 	"os"
-
-	"resty.dev/v3"
 )
 
 type Credentials struct {

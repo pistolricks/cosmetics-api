@@ -1,12 +1,12 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strconv"
 
 	goshopify "github.com/bold-commerce/go-shopify/v4"
-	context "golang.org/x/net/context"
 )
 
 func (app *application) updateOrderMetaField(w http.ResponseWriter, r *http.Request) {
