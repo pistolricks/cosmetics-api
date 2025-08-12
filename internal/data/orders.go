@@ -1,5 +1,9 @@
 package data
 
+import (
+	"resty.dev/v3"
+)
+
 type Order struct {
 	MainId          int         `json:"mainId"`
 	MainOrderType   int         `json:"mainOrderType"`

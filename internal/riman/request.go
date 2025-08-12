@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"resty.dev/v3"
 )
 
 type Credentials struct {

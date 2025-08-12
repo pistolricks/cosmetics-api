@@ -3,6 +3,7 @@ package riman
 import (
 	"fmt"
 	"os"
+	"resty.dev/v3"
 )
 
 type ShipmentResponse struct {
