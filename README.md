@@ -8,6 +8,10 @@ Using headless chromium to automate orders.
 
 # Riman API
 
+REISSUE_TOKEN=https://security-api.riman.com/api/v2/token/reissue
+
+GET_HAS_ENC_NUMBER=https://cart-api.riman.com/api/v1/orders/?orderNumber=2315767&shouldCheckIfPrepaid=true
+
 GetRimanCustomer=https://profile-api.riman.com/api/v1/users/51311
 
 GetRimanReferrer=https://profile-api.riman.com/api/v1/member/referrer
