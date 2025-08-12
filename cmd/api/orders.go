@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	goshopify "github.com/bold-commerce/go-shopify/v4"
 	"github.com/joho/godotenv"
@@ -45,7 +46,7 @@ type NoteUpdate struct {
 func (app *application) orderUpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 	var input struct {
-		OrderId uint64 `json:"order_id"`
+		OrderId string `json:"order_id"`
 		Note    string `json:"note"`
 	}
 
@@ -55,7 +56,13 @@ func (app *application) orderUpdateHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	orderNote := NoteUpdate{input.OrderId, input.Note}
+	orderId, err := strconv.ParseUint(input.OrderId, 10, 64)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	orderNote := NoteUpdate{orderId, input.Note}
 
 	order, err := app.shopify.Orders.UpdateOrderNote(orderNote.OrderId, orderNote.Note)
 

@@ -31,7 +31,7 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/process/order/billing", app.inputBillingHandler)
 
 	router.HandlerFunc(http.MethodGet, "/v1/shopify/products", app.ShopifyApiListProductsHandler)
-	router.HandlerFunc(http.MethodPost, "/v1/shopify/orders/update", app.orderUpdateHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/shopify/orders/note", app.orderUpdateHandler)
 
 	router.HandlerFunc(http.MethodGet, "/v1/riman/test/event", app.getEventHandler)
 
