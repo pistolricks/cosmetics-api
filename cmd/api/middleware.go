@@ -311,10 +311,6 @@ func (app *application) authenticateClient(next http.Handler) http.Handler {
 			return
 		}
 
-		testSentence := fmt.Sprintf("Middleware Token: %s", token)
-
-		fmt.Println(testSentence)
-
 		client, err := app.riman.Clients.GetForRimanToken(riman.ScopeAuthentication, token)
 		if err != nil {
 			switch {

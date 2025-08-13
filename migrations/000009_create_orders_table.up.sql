@@ -1,244 +1,104 @@
 CREATE TABLE IF NOT EXISTS orders
 (
-    id
-    bigint
-    PRIMARY
-    KEY,
-    app_id
-    bigint
-    NOT
-    NULL,
-    billing_address_id
-    bigint
-    NOT
-    NULL
-    REFERENCES
-    addresses
-    ON
-    DELETE
-    CASCADE,
-    browser_ip
-    text,
-    buyer_accepts_marketing
-    bool
-    DEFAULT
-    false,
-    cart_token
-    text,
-    checkout_id
-    bigint,
-    checkout_token
-    text,
-    client_details
-    json,
-    confirmed
-    bool
-    DEFAULT
-    false,
-    contact_email
-    text,
-    created_at
-    text,
-    currency
-    text,
-    current_subtotal_price
-    float,
-    current_total_discounts
-    float,
-    current_total_discounts_set
-    json,
-    current_total_price
-    float,
-    current_total_tax
-    float,
-    current_total_tax_set
-    json,
-    customer_id
-    bigint
-    NOT
-    NULL
-    REFERENCES
-    customers
-    ON
-    DELETE
-    CASCADE,
-    customer_locale
-    text,
-    discount_applications
-    json,
-    email
-    text
-    NOT
-    NULL,
-    financial_status
-    text,
-    fulfillments
-    json,
-    fulfillment_status
-    text,
-    landing_site
-    text,
-    line_items
-    json,
-    name
-    text,
-    number
-    bigint,
-    order_number
-    bigint,
-    order_status_url
-    text,
-    payment_gateway_names
-    text[],
-    presentment_currency
-    text,
-    processed_at
-    text,
-    referring_site
-    text,
-    shipping_address_id
-    bigint
-    NOT
-    NULL
-    REFERENCES
-    addresses
-    ON
-    DELETE
-    CASCADE,
-    shipping_lines
-    json,
-    source_name
-    text,
-    subtotal_price
-    float,
-    tax_lines
-    json,
-    token
-    text,
-    total_discounts
-    float,
-    total_discounts_set
-    json,
-    total_line_items_price
-    float,
-    total_line_items_price_set
-    json,
-    total_price
-    float,
-    total_price_set
-    json,
-    total_shipping_price_set
-    json,
-    total_tax
-    float,
-    total_tax_set
-    json,
-    total_tip_received
-    float,
-    total_weight
-    float,
-    transactions
-    json,
-    updated_at
-    text,
-    cancelled_at
-    text,
-    closed_at
-    text,
-    taxes_included
-    bool,
-    note
-    text,
-    test
-    bool,
-    cancel_reason
-    json,
-    note_attributes
-    json,
-    discount_codes
-    json,
-    tags
-    text
-[],
-    location_id
-    bigint,
-    processing_method
-    text,
-    refunds
-    json,
-    user_id
-    bigint,
-    gateway
-    text,
-    reference
-    text,
-    source_identifier
-    text,
-    source_url
-    text,
-    device_id
-    bigint,
-    phone
-    text,
-    landing_site_ref
-    text,
-    metafields
-    json,
-    send_receipt
-    bool,
-    send_fulfillment_receipt
-    bool,
-    inventory_behaviour
-    json,
-    client_id
-    bigint
-    NOT
-    NULL
-    REFERENCES
-    clients
-    ON
-    DELETE
-    CASCADE,
-    riman_order_id
-    bigint,
-    riman_order_type
-    text,
-    riman_user_id
-    bigint,
-    riman_shipment_status
-    text,
-    riman_order_paid
-    text,
-    riman_order_date
-    text,
-    riman_order_phone
-    text,
-    riman_order_email
-    text,
-    riman_subtotal
-    float,
-    riman_discount
-    float,
-    riman_net_subtotal
-    float,
-    riman_shipping
-    float,
-    riman_product_tax
-    float,
-    riman_shipping_tax
-    float,
-    riman_grand_total
-    float,
-    landmark_global_tracking_id
-    text,
-    landmark_global_tracking_url
-    text,
-    landmark_global_order_reference
-    text,
-    delivery_partner_name
-    text,
-    delivery_partner_tracking_id
-    text,
-    delivery_partner_url
-    text
+    id                              bigint PRIMARY KEY,
+    app_id                          bigint NOT NULL,
+    billing_address_id              bigint NOT NULL REFERENCES addresses ON DELETE CASCADE,
+    browser_ip                      text,
+    buyer_accepts_marketing         bool DEFAULT false,
+    cart_token                      text,
+    checkout_id                     bigint,
+    checkout_token                  text,
+    client_details                  json,
+    confirmed                       bool DEFAULT false,
+    contact_email                   text,
+    created_at                      text,
+    currency                        text,
+    current_subtotal_price          float,
+    current_total_discounts         float,
+    current_total_discounts_set     json,
+    current_total_price             float,
+    current_total_tax               float,
+    current_total_tax_set           json,
+    customer_id                     bigint NOT NULL REFERENCES customers ON DELETE CASCADE,
+    customer_locale                 text,
+    discount_applications           json,
+    email                           text   NOT NULL,
+    financial_status                text,
+    fulfillments                    json,
+    fulfillment_status              text,
+    landing_site                    text,
+    line_items                      json,
+    name                            text,
+    number                          bigint,
+    order_number                    bigint,
+    order_status_url                text,
+    payment_gateway_names           text[],
+    presentment_currency            text,
+    processed_at                    text,
+    referring_site                  text,
+    shipping_address_id             bigint NOT NULL REFERENCES addresses ON DELETE CASCADE,
+    shipping_lines                  json,
+    source_name                     text,
+    subtotal_price                  float,
+    tax_lines                       json,
+    token                           text,
+    total_discounts                 float,
+    total_discounts_set             json,
+    total_line_items_price          float,
+    total_line_items_price_set      json,
+    total_price                     float,
+    total_price_set                 json,
+    total_shipping_price_set        json,
+    total_tax                       float,
+    total_tax_set                   json,
+    total_tip_received              float,
+    total_weight                    float,
+    transactions                    json,
+    updated_at                      text,
+    cancelled_at                    text,
+    closed_at                       text,
+    taxes_included                  bool,
+    note                            text,
+    test                            bool,
+    cancel_reason                   json,
+    note_attributes                 json,
+    discount_codes                  json,
+    tags                            text[],
+    location_id                     bigint,
+    processing_method               text,
+    refunds                         json,
+    user_id                         bigint,
+    gateway                         text,
+    reference                       text,
+    source_identifier               text,
+    source_url                      text,
+    device_id                       bigint,
+    phone                           text,
+    landing_site_ref                text,
+    metafields                      json,
+    send_receipt                    bool,
+    send_fulfillment_receipt        bool,
+    inventory_behaviour             json,
+    client_id                       bigint NOT NULL REFERENCES clients ON DELETE CASCADE,
+    riman_order_id                  bigint,
+    riman_order_type                text,
+    riman_user_id                   bigint,
+    riman_shipment_status           text,
+    riman_order_paid                text,
+    riman_order_date                text,
+    riman_order_phone               text,
+    riman_order_email               text,
+    riman_subtotal                  float,
+    riman_discount                  float,
+    riman_net_subtotal              float,
+    riman_shipping                  float,
+    riman_product_tax               float,
+    riman_shipping_tax              float,
+    riman_grand_total               float,
+    landmark_global_tracking_id     text,
+    landmark_global_tracking_url    text,
+    landmark_global_order_reference text,
+    delivery_partner_name           text,
+    delivery_partner_tracking_id    text,
+    delivery_partner_url            text
 )
