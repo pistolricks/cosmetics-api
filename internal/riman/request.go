@@ -1,12 +1,9 @@
 package riman
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
-	"log"
-	"net/http"
 	"net/url"
+
 	"resty.dev/v3"
 )
 
@@ -15,7 +12,7 @@ type Credentials struct {
 	Password string `json:"password"`
 }
 
-type Post struct {
+type LoggedInResponse struct {
 	SecurityRedirect bool   `json:"securityRedirect"`
 	Status           string `json:"-"`
 	LiToken          string `json:"liToken"`
@@ -23,43 +20,64 @@ type Post struct {
 	Jwt              string `json:"jwt"`
 }
 
-const apiUrl = "https://security-api.riman.com/api/v2/CheckAttemptsAndLogin"
+const loginUrl = "https://security-api.riman.com/api/v2/CheckAttemptsAndLogin"
 
-func Login(credentials Credentials) (Post, error) {
+func (m *ClientModel) Login(token string, credentials Credentials) (*LoggedInResponse, error) {
 
 	params := url.Values{}
 	params.Add("userName", credentials.UserName)
 	params.Add("password", credentials.Password)
 
-	resp, err := http.PostForm(apiUrl, params)
+	client := resty.New()
+	defer client.Close()
+
+	res, err := client.R().
+		SetHeader("Accept", "application/json").
+		SetAuthToken(token).
+		SetBody(Credentials{
+			UserName: credentials.UserName,
+			Password: credentials.Password,
+		}).
+		SetResult(&LoggedInResponse{}).
+		SetError(&Errors{}).
+		Post(loginUrl)
+
+	return res.Result().(*LoggedInResponse), err
+}
+
+type ReissueTokenResponse = map[string]any
+
+func (m *ClientModel) ReissueToken(token string) (*ReissueTokenResponse, error) {
+
+	logoutUrl := fmt.Sprintf("https://security-api.riman.com/api/v2/token/reissue")
+
+	fmt.Println(logoutUrl)
+
+	client := resty.New()
+	defer client.Close()
+
+	res, err := client.R().
+		SetHeader("Accept", "application/json").
+		SetAuthToken(token).
+		SetResult(&ReissueTokenResponse{}).
+		SetError(&Errors{}).
+		Post(logoutUrl)
 
 	if err != nil {
-		log.Printf("Posting failed: %s", err.Error())
-		return Post{}, nil
+		return nil, err
 	}
 
-	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
-	// Log the request body
-	bodyString := string(body)
-	log.Print(bodyString)
-	// Unmarshal result
+	fmt.Println(res.String())
+	fmt.Println("string | cart")
+	fmt.Println(res.Result().(*ReissueTokenResponse))
 
-	post := Post{}
-
-	err = json.Unmarshal(body, &post)
-	if err != nil {
-		log.Printf("Reading body failed: %s", err.Error())
-		return Post{}, nil
-	}
-
-	return post, err
+	return res.Result().(*ReissueTokenResponse), err
 
 }
 
 type LogoutResponse = map[string]any
 
-func Logout(token string) (*LogoutResponse, error) {
+func (m *ClientModel) Logout(token string) (*LogoutResponse, error) {
 
 	logoutUrl := fmt.Sprintf("https://security-api.riman.com/api/v2/token/logout")
 

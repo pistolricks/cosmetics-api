@@ -24,7 +24,7 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/platform/orders/list", app.listShopifyOrders)
 	router.HandlerFunc(http.MethodGet, "/v1/platform/orders/all", app.listAllShopifyOrders)
 
-	router.HandlerFunc(http.MethodGet, "/v1/vendors/products", app.RimanApiListProductsHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/vendors/products", app.requireClient(app.RimanApiListProductsHandler))
 	router.HandlerFunc(http.MethodGet, "/v1/vendors/carts", app.getCartHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/vendors/orders", app.listRimanOrders)
 	router.HandlerFunc(http.MethodGet, "/v1/vendors/tracking", app.trackingHandler)

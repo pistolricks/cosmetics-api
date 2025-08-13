@@ -1,15 +1,20 @@
 package riman
 
 import (
+	"database/sql"
 	"fmt"
+
 	"resty.dev/v3"
 )
 
 type Products struct{}
 
 /**/
+type ProductModel struct {
+	DB *sql.DB
+}
 
-func GetProducts() (*[]RimanProduct, error) {
+func (m ProductModel) GetProducts() (*[]RimanProduct, error) {
 
 	client := resty.New()
 	defer client.Close()

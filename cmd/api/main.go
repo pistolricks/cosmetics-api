@@ -82,8 +82,6 @@ type application struct {
 	riman    riman.Riman
 	shopify  shopify.ShopClient
 	chromium chromium.ChromeConnector
-	client   *riman.Client
-	session  *riman.Session
 	mailer   mailer.Mailer
 	wg       sync.WaitGroup
 }

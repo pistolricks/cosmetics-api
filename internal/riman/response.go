@@ -1,5 +1,7 @@
 package riman
 
+import "time"
+
 type ShippedProductResponse struct {
 	PackagePk                 int         `json:"packagePk"`
 	ProductPk                 int         `json:"productPk"`
@@ -358,4 +360,39 @@ type BillingAddress struct {
 	AreaName             interface{} `json:"areaName"`
 	SiteUrl              interface{} `json:"siteUrl"`
 	IsUseShippingAddress bool        `json:"isUseShippingAddress"`
+}
+
+type Client struct {
+	ID                     int64     `json:"id"`
+	CreatedAt              time.Time `json:"created_at"`
+	FirstName              string    `json:"first_name"`
+	MiddleName             string    `json:"middle_name,omitempty"`
+	LastName               string    `json:"last_name"`
+	Suffix                 string    `json:"suffix,omitempty"`
+	Email                  string    `json:"email"`
+	Mobile                 string    `json:"mobile,omitempty"`
+	Username               string    `json:"username"`
+	RimanUserId            int64     `json:"riman_user_id"`
+	Status                 bool      `json:"status"`
+	OrganizationType       string    `json:"organization_type,omitempty"`
+	SignupDate             string    `json:"signup_date"`
+	AnniversaryDate        string    `json:"anniversary_date"`
+	AccountType            string    `json:"account_type"`
+	SponsorUsername        string    `json:"sponsor_username,omitempty"`
+	MemberId               string    `json:"member_id"`
+	Rank                   string    `json:"rank,omitempty"`
+	EnrollmentDate         string    `json:"enrollment_date,omitempty"`
+	PersonalOrdersVolume   float64   `json:"personal_orders_volume,omitempty"`
+	PersonalClientsVolume  float64   `json:"personal_clients_volume,omitempty"`
+	TotalPersonalVolume    float64   `json:"total_personal_volume,omitempty"`
+	CurrentMonthSp         float64   `json:"current_month_sp,omitempty"`
+	CurrentMonthBp         float64   `json:"current_month_bp,omitempty"`
+	LastOrderDate          string    `json:"last_order_date,omitempty"`
+	LastOrderId            int64     `json:"last_order_id,omitempty"`
+	LastOrderSp            float64   `json:"last_order_sp,omitempty"`
+	LastOrderBp            float64   `json:"last_order_bp,omitempty"`
+	LifetimeSpend          float64   `json:"lifetime_spend,omitempty"`
+	MostRecent12MonthSpend float64   `json:"most_recent_12_month_spend,omitempty"`
+	Data                   any       `json:"data,omitempty"`
+	PasswordHash           string    `json:"password_hash"`
 }

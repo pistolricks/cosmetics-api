@@ -1,6 +1,7 @@
 package riman
 
 import (
+	"database/sql"
 	"fmt"
 
 	"resty.dev/v3"
@@ -9,8 +10,11 @@ import (
 type CartErrors struct {
 	Error string `json:"error"`
 }
-
 type Body map[string]any
+
+type CartModel struct {
+	DB *sql.DB
+}
 
 func (m ClientModel) Patch(cartKey string, token string) (*Cart, error) {
 

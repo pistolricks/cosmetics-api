@@ -1,6 +1,7 @@
 package riman
 
 import (
+	"database/sql"
 	"fmt"
 
 	"resty.dev/v3"
@@ -32,7 +33,11 @@ type Errors struct {
 	ErrorUri         string `json:"error_uri"`
 }
 
-func ShipmentTracker(orderId string, token string) ([]*ProductTracking, error) {
+type ShipModel struct {
+	DB *sql.DB
+}
+
+func (m ShipModel) ShipmentTracker(orderId string, token string) ([]*ProductTracking, error) {
 
 	client := resty.New()
 	defer client.Close()
