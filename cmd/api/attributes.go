@@ -9,6 +9,19 @@ import (
 	goshopify "github.com/bold-commerce/go-shopify/v4"
 )
 
+func (app *application) findCookieValue() *string {
+	for i := range app.cookies {
+		if app.cookies[i].Name == "token" {
+			app.envars.Token = app.cookies[i].Value
+			fmt.Println("app.envars.Token")
+			fmt.Println(app.envars.Token)
+			return &app.cookies[i].Value
+		}
+	}
+	// Return nil if no product is found
+	return nil
+}
+
 func (app *application) updateOrderFields(w http.ResponseWriter, r *http.Request) {
 
 	var input struct {

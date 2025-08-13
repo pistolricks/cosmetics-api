@@ -1,51 +1,28 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 )
 
-type LatLng struct {
-	Lat float64 `json:"lat"`
-	Lng float64 `json:"lng"`
-}
+func (app *application) login(w http.ResponseWriter, r *http.Request) {
 
-type RimanBillingAddress struct {
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	Address1  string `json:"address1"`
-	Address2  string `json:"address2"`
-	City      string `json:"city"`
-	State     string `json:"state"`
-	Zip       string `json:"zip"`
-	Phone     string `json:"phone"`
-}
-
-type RimanCreditCard struct {
-	CardName   string `json:"cardName"`
-	CardNumber string `json:"cardNumber"`
-	ExpMonth   string `json:"expMonth"`
-	ExpYear    string `json:"expYear"`
-	CVV        string `json:"cvv"`
-}
-
-type State struct {
-	Code  string      `json:"code"`
-	Name  string      `json:"name"`
-	Name2 interface{} `json:"-"`
-}
-
-func (app *application) findCookieValue() *string {
-	for i := range app.cookies {
-		if app.cookies[i].Name == "token" {
-			app.envars.Token = app.cookies[i].Value
-			fmt.Println("app.envars.Token")
-			fmt.Println(app.envars.Token)
-			return &app.cookies[i].Value
-		}
+	var input struct {
+		UserName string `json:"userName"`
+		Password string `json:"password"`
 	}
-	// Return nil if no product is found
-	return nil
+
+	err := app.readJSON(w, r, &input)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	token, err := app.riman.Session.Login(input.UserName, input.Password)
+
+	err = app.writeJSON(w, http.StatusCreated, envelope{"authentication_token": token}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
 }
 
 func (app *application) findCartKeyValue() *string {
