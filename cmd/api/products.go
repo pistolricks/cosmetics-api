@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	goshopify "github.com/bold-commerce/go-shopify/v4"
-	"github.com/pistolricks/kbeauty-api/internal/shopify"
-	"github.com/pistolricks/kbeauty-api/internal/vendors"
+	"github.com/pistolricks/cosmetics-api/internal/shopify"
+	"github.com/pistolricks/cosmetics-api/internal/vendors"
 )
 
 func (app *application) RimanApiListProductsHandler(w http.ResponseWriter, r *http.Request) {

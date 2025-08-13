@@ -10,9 +10,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/pistolricks/kbeauty-api/internal/data"
-	"github.com/pistolricks/kbeauty-api/internal/validator"
-	"github.com/pistolricks/kbeauty-api/internal/vendors"
+	"github.com/pistolricks/cosmetics-api/internal/data"
+	"github.com/pistolricks/cosmetics-api/internal/validator"
+	"github.com/pistolricks/cosmetics-api/internal/vendors"
 
 	"github.com/tomasen/realip"
 	"golang.org/x/time/rate"
@@ -125,7 +125,7 @@ func (app *application) authenticate(next http.Handler) http.Handler {
 
 		r = app.contextSetUser(r, user)
 
-		client, err := app.riman.Clients.GetForRimanToken(riman.ScopeAuthentication, token)
+		client, err := app.vendors.Clients.GetForRimanToken(vendors.ScopeAuthentication, token)
 		if err != nil {
 			switch {
 			case errors.Is(err, data.ErrRecordNotFound):
@@ -291,7 +291,7 @@ func (app *application) authenticateClient(next http.Handler) http.Handler {
 		authorizationHeader := r.Header.Get("Authorization")
 
 		if authorizationHeader == "" {
-			r = app.contextSetClient(r, riman.AnonymousClient)
+			r = app.contextSetClient(r, vendors.AnonymousClient)
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -315,7 +315,7 @@ func (app *application) authenticateClient(next http.Handler) http.Handler {
 
 		fmt.Println(testSentence)
 
-		client, err := app.riman.Clients.GetForRimanToken(riman.ScopeAuthentication, token)
+		client, err := app.vendors.Clients.GetForRimanToken(vendors.ScopeAuthentication, token)
 		if err != nil {
 			switch {
 			case errors.Is(err, data.ErrRecordNotFound):

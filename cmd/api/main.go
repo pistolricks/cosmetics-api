@@ -18,12 +18,12 @@ import (
 	"github.com/go-rod/rod/lib/launcher"
 	"github.com/go-rod/rod/lib/proto"
 	"github.com/joho/godotenv"
-	"github.com/pistolricks/kbeauty-api/internal/chromium"
-	"github.com/pistolricks/kbeauty-api/internal/data"
-	"github.com/pistolricks/kbeauty-api/internal/mailer"
-	"github.com/pistolricks/kbeauty-api/internal/shopify"
-	"github.com/pistolricks/kbeauty-api/internal/vcs"
-	"github.com/pistolricks/kbeauty-api/internal/vendors"
+	"github.com/pistolricks/cosmetics-api/internal/chromium"
+	"github.com/pistolricks/cosmetics-api/internal/data"
+	"github.com/pistolricks/cosmetics-api/internal/mailer"
+	"github.com/pistolricks/cosmetics-api/internal/shopify"
+	"github.com/pistolricks/cosmetics-api/internal/vcs"
+	"github.com/pistolricks/cosmetics-api/internal/vendors"
 )
 
 type Envars struct {
@@ -79,7 +79,7 @@ type application struct {
 	browser  *rod.Browser
 	cookies  []*proto.NetworkCookie
 	models   data.Models
-	vendors  *vendors.NewVendors
+	vendors  vendors.Vendors
 	shopify  shopify.ShopClient
 	chromium chromium.ChromeConnector
 	client   *vendors.Client

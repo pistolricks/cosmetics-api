@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/pistolricks/kbeauty-api/internal/data"
-	"github.com/pistolricks/kbeauty-api/internal/validator"
+	"github.com/pistolricks/cosmetics-api/internal/data"
+	"github.com/pistolricks/cosmetics-api/internal/validator"
 )
 
 func (app *application) createAuthenticationTokenHandler(w http.ResponseWriter, r *http.Request) {

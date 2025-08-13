@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/pistolricks/kbeauty-api/internal/vendors"
+	"github.com/pistolricks/cosmetics-api/internal/vendors"
 )
 
 func (app *application) getCartHandler(w http.ResponseWriter, r *http.Request) {

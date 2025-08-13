@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/pistolricks/kbeauty-api/internal/data"
-	"github.com/pistolricks/kbeauty-api/internal/vendors"
+	"github.com/pistolricks/cosmetics-api/internal/data"
+	"github.com/pistolricks/cosmetics-api/internal/vendors"
 )
 
 type contextKey string

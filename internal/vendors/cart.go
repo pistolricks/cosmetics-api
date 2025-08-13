@@ -12,9 +12,9 @@ type CartErrors struct {
 
 type Body map[string]any
 
-func (m ClientModel) Patch() (*Cart, error) {
+func (m ClientModel) Patch(body Body) (*Cart, error) {
 
-	cartUrl := fmt.Sprintf("https://cart-api.riman.com/api/v1/shopping/%s", "")
+	cartUrl := fmt.Sprintf("https://cart-api.riman.com/api/v1/shopping/%s", "cart")
 
 	fmt.Println(cartUrl)
 

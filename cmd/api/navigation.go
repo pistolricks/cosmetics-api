@@ -12,9 +12,9 @@ import (
 
 	"github.com/go-rod/rod"
 	"github.com/go-rod/rod/lib/proto"
-	"github.com/pistolricks/kbeauty-api/internal/data"
-	"github.com/pistolricks/kbeauty-api/internal/validator"
-	"github.com/pistolricks/kbeauty-api/internal/vendors"
+	"github.com/pistolricks/cosmetics-api/internal/data"
+	"github.com/pistolricks/cosmetics-api/internal/validator"
+	"github.com/pistolricks/cosmetics-api/internal/vendors"
 	"golang.org/x/net/context"
 )
 
@@ -33,7 +33,7 @@ func (app *application) chromeLoginHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	credentials := riman.Credentials{
+	credentials := vendors.Credentials{
 		UserName: input.UserName,
 		Password: input.Password,
 	}
@@ -56,7 +56,7 @@ func (app *application) chromeLoginHandler(w http.ResponseWriter, r *http.Reques
 	app.cookies = cookies
 	fmt.Println(browser)
 
-	client, err := app.riman.Clients.GetByClientUsername(input.UserName)
+	client, err := app.vendors.Clients.GetByClientUsername(input.UserName)
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrRecordNotFound):
@@ -97,7 +97,7 @@ func (app *application) chromeHomePageHandler(w http.ResponseWriter, r *http.Req
 
 	/* ADD SESSION HERE */
 
-	client, err := app.riman.Clients.GetByClientUsername(rimanRid)
+	client, err := app.vendors.Clients.GetByClientUsername(rimanRid)
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrRecordNotFound):
@@ -122,7 +122,7 @@ func (app *application) chromeHomePageHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	session, err := app.riman.Session.NewRimanSession(client.ID, 24*time.Hour, riman.ScopeAuthentication, app.envars.Token, *cartKey, envelope{"cookies": cookies})
+	session, err := app.vendors.Session.NewRimanSession(client.ID, 24*time.Hour, vendors.ScopeAuthentication, app.envars.Token, *cartKey, envelope{"cookies": cookies})
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
@@ -146,7 +146,7 @@ func (app *application) apiRimanLogoutHandler(w http.ResponseWriter, r *http.Req
 	p.MustClose()
 
 	/*
-			res, err := riman.Logout(app.envars.Token)
+			res, err := vendors.Logout(app.envars.Token)
 			if err != nil {
 				app.serverErrorResponse(w, r, err)
 			}

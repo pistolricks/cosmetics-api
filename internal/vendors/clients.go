@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/pistolricks/kbeauty-api/internal/data"
+	"github.com/pistolricks/cosmetics-api/internal/data"
 )
 
 type Client struct {

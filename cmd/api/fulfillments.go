@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/pistolricks/kbeauty-api/internal/vendors"
+	"github.com/pistolricks/cosmetics-api/internal/vendors"
 )
 
 func (app *application) updateFulfillmentHandler(w http.ResponseWriter, r *http.Request) {
