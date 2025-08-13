@@ -1,10 +1,7 @@
 package chromium
 
 import (
-	"time"
-
 	"github.com/go-rod/rod/lib/input"
-	"github.com/go-rod/rod/lib/proto"
 )
 
 type Billing struct {
@@ -43,13 +40,14 @@ func (chrome ChromeClient) InsertBillingInfo(email string) bool {
 
 	//chrome.Client.Page.Timeout(2 * time.Second).MustNavigate("https://mall.riman.com/checkout/billing?orderNum=0x0200000025227197FB7D1FAD7A856026F088D63E312861E9D6C8DF1D29F8C4327B40D24E7E35573BC1B1190A08488CD351124AF1")
 
-	_ = chrome.Client.Page.Timeout(2 * time.Second).MustElement("#mat-select-5").MustType(input.Enter)
-	_ = chrome.Client.Page.Timeout(2*time.Second).MustElement("#mat-select-5").Click(proto.InputMouseButtonLeft, 1)
+	chrome.Client.Page.MustElement("#mat-input-10").MustKeyActions().Type(input.Tab).MustDo()
 
-	el := chrome.Client.Page.Timeout(2 * time.Second).MustElement(`[type="checkbox"]`)
-	if el.MustProperty("checked").Bool() {
-		el.MustClick()
-	}
+	chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Tab).MustDo()
+
+	chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Space).MustDo()
+	// chrome.Client.Page.MustWaitStable().MustElement("#").Click(proto.InputMouseButtonLeft, 1)
+
+	chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Tab).MustDo()
 
 	// nameOnCard := os.Getenv("NAME_ON_CARD")
 	// cardNumber := os.Getenv("CARD_NUMBER")
