@@ -7,7 +7,7 @@ import (
 	"resty.dev/v3"
 )
 
-type Credentials struct {
+type ClientCredentials struct {
 	UserName string `json:"userName"`
 	Password string `json:"password"`
 }
@@ -22,21 +22,21 @@ type LoggedInResponse struct {
 
 const loginUrl = "https://security-api.riman.com/api/v2/CheckAttemptsAndLogin"
 
-func (m *ClientModel) Login(token string, credentials Credentials) (*LoggedInResponse, error) {
+func (m SessionModel) Login(userName string, password string) (*LoggedInResponse, error) {
 
 	params := url.Values{}
-	params.Add("userName", credentials.UserName)
-	params.Add("password", credentials.Password)
+	params.Add("userName", userName)
+	params.Add("password", password)
 
 	client := resty.New()
 	defer client.Close()
 
 	res, err := client.R().
 		SetHeader("Accept", "application/json").
-		SetAuthToken(token).
-		SetBody(Credentials{
-			UserName: credentials.UserName,
-			Password: credentials.Password,
+		SetAuthToken("").
+		SetBody(ClientCredentials{
+			UserName: userName,
+			Password: password,
 		}).
 		SetResult(&LoggedInResponse{}).
 		SetError(&Errors{}).
@@ -47,7 +47,7 @@ func (m *ClientModel) Login(token string, credentials Credentials) (*LoggedInRes
 
 type ReissueTokenResponse = map[string]any
 
-func (m *ClientModel) ReissueToken(token string) (*ReissueTokenResponse, error) {
+func (m SessionModel) ReissueToken(token string) (*ReissueTokenResponse, error) {
 
 	logoutUrl := fmt.Sprintf("https://security-api.riman.com/api/v2/token/reissue")
 
@@ -77,7 +77,7 @@ func (m *ClientModel) ReissueToken(token string) (*ReissueTokenResponse, error) 
 
 type LogoutResponse = map[string]any
 
-func (m *ClientModel) Logout(token string) (*LogoutResponse, error) {
+func (m SessionModel) Logout(token string) (*LogoutResponse, error) {
 
 	logoutUrl := fmt.Sprintf("https://security-api.riman.com/api/v2/token/logout")
 

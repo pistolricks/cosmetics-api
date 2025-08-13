@@ -5,14 +5,13 @@ import (
 	"net/http"
 
 	goshopify "github.com/bold-commerce/go-shopify/v4"
-	"github.com/pistolricks/kbeauty-api/internal/riman"
 	"github.com/pistolricks/kbeauty-api/internal/shopify"
 )
 
 func (app *application) RimanApiListProductsHandler(w http.ResponseWriter, r *http.Request) {
 	// create a Resty client
 
-	products, err := riman.GetProducts()
+	products, err := app.riman.Products.GetProducts()
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"products": products, "errors": err}, nil)
 	if err != nil {

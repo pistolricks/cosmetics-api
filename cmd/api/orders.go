@@ -9,7 +9,6 @@ import (
 	goshopify "github.com/bold-commerce/go-shopify/v4"
 	"github.com/joho/godotenv"
 	"github.com/pistolricks/kbeauty-api/internal/data"
-	"github.com/pistolricks/kbeauty-api/internal/riman"
 	"github.com/pistolricks/kbeauty-api/internal/shopify"
 )
 
@@ -333,7 +332,7 @@ func (app *application) listShopifyOrders(w http.ResponseWriter, r *http.Request
 
 func (app *application) listRimanOrders(w http.ResponseWriter, r *http.Request) {
 
-	orderResponse, err := riman.GetOrders(app.envars.Username, app.envars.Token, app.cookies)
+	orderResponse, err := app.riman.Orders.GetOrders(app.envars.Username, app.envars.Token, app.cookies)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}

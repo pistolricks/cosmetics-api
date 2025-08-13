@@ -61,7 +61,7 @@ func (app *application) importAndUpdateTrackingHandler(w http.ResponseWriter, r 
 		return
 	}
 
-	tracking, _ := riman.ShipmentTracker(input.RimanID, app.session.Plaintext)
+	tracking, _ := app.riman.Shipping.ShipmentTracker(input.RimanID, app.session.Plaintext)
 
 	var trackData riman.ProductTracking
 

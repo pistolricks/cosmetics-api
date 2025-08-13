@@ -33,13 +33,8 @@ func (app *application) chromeLoginHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	credentials := riman.Credentials{
-		UserName: input.UserName,
-		Password: input.Password,
-	}
-
 	v := validator.New()
-	data.ValidatePasswordPlaintext(v, credentials.Password)
+	data.ValidatePasswordPlaintext(v, input.Password)
 
 	if !v.Valid() {
 		app.failedValidationResponse(w, r, v.Errors)
@@ -47,11 +42,11 @@ func (app *application) chromeLoginHandler(w http.ResponseWriter, r *http.Reques
 	}
 
 	app.envars.RimanStoreName = input.RimanStoreName
-	app.envars.Username = credentials.UserName
-	app.envars.Password = credentials.Password
+	app.envars.Username = input.UserName
+	app.envars.Password = input.Password
 	app.envars.LoginUrl = input.LoginUrl
 
-	page, browser, cookies := app.chromium.Chrome.ChromeLogin(input.LoginUrl, input.RimanStoreName, credentials.UserName, credentials.Password)
+	page, browser, cookies := app.chromium.Chrome.ChromeLogin(input.LoginUrl, input.RimanStoreName, input.UserName, input.Password)
 
 	app.cookies = cookies
 	fmt.Println(browser)
