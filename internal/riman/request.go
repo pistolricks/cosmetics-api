@@ -1,4 +1,4 @@
-package vendors
+package riman
 
 import (
 	"encoding/json"
@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-
 	"resty.dev/v3"
 )
 

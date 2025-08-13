@@ -1,9 +1,10 @@
-module github.com/pistolricks/cosmetics-api
+module github.com/pistolricks/kbeauty-api
 
 go 1.24
 
 require (
 	github.com/bold-commerce/go-shopify/v4 v4.7.0
+	github.com/go-rod/rod v0.116.2
 	github.com/joho/godotenv v1.5.1
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/lib/pq v1.10.9
@@ -17,13 +18,12 @@ require (
 )
 
 require (
-	github.com/google/go-cmp v0.5.9 // indirect
-	github.com/google/go-querystring v1.1.0 // indirect
+	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/shopspring/decimal v1.4.0 // indirect
-	github.com/ysmood/fetchup v0.5.2 // indirect
+	github.com/shopspring/decimal v0.0.0-20200105231215-408a2507e114 // indirect
+	github.com/ysmood/fetchup v0.2.3 // indirect
 	github.com/ysmood/goob v0.4.0 // indirect
-	github.com/ysmood/got v0.41.0 // indirect
+	github.com/ysmood/got v0.40.0 // indirect
 	github.com/ysmood/gson v0.7.3 // indirect
 	github.com/ysmood/leakless v0.9.0 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect

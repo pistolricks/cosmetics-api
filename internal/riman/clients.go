@@ -1,4 +1,4 @@
-package vendors
+package riman
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/pistolricks/cosmetics-api/internal/data"
+	"github.com/pistolricks/kbeauty-api/internal/data"
 )
 
 type Client struct {

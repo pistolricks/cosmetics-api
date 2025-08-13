@@ -4,8 +4,8 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/pistolricks/cosmetics-api/internal/data"
-	"github.com/pistolricks/cosmetics-api/internal/validator"
+	"github.com/pistolricks/kbeauty-api/internal/data"
+	"github.com/pistolricks/kbeauty-api/internal/validator"
 )
 
 func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Request) {

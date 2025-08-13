@@ -1,4 +1,4 @@
-package vendors
+package riman
 
 import (
 	"database/sql"
@@ -10,13 +10,13 @@ var (
 	ErrEditConflict   = errors.New("edit conflict")
 )
 
-type Vendors struct {
+type Riman struct {
 	Session SessionModel
 	Clients ClientModel
 }
 
-func NewVendors(db *sql.DB) Vendors {
-	return Vendors{
+func NewRiman(db *sql.DB) Riman {
+	return Riman{
 		Session: SessionModel{DB: db},
 		Clients: ClientModel{DB: db},
 	}

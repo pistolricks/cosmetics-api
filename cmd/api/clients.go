@@ -60,7 +60,7 @@ func (app *application) findCartKeyValue() *string {
 
 func (app *application) listClientsHandler(w http.ResponseWriter, r *http.Request) {
 
-	clients, metadata, err := app.vendors.Clients.GetAll()
+	clients, metadata, err := app.riman.Clients.GetAll()
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return

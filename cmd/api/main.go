@@ -18,12 +18,12 @@ import (
 	"github.com/go-rod/rod/lib/launcher"
 	"github.com/go-rod/rod/lib/proto"
 	"github.com/joho/godotenv"
-	"github.com/pistolricks/cosmetics-api/internal/chromium"
-	"github.com/pistolricks/cosmetics-api/internal/data"
-	"github.com/pistolricks/cosmetics-api/internal/mailer"
-	"github.com/pistolricks/cosmetics-api/internal/shopify"
-	"github.com/pistolricks/cosmetics-api/internal/vcs"
-	"github.com/pistolricks/cosmetics-api/internal/vendors"
+	"github.com/pistolricks/kbeauty-api/internal/chromium"
+	"github.com/pistolricks/kbeauty-api/internal/data"
+	"github.com/pistolricks/kbeauty-api/internal/mailer"
+	"github.com/pistolricks/kbeauty-api/internal/riman"
+	"github.com/pistolricks/kbeauty-api/internal/shopify"
+	"github.com/pistolricks/kbeauty-api/internal/vcs"
 )
 
 type Envars struct {
@@ -79,11 +79,11 @@ type application struct {
 	browser  *rod.Browser
 	cookies  []*proto.NetworkCookie
 	models   data.Models
-	vendors  vendors.Vendors
+	riman    riman.Riman
 	shopify  shopify.ShopClient
 	chromium chromium.ChromeConnector
-	client   *vendors.Client
-	session  *vendors.Session
+	client   *riman.Client
+	session  *riman.Session
 	mailer   mailer.Mailer
 	wg       sync.WaitGroup
 }
@@ -103,7 +103,7 @@ func main() {
 
 	rimanStoreName := os.Getenv("RIMAN_STORE_NAME")
 	if rimanStoreName == "" {
-		fmt.Println("missing vendors store name")
+		fmt.Println("missing riman store name")
 		return
 	}
 
@@ -247,7 +247,7 @@ func main() {
 		logger:   logger,
 		envars:   vars,
 		models:   data.NewModels(db),
-		vendors:  vendors.NewVendors(db),
+		riman:    riman.NewRiman(db),
 		shopify:  shopify.NewShopClient(shopConfig),
 		chromium: chromium.NewChromeConnector(chromeConfig),
 		mailer:   mailer.New(cfg.smtp.host, cfg.smtp.port, cfg.smtp.username, cfg.smtp.password, cfg.smtp.sender),

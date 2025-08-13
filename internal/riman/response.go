@@ -1,4 +1,4 @@
-package vendors
+package riman
 
 type ShippedProductResponse struct {
 	PackagePk                 int         `json:"packagePk"`

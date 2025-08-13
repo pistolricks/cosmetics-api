@@ -9,8 +9,8 @@ import (
 	"strconv"
 
 	goshopify "github.com/bold-commerce/go-shopify/v4"
-	"github.com/pistolricks/cosmetics-api/internal/data"
-	"github.com/pistolricks/cosmetics-api/internal/vendors"
+	"github.com/pistolricks/kbeauty-api/internal/data"
+	"github.com/pistolricks/kbeauty-api/internal/riman"
 )
 
 type RimanOrder struct {
@@ -91,7 +91,7 @@ func (app *application) getShipmentHandler(w http.ResponseWriter, r *http.Reques
 
 	orderId := input.OrderId
 
-	shipment, err := vendors.ShipmentTracker(orderId, app.session.Plaintext)
+	shipment, err := riman.ShipmentTracker(orderId, app.session.Plaintext)
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"shipment": shipment, "errors": err}, nil)
 	if err != nil {

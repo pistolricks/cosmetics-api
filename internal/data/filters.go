@@ -3,7 +3,7 @@ package data
 import (
 	"strings"
 
-	"github.com/pistolricks/cosmetics-api/internal/validator"
+	"github.com/pistolricks/kbeauty-api/internal/validator"
 )
 
 type Filters struct {

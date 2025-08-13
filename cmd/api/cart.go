@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-
-	"github.com/pistolricks/cosmetics-api/internal/vendors"
 )
 
 func (app *application) getCartHandler(w http.ResponseWriter, r *http.Request) {
@@ -16,7 +14,7 @@ func (app *application) getCartHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(app.session.CartKey)
 	fmt.Println(input.CartKey)
 
-	cart, err := riman.ClientModel.Patch(app.session.CartKey)
+	cart, err := app.riman.Clients.Patch("test", "stse")
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"cart": cart, "error": err}, nil)
 	if err != nil {

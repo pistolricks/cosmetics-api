@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/pistolricks/cosmetics-api/internal/data"
-	"github.com/pistolricks/cosmetics-api/internal/vendors"
+	"github.com/pistolricks/kbeauty-api/internal/data"
+	"github.com/pistolricks/kbeauty-api/internal/riman"
 )
 
 type contextKey string
@@ -13,13 +13,13 @@ type contextKey string
 const clientContextKey = contextKey("client")
 const userContextKey = contextKey("user")
 
-func (app *application) contextSetClient(r *http.Request, client *vendors.Client) *http.Request {
+func (app *application) contextSetClient(r *http.Request, client *riman.Client) *http.Request {
 	ctx := context.WithValue(r.Context(), clientContextKey, client)
 	return r.WithContext(ctx)
 }
 
-func (app *application) contextGetClient(r *http.Request) *vendors.Client {
-	client, ok := r.Context().Value(clientContextKey).(*vendors.Client)
+func (app *application) contextGetClient(r *http.Request) *riman.Client {
+	client, ok := r.Context().Value(clientContextKey).(*riman.Client)
 	if !ok {
 		panic("missing client value in request context")
 	}

@@ -1,4 +1,4 @@
-package vendors
+package riman
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/pistolricks/cosmetics-api/internal/validator"
+	"github.com/pistolricks/kbeauty-api/internal/validator"
 )
 
 const (

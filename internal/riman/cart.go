@@ -1,4 +1,4 @@
-package vendors
+package riman
 
 import (
 	"fmt"
@@ -12,9 +12,9 @@ type CartErrors struct {
 
 type Body map[string]any
 
-func (m ClientModel) Patch(body Body) (*Cart, error) {
+func (m ClientModel) Patch(cartKey string, token string) (*Cart, error) {
 
-	cartUrl := fmt.Sprintf("https://cart-api.riman.com/api/v1/shopping/%s", "cart")
+	cartUrl := fmt.Sprintf("https://cart-api.riman.com/api/v1/shopping/%s", "")
 
 	fmt.Println(cartUrl)
 
