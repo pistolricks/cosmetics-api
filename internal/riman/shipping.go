@@ -2,11 +2,11 @@ package riman
 
 import (
 	"fmt"
-	"os"
+
 	"resty.dev/v3"
 )
 
-type ShipmentResponse struct {
+type ProductTracking struct {
 	PackagePk                 int         `json:"packagePk"`
 	ProductPk                 int         `json:"productPk"`
 	PackageName               string      `json:"packageName"`
@@ -32,25 +32,23 @@ type Errors struct {
 	ErrorUri         string `json:"error_uri"`
 }
 
-func ShipmentHandler(orderId string) (*ShipmentResponse, error) {
+func ShipmentTracker(orderId string, token string) ([]*ProductTracking, error) {
 
 	client := resty.New()
 	defer client.Close()
 
 	shipmentUrl := fmt.Sprintf("https://cart-api.riman.com/api/v1/orders/%s/shipment-products", orderId)
 
-	token := os.Getenv("TOKEN")
-
 	res, err := client.R().
 		SetAuthToken(token).
-		SetResult(&ShipmentResponse{}). // or SetResult(LoginResponse{}).
-		SetError(&Errors{}).            // or SetError(LoginError{}).
+		SetResult(&ProductTracking{}). // or SetResult(LoginResponse{}).
+		SetError(&Errors{}).           // or SetError(LoginError{}).
 		Get(shipmentUrl)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return res.Result().(*ShipmentResponse), err
+	return res.Result().([]*ProductTracking), err
 
 }

@@ -39,6 +39,8 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/riman/shipment", app.getShipmentHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/riman/tracking", app.trackingHandler)
 
+	router.HandlerFunc(http.MethodPost, "/v1/orders/fulfillments/tracking", app.updateFulfillmentHandler)
+
 	router.HandlerFunc(http.MethodPost, "/v1/riman/login", app.chromeLoginHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/riman/home", app.chromeHomePageHandler)
 

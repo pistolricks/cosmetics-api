@@ -91,7 +91,7 @@ func (app *application) getShipmentHandler(w http.ResponseWriter, r *http.Reques
 
 	orderId := input.OrderId
 
-	shipment, err := riman.ShipmentHandler(orderId)
+	shipment, err := riman.ShipmentTracker(orderId, app.session.Plaintext)
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"shipment": shipment, "errors": err}, nil)
 	if err != nil {

@@ -23,14 +23,14 @@ https://cart-api.riman.com/api/v2/order
 }
 */
 
-func (client OrderClient) UpdateOrderNote(orderId uint64, note string) (*goshopify.Order, error) {
+func (orderClient OrderClient) UpdateOrderNote(orderId uint64, note string) (*goshopify.Order, error) {
 
 	o := goshopify.Order{
 		Id:   orderId, // orderId,
 		Note: note,
 	}
 
-	order, err := client.Config.Client.Order.Update(context.Background(), o)
+	order, err := orderClient.Config.Client.Order.Update(context.Background(), o)
 	if err != nil {
 		return order, err
 	}

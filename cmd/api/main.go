@@ -229,7 +229,7 @@ func main() {
 		ApiKey:      shopifyKey,
 		ApiSecret:   shopifySecret,
 		RedirectUrl: "https://example.com/callback",
-		Scope:       "read_orders,write_orders",
+		Scope:       "read_orders,write_orders,read_fulfillments,write_fulfillments,write_third_party_fulfillment_orders,read_shipping,write_shipping",
 	}
 
 	client, err := goshopify.NewClient(sa, storeName, shopifyToken)
@@ -238,7 +238,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	shopConfig := &shopify.ShopConfig{App: &sa, Client: client, ShopName: storeName, ShopToken: shopifyToken}
+	shopConfig := &shopify.ShopConfig{OrderApp: &sa, Client: client, ShopName: storeName, ShopToken: shopifyToken}
 
 	chromeConfig := &chromium.ChromeConfig{Browser: browser}
 
