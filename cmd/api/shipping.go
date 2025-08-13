@@ -10,7 +10,7 @@ import (
 
 	goshopify "github.com/bold-commerce/go-shopify/v4"
 	"github.com/pistolricks/kbeauty-api/internal/data"
-	"github.com/pistolricks/kbeauty-api/internal/riman"
+	"github.com/pistolricks/kbeauty-api/internal/vendors"
 )
 
 type RimanOrder struct {

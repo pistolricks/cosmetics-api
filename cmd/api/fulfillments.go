@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/pistolricks/kbeauty-api/internal/riman"
+	"github.com/pistolricks/kbeauty-api/internal/vendors"
 )
 
 func (app *application) updateFulfillmentHandler(w http.ResponseWriter, r *http.Request) {
@@ -61,9 +61,9 @@ func (app *application) importAndUpdateTrackingHandler(w http.ResponseWriter, r 
 		return
 	}
 
-	tracking, _ := riman.ShipmentTracker(input.RimanID, app.session.Plaintext)
+	tracking, _ := vendors.ShipmentTracker(input.RimanID, app.session.Plaintext)
 
-	var trackData riman.ProductTracking
+	var trackData vendors.ProductTracking
 
 	if len(tracking) > 0 {
 		trackData = *tracking[0] // this copies all fields, like JS {...tracking[0]}

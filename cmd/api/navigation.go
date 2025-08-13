@@ -13,8 +13,8 @@ import (
 	"github.com/go-rod/rod"
 	"github.com/go-rod/rod/lib/proto"
 	"github.com/pistolricks/kbeauty-api/internal/data"
-	"github.com/pistolricks/kbeauty-api/internal/riman"
 	"github.com/pistolricks/kbeauty-api/internal/validator"
+	"github.com/pistolricks/kbeauty-api/internal/vendors"
 	"golang.org/x/net/context"
 )
 
@@ -232,4 +232,14 @@ func (app *application) emulateGPS(page *rod.Page) bool {
 	}
 
 	return true
+}
+
+func (app *application) submitFormHandler(w http.ResponseWriter, r *http.Request) {
+
+	el := app.chromium.Chrome.SubmitForm()
+
+	err := app.writeJSON(w, http.StatusOK, envelope{"element": el}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
 }

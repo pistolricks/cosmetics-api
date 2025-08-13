@@ -21,9 +21,9 @@ import (
 	"github.com/pistolricks/kbeauty-api/internal/chromium"
 	"github.com/pistolricks/kbeauty-api/internal/data"
 	"github.com/pistolricks/kbeauty-api/internal/mailer"
-	"github.com/pistolricks/kbeauty-api/internal/riman"
 	"github.com/pistolricks/kbeauty-api/internal/shopify"
 	"github.com/pistolricks/kbeauty-api/internal/vcs"
+	"github.com/pistolricks/kbeauty-api/internal/vendors"
 )
 
 type Envars struct {
@@ -79,11 +79,11 @@ type application struct {
 	browser  *rod.Browser
 	cookies  []*proto.NetworkCookie
 	models   data.Models
-	riman    riman.Extended
+	vendors  *vendors.NewVendors
 	shopify  shopify.ShopClient
 	chromium chromium.ChromeConnector
-	client   *riman.Client
-	session  *riman.Session
+	client   *vendors.Client
+	session  *vendors.Session
 	mailer   mailer.Mailer
 	wg       sync.WaitGroup
 }
@@ -103,7 +103,7 @@ func main() {
 
 	rimanStoreName := os.Getenv("RIMAN_STORE_NAME")
 	if rimanStoreName == "" {
-		fmt.Println("missing riman store name")
+		fmt.Println("missing vendors store name")
 		return
 	}
 
@@ -247,7 +247,7 @@ func main() {
 		logger:   logger,
 		envars:   vars,
 		models:   data.NewModels(db),
-		riman:    riman.NewExtended(db),
+		vendors:  vendors.NewVendors(db),
 		shopify:  shopify.NewShopClient(shopConfig),
 		chromium: chromium.NewChromeConnector(chromeConfig),
 		mailer:   mailer.New(cfg.smtp.host, cfg.smtp.port, cfg.smtp.username, cfg.smtp.password, cfg.smtp.sender),

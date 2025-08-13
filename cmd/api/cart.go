@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/pistolricks/kbeauty-api/internal/riman"
+	"github.com/pistolricks/kbeauty-api/internal/vendors"
 )
 
 func (app *application) getCartHandler(w http.ResponseWriter, r *http.Request) {
@@ -16,7 +16,7 @@ func (app *application) getCartHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(app.session.CartKey)
 	fmt.Println(input.CartKey)
 
-	cart, err := riman.GetCart(input.CartKey)
+	cart, err := riman.ClientModel.Patch(app.session.CartKey)
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"cart": cart, "error": err}, nil)
 	if err != nil {

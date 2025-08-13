@@ -1,4 +1,4 @@
-package riman
+package vendors
 
 import (
 	"github.com/pistolricks/kbeauty-api/internal/data"

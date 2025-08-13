@@ -9,7 +9,7 @@ import (
 	goshopify "github.com/bold-commerce/go-shopify/v4"
 )
 
-func (app *application) updateOrderMetaField(w http.ResponseWriter, r *http.Request) {
+func (app *application) updateOrderFields(w http.ResponseWriter, r *http.Request) {
 
 	var input struct {
 		ID      string `json:"id"`

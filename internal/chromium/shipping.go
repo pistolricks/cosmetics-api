@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	goshopify "github.com/bold-commerce/go-shopify/v4"
+	"github.com/go-rod/rod/lib/input"
 	"github.com/go-rod/rod/lib/proto"
 )
 
@@ -71,15 +72,26 @@ func (chrome ChromeClient) InsertShippingInfo(email string, checkoutUrl string, 
 	address := fmt.Sprintf("%s %s, %s", formattedAddress, address2, shortZip)
 
 	chrome.Client.Page.MustElement("#address10").MustSelectAllText().MustInput(address)
+
+	chrome.Client.Page.MustWaitStable().KeyActions().Type(input.ArrowDown).MustDo()
+	chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Enter).MustDo()
+
 	chrome.Client.Page.MustElement("#address20").MustSelectAllText().MustInput(company)
 
-	chrome.Client.Page.MustElement("#city0").MustSelectAllText().MustInput(city)
+	// chrome.Client.Page.MustElement("#city0").MustSelectAllText().MustInput(city)
 	// chrome.Client.Page.MustElement("#state0").MustSelect(provinceCode)
-	chrome.Client.Page.MustElement("#postalCode0").MustSelectAllText().MustInput(zip)
+	// chrome.Client.Page.MustElement("#postalCode0").MustSelectAllText().MustInput(zip)
 
 	chrome.Client.Page.MustElement("#phoneNumber0").MustSelectAllText().MustInput(phone)
 
 	chrome.Client.Page.MustElement("#email0").MustSelectAllText().MustInput(email)
+
+	chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Tab).MustDo()
+
+	chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Space).MustDo()
+	chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Space).MustDo()
+
+	chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Tab).MustDo()
 
 	/* Need to add Province/State */
 	// chrome.Client.Page.MustElement("#state0").MustSelectAllText().MustInput(province)

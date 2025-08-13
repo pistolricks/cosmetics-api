@@ -1,7 +1,8 @@
-package riman
+package vendors
 
 import (
 	"fmt"
+
 	"resty.dev/v3"
 )
 

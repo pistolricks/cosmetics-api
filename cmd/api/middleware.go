@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/pistolricks/kbeauty-api/internal/data"
-	"github.com/pistolricks/kbeauty-api/internal/riman"
 	"github.com/pistolricks/kbeauty-api/internal/validator"
+	"github.com/pistolricks/kbeauty-api/internal/vendors"
 
 	"github.com/tomasen/realip"
 	"golang.org/x/time/rate"
@@ -310,6 +310,10 @@ func (app *application) authenticateClient(next http.Handler) http.Handler {
 			app.invalidAuthenticationTokenResponse(w, r)
 			return
 		}
+
+		testSentence := fmt.Sprintf("Middleware Token: %s", token)
+
+		fmt.Println(testSentence)
 
 		client, err := app.riman.Clients.GetForRimanToken(riman.ScopeAuthentication, token)
 		if err != nil {

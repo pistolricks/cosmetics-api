@@ -9,8 +9,8 @@ import (
 	goshopify "github.com/bold-commerce/go-shopify/v4"
 	"github.com/joho/godotenv"
 	"github.com/pistolricks/kbeauty-api/internal/data"
-	"github.com/pistolricks/kbeauty-api/internal/riman"
 	"github.com/pistolricks/kbeauty-api/internal/shopify"
+	"github.com/pistolricks/kbeauty-api/internal/vendors"
 )
 
 /* ORDER STATUS */

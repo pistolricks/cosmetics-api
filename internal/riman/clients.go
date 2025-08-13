@@ -1,4 +1,4 @@
-package riman
+package vendors
 
 import (
 	"context"

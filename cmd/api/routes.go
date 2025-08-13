@@ -16,46 +16,34 @@ func (app *application) routes() http.Handler {
 
 	router.HandlerFunc(http.MethodGet, "/v1/healthcheck", app.healthcheckHandler)
 
-	router.HandlerFunc(http.MethodGet, "/v1/riman/products", app.RimanApiListProductsHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/platform/products", app.ShopifyApiListProductsHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/platform/notes", app.orderUpdateHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/platform/fields", app.updateOrderFields)
+	router.HandlerFunc(http.MethodPost, "/v1/platform/tracking", app.updateFulfillmentHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/platform/orders", app.listShopifyOrdersHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/platform/orders/list", app.listShopifyOrders)
+	router.HandlerFunc(http.MethodGet, "/v1/platform/orders/all", app.listAllShopifyOrders)
 
-	router.HandlerFunc(http.MethodGet, "/v1/orders", app.listShopifyOrdersHandler)
-
-	router.HandlerFunc(http.MethodPost, "/v1/attributes/metafield", app.updateOrderMetaField)
-
-	router.HandlerFunc(http.MethodGet, "/v1/process/orders", app.processShopifyOrders)
-
-	router.HandlerFunc(http.MethodGet, "/v1/process/order/cart", app.getCartHandler)
-
-	router.HandlerFunc(http.MethodPost, "/v1/process/order", app.processShopifyOrder)
-
-	router.HandlerFunc(http.MethodGet, "/v1/process/order/billing", app.inputBillingHandler)
-
-	router.HandlerFunc(http.MethodGet, "/v1/shopify/products", app.ShopifyApiListProductsHandler)
-	router.HandlerFunc(http.MethodPost, "/v1/shopify/orders/note", app.orderUpdateHandler)
-
-	router.HandlerFunc(http.MethodGet, "/v1/riman/test/event", app.getEventHandler)
-
-	router.HandlerFunc(http.MethodGet, "/v1/riman/orders", app.listRimanOrders)
-	router.HandlerFunc(http.MethodGet, "/v1/riman/shipment", app.getShipmentHandler)
-	router.HandlerFunc(http.MethodGet, "/v1/riman/tracking", app.trackingHandler)
-
-	router.HandlerFunc(http.MethodPost, "/v1/orders/fulfillments/tracking", app.updateFulfillmentHandler)
-
-	router.HandlerFunc(http.MethodPost, "/v1/riman/login", app.chromeLoginHandler)
-	router.HandlerFunc(http.MethodGet, "/v1/riman/home", app.chromeHomePageHandler)
-
-	router.HandlerFunc(http.MethodPost, "/v1/riman/logout", app.apiRimanLogoutHandler)
-
-	//	router.HandlerFunc(http.MethodPost, "/v1/riman/login", app.createRimanTokenHandler)
-
-	router.HandlerFunc(http.MethodPost, "/v1/users/register", app.registerUserHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/vendors/products", app.RimanApiListProductsHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/vendors/carts", app.getCartHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/vendors/orders", app.listRimanOrders)
+	router.HandlerFunc(http.MethodGet, "/v1/vendors/tracking", app.trackingHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/vendors/shipment", app.getShipmentHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/clients", app.listClientsHandler)
 
 	router.HandlerFunc(http.MethodPost, "/v1/users/login", app.createAuthenticationTokenHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/users/register", app.registerUserHandler)
 
-	router.HandlerFunc(http.MethodGet, "/v1/orders/all", app.listAllShopifyOrders)
-	router.HandlerFunc(http.MethodGet, "/v1/orders/list", app.listShopifyOrders)
+	router.HandlerFunc(http.MethodPost, "/v1/navigation/login", app.chromeLoginHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/navigation/logout", app.apiRimanLogoutHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/navigation/home", app.chromeHomePageHandler)
 
-	router.HandlerFunc(http.MethodGet, "/v1/clients", app.listClientsHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/navigation/orders", app.processShopifyOrder)
+	router.HandlerFunc(http.MethodGet, "/v1/navigation/orders", app.processShopifyOrders)
+
+	router.HandlerFunc(http.MethodGet, "/v1/navigation/test/event", app.getEventHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/navigation/billing", app.inputBillingHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/navigation/forms/submit", app.submitFormHandler)
 
 	/*
 

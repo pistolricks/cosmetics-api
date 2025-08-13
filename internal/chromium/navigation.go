@@ -3,8 +3,10 @@ package chromium
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/go-rod/rod"
+	"github.com/go-rod/rod/lib/input"
 	"github.com/go-rod/rod/lib/proto"
 )
 
@@ -58,4 +60,12 @@ func (chrome ChromeClient) ChromeHomePage(rimanStoreName string) []*proto.Networ
 	cookies := chrome.Client.Browser.MustGetCookies()
 
 	return cookies
+}
+
+func (chrome ChromeClient) SubmitForm() *rod.Element {
+
+	el := chrome.Client.Page.Timeout(2 * time.Second).MustElement("[type=submit]")
+	el.MustType(input.Enter)
+
+	return el
 }
