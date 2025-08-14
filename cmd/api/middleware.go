@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/pistolricks/kbeauty-api/internal/data"
-	"github.com/pistolricks/kbeauty-api/internal/riman"
 	"github.com/pistolricks/kbeauty-api/internal/validator"
 
 	"github.com/tomasen/realip"
@@ -124,20 +123,6 @@ func (app *application) authenticate(next http.Handler) http.Handler {
 		}
 
 		r = app.contextSetUser(r, user)
-
-		client, err := app.riman.Clients.GetForRimanToken(riman.ScopeAuthentication, token)
-		if err != nil {
-			switch {
-			case errors.Is(err, data.ErrRecordNotFound):
-				v.AddError("email", "no matching email address found")
-				app.failedValidationResponse(w, r, v.Errors)
-			default:
-				app.serverErrorResponse(w, r, err)
-			}
-			return
-		}
-
-		r = app.contextSetClient(r, client)
 
 		next.ServeHTTP(w, r)
 	})
