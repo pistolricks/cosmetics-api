@@ -24,12 +24,13 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/platform/orders/list", app.listShopifyOrders)
 	router.HandlerFunc(http.MethodGet, "/v1/platform/orders/all", app.listAllShopifyOrders)
 
+	router.HandlerFunc(http.MethodPost, "/v1/vendors/login", app.createRimanSessionHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/vendors/products", app.requireClient(app.RimanApiListProductsHandler))
 	router.HandlerFunc(http.MethodGet, "/v1/vendors/carts", app.getCartHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/vendors/orders", app.listRimanOrders)
 	router.HandlerFunc(http.MethodGet, "/v1/vendors/tracking", app.trackingHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/vendors/shipment", app.getShipmentHandler)
-	router.HandlerFunc(http.MethodGet, "/v1/clients", app.listClientsHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/vendors/clients", app.listClientsHandler)
 
 	router.HandlerFunc(http.MethodPost, "/v1/users/login", app.createAuthenticationTokenHandler)
 	router.HandlerFunc(http.MethodPost, "/v1/users/register", app.registerUserHandler)

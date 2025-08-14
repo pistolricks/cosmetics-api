@@ -6,9 +6,11 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"net/url"
 	"time"
 
 	"github.com/pistolricks/kbeauty-api/internal/data"
+	"resty.dev/v3"
 )
 
 type ClientModel struct {
@@ -21,7 +23,104 @@ func (c *Client) IsAnonymous() bool {
 	return c == AnonymousClient
 }
 
-func (m ClientModel) GetByClientUsername(username string) (*Client, error) {
+type ClientCredentials struct {
+	UserName string `json:"userName"`
+	Password string `json:"password"`
+}
+
+type LoggedInResponse struct {
+	SecurityRedirect bool   `json:"securityRedirect"`
+	Status           string `json:"-"`
+	LiToken          string `json:"liToken"`
+	LiUser           string `json:"liUser"`
+	Jwt              string `json:"jwt"`
+}
+
+const loginUrl = "https://security-api.riman.com/api/v2/CheckAttemptsAndLogin"
+
+func (m ClientModel) Login(userName string, password string) (*LoggedInResponse, error) {
+
+	params := url.Values{}
+	params.Add("userName", userName)
+	params.Add("password", password)
+
+	client := resty.New()
+	defer client.Close()
+
+	res, err := client.R().
+		SetHeader("Accept", "application/json").
+		SetAuthToken("").
+		SetBody(ClientCredentials{
+			UserName: userName,
+			Password: password,
+		}).
+		SetResult(&LoggedInResponse{}).
+		SetError(&Errors{}).
+		Post(loginUrl)
+
+	return res.Result().(*LoggedInResponse), err
+}
+
+type ReissueTokenResponse = map[string]any
+
+func (m ClientModel) ReissueToken(token string) (*ReissueTokenResponse, error) {
+
+	logoutUrl := fmt.Sprintf("https://security-api.riman.com/api/v2/token/reissue")
+
+	fmt.Println(logoutUrl)
+
+	client := resty.New()
+	defer client.Close()
+
+	res, err := client.R().
+		SetHeader("Accept", "application/json").
+		SetAuthToken(token).
+		SetResult(&ReissueTokenResponse{}).
+		SetError(&Errors{}).
+		Post(logoutUrl)
+
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println(res.String())
+	fmt.Println("string | cart")
+	fmt.Println(res.Result().(*ReissueTokenResponse))
+
+	return res.Result().(*ReissueTokenResponse), err
+
+}
+
+type LogoutResponse = map[string]any
+
+func (m ClientModel) Logout(token string) (*LogoutResponse, error) {
+
+	logoutUrl := fmt.Sprintf("https://security-api.riman.com/api/v2/token/logout")
+
+	fmt.Println(logoutUrl)
+
+	client := resty.New()
+	defer client.Close()
+
+	res, err := client.R().
+		SetHeader("Accept", "application/json").
+		SetAuthToken(token).
+		SetResult(&LogoutResponse{}).
+		SetError(&Errors{}).
+		Post(logoutUrl)
+
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println(res.String())
+	fmt.Println("string | cart")
+	fmt.Println(res.Result().(*LogoutResponse))
+
+	return res.Result().(*LogoutResponse), err
+}
+
+func (m ClientModel) GetByClientUserName(username string) (*Client, error) {
 	query := `
         SELECT id, created_at, first_name, middle_name, last_name, suffix, email, mobile, username, riman_user_id, status, organization_type, signup_date, anniversary_date, account_type, sponsor_username, member_id, rank, enrollment_date, personal_orders_volume, personal_clients_volume, total_personal_volume, current_month_sp, current_month_bp, last_order_date, last_order_id, last_order_sp, last_order_bp, lifetime_spend, most_recent_12_month_spend, data
         FROM clients

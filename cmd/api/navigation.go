@@ -51,7 +51,7 @@ func (app *application) chromeLoginHandler(w http.ResponseWriter, r *http.Reques
 	app.cookies = cookies
 	fmt.Println(browser)
 
-	client, err := app.riman.Clients.GetByClientUsername(input.UserName)
+	client, err := app.riman.Clients.GetByClientUserName(input.UserName)
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrRecordNotFound):
@@ -92,7 +92,7 @@ func (app *application) chromeHomePageHandler(w http.ResponseWriter, r *http.Req
 
 	/* ADD SESSION HERE */
 
-	client, err := app.riman.Clients.GetByClientUsername(rimanRid)
+	client, err := app.riman.Clients.GetByClientUserName(rimanRid)
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrRecordNotFound):

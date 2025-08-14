@@ -11,8 +11,8 @@ import (
 )
 
 func (app *application) createAuthenticationTokenHandler(w http.ResponseWriter, r *http.Request) {
+
 	var input struct {
-		UserName string `json:"userName"`
 		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
