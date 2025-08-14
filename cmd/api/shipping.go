@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+	"strings"
 
 	goshopify "github.com/bold-commerce/go-shopify/v4"
 	"github.com/pistolricks/kbeauty-api/internal/data"
@@ -111,9 +112,8 @@ func (app *application) trackingHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	client, err := goshopify.NewClient(shopApp, app.envars.StoreName, app.envars.ShopifyToken)
-
 	if err != nil {
-		fmt.Println(err)
+		app.serverErrorResponse(w, r, err)
 		return
 	}
 
@@ -130,40 +130,64 @@ func (app *application) trackingHandler(w http.ResponseWriter, r *http.Request) 
 	input.OrderId = app.readString(qs, "order_id", "")
 	input.FulfillmentId = app.readString(qs, "fulfillment_id", "")
 	input.ID = app.readString(qs, "id", "")
-	tracking, _ := data.OrderUpdateTracking(input.OrderId, input.Token)
+
+	// Validate basic inputs
+	if input.Token == "" || strings.EqualFold(input.Token, "null") {
+		app.badRequestResponse(w, r, fmt.Errorf("invalid token parameter"))
+		return
+	}
+	if input.OrderId == "" || input.FulfillmentId == "" || input.ID == "" {
+		app.badRequestResponse(w, r, fmt.Errorf("missing required query parameters"))
+		return
+	}
+
+	tracking, trErr := data.OrderUpdateTracking(input.OrderId, input.Token)
+	if trErr != nil {
+		app.serverErrorResponse(w, r, trErr)
+		return
+	}
 
 	fId, err := strconv.ParseUint(input.FulfillmentId, 10, 64)
 	if err != nil {
-		fmt.Println(err.Error())
+		app.badRequestResponse(w, r, fmt.Errorf("invalid fulfillment_id: %w", err))
+		return
+	}
+
+	id, err := strconv.ParseUint(input.ID, 10, 64)
+	if err != nil {
+		app.badRequestResponse(w, r, fmt.Errorf("invalid id: %w", err))
+		return
 	}
 
 	fulfillment := goshopify.Fulfillment{}
 
-	id, err := strconv.ParseUint(input.ID, 10, 64)
-
-	if tracking[0].TrackingNumber == "" {
-		return
-	} else {
-
-		fulfillment = goshopify.Fulfillment{
-			Id:              fId,
-			TrackingUrl:     tracking[0].TrackingLink,
-			TrackingNumber:  tracking[0].TrackingNumber,
-			TrackingCompany: "Other",
-		}
-		_, err := client.Order.UpdateFulfillment(ctx, id, fulfillment)
-
+	// Guard against empty tracking slice
+	if len(tracking) == 0 || tracking[0].TrackingNumber == "" {
+		// No tracking available; return 200 with empty tracking info
+		err = app.writeJSON(w, http.StatusOK, envelope{"tracking": tracking, "fulfillment": fulfillment}, nil)
 		if err != nil {
-			fmt.Println(err.Error())
+			app.serverErrorResponse(w, r, err)
 		}
-
+		return
 	}
 
-	err = app.writeJSON(w, http.StatusOK, envelope{"tracking": tracking, "fulfillment": fulfillment, "errors": err}, nil)
+	fulfillment = goshopify.Fulfillment{
+		Id:              fId,
+		TrackingUrl:     tracking[0].TrackingLink,
+		TrackingNumber:  tracking[0].TrackingNumber,
+		TrackingCompany: "Other",
+	}
+	_, err = client.Order.UpdateFulfillment(ctx, id, fulfillment)
+	if err != nil {
+		// Return the tracking data even if fulfillment update failed
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"tracking": tracking, "fulfillment": fulfillment}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
-
 }
 
 func (app *application) shippingHandler(w http.ResponseWriter, r *http.Request) {

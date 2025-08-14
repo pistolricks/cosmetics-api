@@ -25,7 +25,7 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/platform/orders/all", app.listAllShopifyOrders)
 
 	router.HandlerFunc(http.MethodPost, "/v1/vendors/login", app.createRimanSessionHandler)
-	router.HandlerFunc(http.MethodGet, "/v1/vendors/products", app.requireClient(app.RimanApiListProductsHandler))
+	router.HandlerFunc(http.MethodGet, "/v1/vendors/products", app.RimanApiListProductsHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/vendors/carts", app.getCartHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/vendors/orders", app.listRimanOrders)
 	router.HandlerFunc(http.MethodGet, "/v1/vendors/tracking", app.trackingHandler)
@@ -58,5 +58,5 @@ func (app *application) routes() http.Handler {
 
 	router.Handler(http.MethodGet, "/debug/vars", expvar.Handler())
 
-	return app.metrics(app.recoverPanic(app.enableCORS(app.rateLimit(app.authenticate(router)))))
+	return app.metrics(app.recoverPanic(app.enableCORS(app.rateLimit(app.authenticate(app.authenticateClient(router))))))
 }

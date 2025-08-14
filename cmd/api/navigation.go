@@ -48,6 +48,9 @@ func (app *application) chromeLoginHandler(w http.ResponseWriter, r *http.Reques
 
 	page, browser, cookies := app.chromium.Chrome.ChromeLogin(input.LoginUrl, input.RimanStoreName, input.UserName, input.Password)
 
+	// Persist browser/page for later usage to avoid nil dereferences
+	app.page = page
+	app.browser = browser
 	app.cookies = cookies
 	fmt.Println(browser)
 
@@ -117,7 +120,7 @@ func (app *application) chromeHomePageHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	session, err := app.riman.Session.NewRimanSession(client.ID, 24*time.Hour, riman.ScopeAuthentication, app.envars.Token, *cartKey, envelope{"cookies": cookies})
+	session, err := app.riman.Session.NewRimanSession(client.ID, 24*time.Hour, riman.ScopeAuthentication, *token, *cartKey, envelope{"cookies": cookies})
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return

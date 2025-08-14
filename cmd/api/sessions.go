@@ -45,7 +45,7 @@ func (app *application) createRimanSessionHandler(w http.ResponseWriter, r *http
 		return
 	}
 
-	response, err := app.riman.Clients.Login(input.UserName, input.Password)
+	response, err := app.riman.Session.Login(input.UserName, input.Password, client.Token)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return

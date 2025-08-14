@@ -395,4 +395,5 @@ type Client struct {
 	MostRecent12MonthSpend float64   `json:"most_recent_12_month_spend,omitempty"`
 	Data                   any       `json:"data,omitempty"`
 	PasswordHash           string    `json:"password_hash"`
+	Token                  string    `json:"token"`
 }

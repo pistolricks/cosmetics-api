@@ -51,6 +51,16 @@ func (chrome ChromeClient) ChromeLogin(loginUrl string, rimanStoreName string, u
 func (chrome ChromeClient) ChromeHomePage(rimanStoreName string) []*proto.NetworkCookie {
 	homeUrl := fmt.Sprintf("https://mall.riman.com/%s/home", rimanStoreName)
 
+	// Ensure client and browser exist to avoid nil pointer dereference
+	if chrome.Client == nil || chrome.Client.Browser == nil {
+		return []*proto.NetworkCookie{}
+	}
+
+	// Ensure there's a page to work with
+	if chrome.Client.Page == nil {
+		chrome.Client.Page = chrome.Client.Browser.MustPage().MustWindowNormal()
+	}
+
 	// client.Page.MustSetCookies(networkCookie...)
 
 	wait := chrome.Client.Page.MustWaitNavigation()
