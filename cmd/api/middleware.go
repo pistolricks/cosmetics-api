@@ -194,7 +194,7 @@ func (app *application) enableCORS(next http.Handler) http.Handler {
 					if r.Method == http.MethodOptions && r.Header.Get("Access-Control-Request-Method") != "" {
 
 						w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, PUT, PATCH, DELETE")
-						w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
+						w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type, token")
 
 						w.WriteHeader(http.StatusOK)
 						return
@@ -276,7 +276,8 @@ func (app *application) authenticateClient(next http.Handler) http.Handler {
 
 		authorizationHeader := r.Header.Get("token")
 
-		if authorizationHeader == "" {
+		// Treat missing or "null" token header as anonymous (no client auth)
+		if authorizationHeader == "" || strings.EqualFold(authorizationHeader, "null") {
 			r = app.contextSetClient(r, riman.AnonymousClient)
 			next.ServeHTTP(w, r)
 			return

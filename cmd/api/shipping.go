@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -131,9 +132,18 @@ func (app *application) trackingHandler(w http.ResponseWriter, r *http.Request) 
 	input.FulfillmentId = app.readString(qs, "fulfillment_id", "")
 	input.ID = app.readString(qs, "id", "")
 
-	// Validate basic inputs
-	if input.Token == "" || strings.EqualFold(input.Token, "null") {
-		app.badRequestResponse(w, r, fmt.Errorf("invalid token parameter"))
+	// Resolve token: accept empty/"null" by falling back to server-side session/env
+	token := input.Token
+	if token == "" || strings.EqualFold(token, "null") {
+		if app.session != nil && app.session.Plaintext != "" {
+			token = app.session.Plaintext
+		} else if app.envars != nil && app.envars.Token != "" {
+			token = app.envars.Token
+		}
+	}
+	// Validate we have a usable token
+	if token == "" || strings.EqualFold(token, "null") {
+		app.badRequestResponse(w, r, fmt.Errorf("missing token: please login first"))
 		return
 	}
 	if input.OrderId == "" || input.FulfillmentId == "" || input.ID == "" {
@@ -141,8 +151,12 @@ func (app *application) trackingHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	tracking, trErr := data.OrderUpdateTracking(input.OrderId, input.Token)
+	tracking, trErr := data.OrderUpdateTracking(input.OrderId, token)
 	if trErr != nil {
+		if errors.Is(trErr, data.ErrUnauthorized) {
+			app.invalidAuthenticationTokenResponse(w, r)
+			return
+		}
 		app.serverErrorResponse(w, r, trErr)
 		return
 	}
