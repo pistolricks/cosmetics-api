@@ -45,7 +45,8 @@ func (m OrderModel) GetOrders(username string, token string, cookies []*proto.Ne
 	updatedCookies := restyCookies(cookies)
 
 	url := fmt.Sprintf("https://cart-api.riman.com/api/v1/orders")
-	// url := fmt.Sprintf("https://cart-api.riman.com/api/v1/orders?mainSiteUrl=%s&memberID=&getEnrollerOrders=&getCustomerOrders=&orderNumber=&shipmentNumber=&trackingNumber=&isRefunded=&paidStatus=true&orderType=&orderLevel=&weChatOrderNumber=&startDate=&endDate=&offset=0&limit=10&orderBy=-mainOrdersPK", mainSiteUrl)
+	// url := fmt.Sprintf("
+	//https://cart-api.riman.com/api/v1/orders?mainSiteUrl=%s&memberID=&getEnrollerOrders=&getCustomerOrders=&orderNumber=&shipmentNumber=&trackingNumber=&isRefunded=&paidStatus=true&orderType=&orderLevel=&weChatOrderNumber=&startDate=&endDate=&offset=0&limit=10&orderBy=-mainOrdersPK", mainSiteUrl)
 	res, err := client.R().
 		SetAuthToken(token).
 		SetCookies(updatedCookies).

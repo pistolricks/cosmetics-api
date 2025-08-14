@@ -82,6 +82,7 @@ func (app *application) getShipmentHandler(w http.ResponseWriter, r *http.Reques
 
 	var input struct {
 		OrderId string `json:"order_id"`
+		Token   string `json:"token"`
 	}
 
 	err := app.readJSON(w, r, &input)
@@ -90,9 +91,7 @@ func (app *application) getShipmentHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	orderId := input.OrderId
-
-	shipment, err := app.riman.Shipping.ShipmentTracker(orderId, app.session.Plaintext)
+	shipment, err := app.riman.Shipping.ShipmentTracker(input.OrderId, input.Token)
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"shipment": shipment, "errors": err}, nil)
 	if err != nil {
@@ -101,7 +100,6 @@ func (app *application) getShipmentHandler(w http.ResponseWriter, r *http.Reques
 }
 
 func (app *application) trackingHandler(w http.ResponseWriter, r *http.Request) {
-	// https://cart-api.riman.com/api/v1/orders/{rid}/shipment-products
 
 	ctx := r.Context()
 
@@ -213,7 +211,7 @@ func (app *application) shippingHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	qs := r.URL.Query()
-	input.Token = app.readString(qs, "token", "")
+	input.Token = app.readString(qs, "token", app.envars.Token)
 	input.UserName = app.readString(qs, "userName", "")
 
 	u := &url.URL{
@@ -266,9 +264,9 @@ func (app *application) shippingHandler(w http.ResponseWriter, r *http.Request) 
 	}
 	fmt.Printf("client: response body: %s\n", resBody)
 
-	bodyString := string(resBody)
+	// bodyString := string(resBody)
 
-	err = app.writeJSON(w, http.StatusOK, envelope{"body": bodyString}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"body": resBody}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}

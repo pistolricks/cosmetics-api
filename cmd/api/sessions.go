@@ -16,6 +16,7 @@ func (app *application) createRimanSessionHandler(w http.ResponseWriter, r *http
 		UserName string `json:"userName"`
 		Password string `json:"password"`
 		CartKey  string `json:"cartKey"`
+		Token    string `json:"token"`
 	}
 
 	err := app.readJSON(w, r, &input)
@@ -45,7 +46,7 @@ func (app *application) createRimanSessionHandler(w http.ResponseWriter, r *http
 		return
 	}
 
-	response, err := app.riman.Session.Login(input.UserName, input.Password, client.Token)
+	response, err := app.riman.Session.Login(input.UserName, input.Password, input.Token)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return

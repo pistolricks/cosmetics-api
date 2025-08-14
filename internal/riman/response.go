@@ -397,3 +397,22 @@ type Client struct {
 	PasswordHash           string    `json:"password_hash"`
 	Token                  string    `json:"token"`
 }
+type TtrackingInfo struct {
+	PackagePk                 int         `json:"packagePk"`
+	ProductPk                 int         `json:"productPk"`
+	PackageName               string      `json:"packageName"`
+	ProductName               string      `json:"productName"`
+	IsPackage                 bool        `json:"isPackage"`
+	Quantity                  int         `json:"quantity"`
+	Cv                        int         `json:"cv"`
+	Sp                        int         `json:"sp"`
+	Price                     int         `json:"price"`
+	FormattedPrice            string      `json:"formattedPrice"`
+	CurrencyCode              string      `json:"currencyCode"`
+	ShipmentNumber            string      `json:"shipmentNumber"`
+	ShipmentStatus            string      `json:"shipmentStatus"`
+	ShippedDate               string      `json:"shippedDate"`
+	TrackingNumber            string      `json:"trackingNumber"`
+	TrackingLink              string      `json:"trackingLink"`
+	VideoOrderPackagingInfoPK interface{} `json:"videoOrderPackagingInfoPK"`
+}

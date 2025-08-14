@@ -29,7 +29,7 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/vendors/carts", app.getCartHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/vendors/orders", app.listRimanOrders)
 	router.HandlerFunc(http.MethodGet, "/v1/vendors/tracking", app.trackingHandler)
-	router.HandlerFunc(http.MethodGet, "/v1/vendors/shipment", app.getShipmentHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/vendors/shipment", app.getShipmentHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/vendors/clients", app.listClientsHandler)
 
 	router.HandlerFunc(http.MethodPost, "/v1/users/login", app.createAuthenticationTokenHandler)
@@ -43,6 +43,8 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/navigation/orders", app.processShopifyOrders)
 
 	router.HandlerFunc(http.MethodGet, "/v1/navigation/test/event", app.getEventHandler)
+
+	router.HandlerFunc(http.MethodGet, "/v1/navigation/shipping", app.inputShippingHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/navigation/billing", app.inputBillingHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/navigation/forms/submit", app.submitFormHandler)
 

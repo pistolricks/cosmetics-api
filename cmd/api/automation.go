@@ -4,6 +4,10 @@ import (
 	"net/http"
 )
 
+func (app *application) inputShippingHandler(w http.ResponseWriter, r *http.Request) {
+
+}
+
 func (app *application) inputBillingHandler(w http.ResponseWriter, r *http.Request) {
 
 	isFinished := app.chromium.Chrome.InsertBillingInfo(app.client.Email)
