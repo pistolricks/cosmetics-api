@@ -65,8 +65,6 @@ func (app *application) chromeLoginHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	app.client = client
-
 	err = app.writeJSON(w, http.StatusOK, envelope{"client": client, "page": page, "browser": browser, "cookies": cookies}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
@@ -106,8 +104,6 @@ func (app *application) chromeHomePageHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	app.client = client
-
 	cookie := app.findCookieValue()
 	if cookie == nil {
 		app.invalidCredentialsResponse(w, r)
@@ -125,8 +121,6 @@ func (app *application) chromeHomePageHandler(w http.ResponseWriter, r *http.Req
 		app.serverErrorResponse(w, r, err)
 		return
 	}
-
-	app.session = session
 
 	fmt.Println("SESSION CLIENT ID")
 	fmt.Println(session.ClientID)

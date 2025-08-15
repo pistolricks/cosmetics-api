@@ -82,10 +82,8 @@ type application struct {
 	shopify  shopify.ShopClient
 	chromium chromium.ChromeConnector
 	v2       v2.Api
-	// client   *riman.Client
-	// session  *riman.Session
-	mailer mailer.Mailer
-	wg     sync.WaitGroup
+	mailer   mailer.Mailer
+	wg       sync.WaitGroup
 }
 
 func main() {

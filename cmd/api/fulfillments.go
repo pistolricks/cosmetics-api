@@ -1,10 +1,9 @@
 package main
 
 import (
+	"context"
 	"net/http"
 	"strconv"
-
-	"github.com/pistolricks/cosmetics-api/internal/riman"
 )
 
 func (app *application) updateFulfillmentHandler(w http.ResponseWriter, r *http.Request) {
@@ -28,7 +27,7 @@ func (app *application) updateFulfillmentHandler(w http.ResponseWriter, r *http.
 		return
 	}
 
-	fulfillment, err := app.shopify.Fulfillments.UpdateFulfillment(id, input.TrackingNumber, input.TrackingLink)
+	fulfillment, err := app.shopify.Fulfillments.Config.Client.FulfillmentService.Get(context.Background(), id, "")
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
@@ -53,6 +52,7 @@ func (app *application) importAndUpdateTrackingHandler(w http.ResponseWriter, r 
 		FulfillmentID  string `json:"fulfillment_id"`
 		TrackingNumber string `json:"tracking_number"`
 		TrackingLink   string `json:"tracking_link"`
+		Token          string `json:"token"`
 	}
 
 	err := app.readJSON(w, r, &input)
@@ -61,29 +61,11 @@ func (app *application) importAndUpdateTrackingHandler(w http.ResponseWriter, r 
 		return
 	}
 
-	tracking, _ := app.riman.Shipping.ShipmentTracker(input.RimanID, app.session.Plaintext)
+	tracking, _ := app.riman.Shipping.ShipmentTracker(input.RimanID, input.Token)
 
-	var trackData riman.ProductTracking
-
-	if len(tracking) > 0 {
-		trackData = *tracking[0] // this copies all fields, like JS {...tracking[0]}
-
-		id, err := strconv.ParseUint(input.FulfillmentID, 10, 64)
-		if err != nil {
-			app.badRequestResponse(w, r, err)
-			return
-		}
-
-		fulfillment, err := app.shopify.Fulfillments.UpdateFulfillment(id, trackData.TrackingNumber, trackData.TrackingLink)
-		if err != nil {
-			app.serverErrorResponse(w, r, err)
-			return
-		}
-
-		err = app.writeJSON(w, http.StatusOK, envelope{"tracking": tracking, "fulfillment": fulfillment, "errors": err}, nil)
-		if err != nil {
-			app.serverErrorResponse(w, r, err)
-		}
-
+	err = app.writeJSON(w, http.StatusOK, envelope{"tracking": tracking, "errors": err}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
 	}
+
 }

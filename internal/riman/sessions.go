@@ -56,7 +56,9 @@ type password struct {
 }
 
 type SessionModel struct {
-	DB *sql.DB
+	DB      *sql.DB
+	CartKey string
+	Token   string
 }
 
 func (m SessionModel) CheckForDuplicateToken(hash []byte) (bool, error) {

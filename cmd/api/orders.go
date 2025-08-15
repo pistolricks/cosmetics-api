@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 
 	goshopify "github.com/bold-commerce/go-shopify/v4"
@@ -172,7 +173,7 @@ func (app *application) processShopifyOrder(w http.ResponseWriter, r *http.Reque
 	}
 
 	app.background(func() {
-		app.chromium.Chrome.ProcessOrders(app.background, app.client.Email, rimanStoreName, app.cookies, orders)
+		app.chromium.Chrome.ProcessOrders(app.background, os.Getenv("ACCOUNT_EMAIL"), rimanStoreName, app.cookies, orders)
 	})
 
 	currentBrowser := app.browser
@@ -249,7 +250,7 @@ func (app *application) processShopifyOrders(w http.ResponseWriter, r *http.Requ
 	}
 
 	app.background(func() {
-		app.chromium.Chrome.ProcessOrders(app.background, app.client.Email, rimanStoreName, app.cookies, orders)
+		app.chromium.Chrome.ProcessOrders(app.background, os.Getenv("ACCOUNT_EMAIL"), rimanStoreName, app.cookies, orders)
 	})
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"orders": orders, "count": count}, nil)

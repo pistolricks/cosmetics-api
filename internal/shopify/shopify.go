@@ -18,13 +18,19 @@ type ShopConfig struct {
 	ShopToken string
 }
 
+type FulfillmentClient struct {
+	Config *ShopConfig
+}
+
 type ShopClient struct {
-	Orders OrderClient
+	Orders       OrderClient
+	Fulfillments FulfillmentClient
 }
 
 func NewShopClient(config ShopConfig) ShopClient {
 	return ShopClient{
-		Orders: OrderClient{Config: &config},
+		Orders:       OrderClient{Config: &config},
+		Fulfillments: FulfillmentClient{Config: &config},
 	}
 }
 

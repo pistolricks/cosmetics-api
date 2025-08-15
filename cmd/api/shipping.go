@@ -133,11 +133,8 @@ func (app *application) trackingHandler(w http.ResponseWriter, r *http.Request) 
 	// Resolve token: accept empty/"null" by falling back to server-side session/env
 	token := input.Token
 	if token == "" || strings.EqualFold(token, "null") {
-		if app.session != nil && app.session.Plaintext != "" {
-			token = app.session.Plaintext
-		} else if app.envars != nil && app.envars.Token != "" {
-			token = app.envars.Token
-		}
+	} else if app.envars != nil && app.envars.Token != "" {
+		token = app.envars.Token
 	}
 	// Validate we have a usable token
 	if token == "" || strings.EqualFold(token, "null") {
