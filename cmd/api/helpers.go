@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/pistolricks/kbeauty-api/internal/validator"
+	"github.com/pistolricks/cosmetics-api/internal/validator"
 )
 
 func (app *application) readStringParam(key string, r *http.Request) string {

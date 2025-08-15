@@ -12,9 +12,9 @@ import (
 
 	"github.com/go-rod/rod"
 	"github.com/go-rod/rod/lib/proto"
-	"github.com/pistolricks/kbeauty-api/internal/data"
-	"github.com/pistolricks/kbeauty-api/internal/riman"
-	"github.com/pistolricks/kbeauty-api/internal/validator"
+	"github.com/pistolricks/cosmetics-api/internal/data"
+	"github.com/pistolricks/cosmetics-api/internal/riman"
+	"github.com/pistolricks/cosmetics-api/internal/validator"
 	"golang.org/x/net/context"
 )
 

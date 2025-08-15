@@ -22,6 +22,8 @@ func (chrome ChromeClient) InsertBillingInfo(email string) bool {
 	chrome.Client.Page.MustElement("#phoneNumber0").MustSelectAllText().MustInput(os.Getenv("BILLING_PHONE"))
 	chrome.Client.Page.MustElement("#email0").MustSelectAllText().MustInput(email)
 
+	chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Tab).MustDo()
+
 	return true
 
 }

@@ -8,7 +8,7 @@ import (
 	"encoding/base32"
 	"time"
 
-	"github.com/pistolricks/kbeauty-api/internal/validator"
+	"github.com/pistolricks/cosmetics-api/internal/validator"
 )
 
 const (

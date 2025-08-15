@@ -1,7 +1,7 @@
 package riman
 
 import (
-	"github.com/pistolricks/kbeauty-api/internal/data"
+	"github.com/pistolricks/cosmetics-api/internal/data"
 )
 
 func calculateMetadata(totalRecords, page, pageSize int) data.Metadata {

@@ -1,4 +1,4 @@
-module github.com/pistolricks/kbeauty-api
+module github.com/pistolricks/cosmetics-api
 
 go 1.24
 

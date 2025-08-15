@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	goshopify "github.com/bold-commerce/go-shopify/v4"
-	"github.com/pistolricks/kbeauty-api/internal/data"
+	"github.com/pistolricks/cosmetics-api/internal/data"
 )
 
 type RimanOrder struct {

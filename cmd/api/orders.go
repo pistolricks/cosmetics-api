@@ -8,8 +8,8 @@ import (
 
 	goshopify "github.com/bold-commerce/go-shopify/v4"
 	"github.com/joho/godotenv"
-	"github.com/pistolricks/kbeauty-api/internal/data"
-	"github.com/pistolricks/kbeauty-api/internal/shopify"
+	"github.com/pistolricks/cosmetics-api/internal/data"
+	"github.com/pistolricks/cosmetics-api/internal/shopify"
 )
 
 /* ORDER STATUS */

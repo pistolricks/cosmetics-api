@@ -18,12 +18,13 @@ import (
 	"github.com/go-rod/rod/lib/launcher"
 	"github.com/go-rod/rod/lib/proto"
 	"github.com/joho/godotenv"
-	"github.com/pistolricks/kbeauty-api/internal/chromium"
-	"github.com/pistolricks/kbeauty-api/internal/data"
-	"github.com/pistolricks/kbeauty-api/internal/mailer"
-	"github.com/pistolricks/kbeauty-api/internal/riman"
-	"github.com/pistolricks/kbeauty-api/internal/shopify"
-	"github.com/pistolricks/kbeauty-api/internal/vcs"
+	"github.com/pistolricks/cosmetics-api/internal/chromium"
+	"github.com/pistolricks/cosmetics-api/internal/data"
+	"github.com/pistolricks/cosmetics-api/internal/mailer"
+	"github.com/pistolricks/cosmetics-api/internal/riman"
+	"github.com/pistolricks/cosmetics-api/internal/shopify"
+	v2 "github.com/pistolricks/cosmetics-api/internal/v2"
+	"github.com/pistolricks/cosmetics-api/internal/vcs"
 )
 
 type Envars struct {
@@ -82,6 +83,7 @@ type application struct {
 	riman    riman.Riman
 	shopify  shopify.ShopClient
 	chromium chromium.ChromeConnector
+	v2       v2.Api
 	client   *riman.Client
 	session  *riman.Session
 	mailer   mailer.Mailer
@@ -193,7 +195,12 @@ func main() {
 	}
 	defer db.Close()
 
-	logger.Info("database connection pool established")
+	ShopifyV2 := v2.ShopifyV2()
+	chromeConfig := &chromium.ChromeConfig{Browser: chromium.ChromeBrowser()}
+	shopClient := shopify.NewShopClient(shopify.ShopConfig),
+		chromium.NewChromeConnector(chromeConfig),
+
+		logger.Info("database connection pool established")
 
 	expvar.NewString("version").Set(version)
 
@@ -213,42 +220,13 @@ func main() {
 
 	fmt.Println(vars)
 
-	path, _ := launcher.LookPath()
-
-	u := launcher.
-		NewUserMode().
-		UserDataDir("path").
-		Headless(false).
-		NoSandbox(true).
-		Bin(path).
-		MustLaunch()
-
-	browser := rod.New().ControlURL(u).MustConnect().NoDefaultDevice()
-
-	sa := goshopify.App{
-		ApiKey:      shopifyKey,
-		ApiSecret:   shopifySecret,
-		RedirectUrl: "https://example.com/callback",
-		Scope:       "read_orders,write_orders,read_fulfillments,write_fulfillments,write_third_party_fulfillment_orders,read_shipping,write_shipping",
-	}
-
-	client, err := goshopify.NewClient(sa, storeName, shopifyToken)
-	if err != nil {
-		logger.Error(err.Error())
-		os.Exit(1)
-	}
-
-	shopConfig := &shopify.ShopConfig{OrderApp: &sa, Client: client, ShopName: storeName, ShopToken: shopifyToken}
-
-	chromeConfig := &chromium.ChromeConfig{Browser: browser}
-
 	app := &application{
-		config:   cfg,
-		logger:   logger,
-		envars:   vars,
-		models:   data.NewModels(db),
-		riman:    riman.NewRiman(db),
-		shopify:  shopify.NewShopClient(shopConfig),
+		config: cfg,
+		logger: logger,
+		envars: vars,
+		models: data.NewModels(db),
+		riman:  riman.NewRiman(db),
+
 		chromium: chromium.NewChromeConnector(chromeConfig),
 		mailer:   mailer.New(cfg.smtp.host, cfg.smtp.port, cfg.smtp.username, cfg.smtp.password, cfg.smtp.sender),
 	}

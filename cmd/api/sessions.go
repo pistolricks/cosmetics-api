@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/pistolricks/kbeauty-api/internal/data"
-	"github.com/pistolricks/kbeauty-api/internal/riman"
-	"github.com/pistolricks/kbeauty-api/internal/validator"
+	"github.com/pistolricks/cosmetics-api/internal/data"
+	"github.com/pistolricks/cosmetics-api/internal/riman"
+	"github.com/pistolricks/cosmetics-api/internal/validator"
 )
 
 func (app *application) createRimanSessionHandler(w http.ResponseWriter, r *http.Request) {

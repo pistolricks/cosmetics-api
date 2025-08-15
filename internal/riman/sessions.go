@@ -8,7 +8,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/pistolricks/kbeauty-api/internal/validator"
+	"github.com/pistolricks/cosmetics-api/internal/validator"
 	"golang.org/x/crypto/bcrypt"
 	"resty.dev/v3"
 )
