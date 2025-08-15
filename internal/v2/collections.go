@@ -7,6 +7,7 @@ import (
 
 	"github.com/pistolricks/cosmetics-api/graph/model"
 	log "github.com/sirupsen/logrus"
+	graphify "github.com/vinhluan/go-shopify-graphql"
 )
 
 type CollectionService interface {

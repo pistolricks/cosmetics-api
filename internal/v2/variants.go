@@ -4,9 +4,10 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/pistolricks/cosmetics-api/graph/model"
-
 	"context"
+
+	"github.com/pistolricks/cosmetics-api/graph/model"
+	graphify "github.com/vinhluan/go-shopify-graphql"
 )
 
 type VariantService interface {
