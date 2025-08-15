@@ -26,7 +26,7 @@ type mutationProductVariantUpdate struct {
 	} `graphql:"productVariantUpdate(input: $input)" json:"productVariantUpdate"`
 }
 
-type ProductV2 struct {
+type VariantV2 struct {
 	DB     *sql.DB
 	Client *graphify.Client
 }

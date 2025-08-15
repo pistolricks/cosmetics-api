@@ -24,6 +24,9 @@ import (
 	"github.com/pistolricks/cosmetics-api/internal/shopify"
 	v2 "github.com/pistolricks/cosmetics-api/internal/v2"
 	"github.com/pistolricks/cosmetics-api/internal/vcs"
+	"github.com/r0busta/graphql"
+
+	graphify "github.com/vinhluan/go-graphql-client"
 )
 
 type Envars struct {
@@ -38,9 +41,30 @@ type Envars struct {
 	Token          string
 }
 
+type ListOptions struct {
+	Query   string
+	First   int
+	Last    int
+	After   string
+	Before  string
+	Reverse bool
+}
+
+type graphqlClient struct {
+	gql         graphify.GraphQL
+	accessToken string
+	apiKey      string
+	apiBasePath string
+	retries     int
+	timeout     time.Duration
+	transport   http.RoundTripper
+}
+
 var (
 	version = vcs.Version()
 )
+
+const defaultHTTPTimeout = time.Second
 
 type config struct {
 	port int
@@ -66,6 +90,14 @@ type config struct {
 	cors struct {
 		trustedOrigins []string
 	}
+	graphql struct {
+		shopifyBaseDomain        string
+		defaultAPIProtocol       string
+		defaultAPIBasePath       string
+		defaultAPIEndpoint       string
+		defaultShopifyAPIVersion string
+		defaultHTTPTimeout       time.Duration
+	}
 }
 
 type CreditCard struct {
@@ -78,6 +110,11 @@ type Transport struct {
 	roundTripper http.RoundTripper
 }
 
+func (t Transport) RoundTrip(request *http.Request) (*http.Response, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 type application struct {
 	config    config
 	logger    *slog.Logger
@@ -88,6 +125,7 @@ type application struct {
 	models    data.Models
 	riman     riman.Riman
 	shopify   shopify.ShopClient
+	graphqql  graphqlClient
 	chromium  chromium.ChromeConnector
 	v2        v2.Api
 	transport *Transport
@@ -182,6 +220,13 @@ func main() {
 		return nil
 	})
 
+	flag.StringVar(&cfg.graphql.shopifyBaseDomain, "shopify_base_domain", "myshopify.com", "Shopify base domain")
+	flag.StringVar(&cfg.graphql.defaultAPIProtocol, "default_apiprotocol", "https", "Default API protocol")
+	flag.StringVar(&cfg.graphql.defaultAPIBasePath, "default_apibase_path", "admin/api", "Default API base path")
+	flag.StringVar(&cfg.graphql.defaultAPIEndpoint, "default_apiendpoint", "graphql.json", "Default API endpoint")
+	flag.StringVar(&cfg.graphql.defaultShopifyAPIVersion, "default_shopify_apiversion", "2023-04", "Default Shopify API version")
+	flag.DurationVar(&cfg.graphql.defaultHTTPTimeout, "default_http_timeout", defaultHTTPTimeout, "Default HTTP timeout")
+
 	displayVersion := flag.Bool("version", false, "Display version and exit")
 
 	flag.Parse()
@@ -220,7 +265,7 @@ func main() {
 
 	fmt.Println(vars)
 
-	client := v2.ShopifyV2()
+	client := v2.V2(db, v2.ShopifyV2)
 
 	shopifyClient := shopify.NewShopClient(shopify.ShopifyV1())
 
@@ -238,7 +283,7 @@ func main() {
 		riman:    riman.NewRiman(db),
 		shopify:  shopifyClient,
 		chromium: chromium.NewChromeConnector(&web),
-		v2:       v2.V2(db, client),
+		v2:       v2.V2(db, graphql.Client{}),
 		mailer:   mailer.New(cfg.smtp.host, cfg.smtp.port, cfg.smtp.username, cfg.smtp.password, cfg.smtp.sender),
 	}
 
