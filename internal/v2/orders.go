@@ -6,13 +6,10 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/pistolricks/cosmetics-api/graph/model"
+	"github.com/vinhluan/go-graphql-client"
 	graphify "github.com/vinhluan/go-shopify-graphql"
 )
-
-type OrderV2 struct {
-	DB     *sql.DB
-	Client *graphify.Client
-}
 
 func (v2 OrderV2) Orders() {
 
@@ -26,7 +23,6 @@ func (v2 OrderV2) Orders() {
 	}
 }
 
-//go:generate mockgen -destination=./mock/order_service.go -package=mock . OrderService
 type OrderService interface {
 	Get(ctx context.Context, id graphql.ID) (*model.Order, error)
 
@@ -235,6 +231,11 @@ fragment lineItem on LineItem {
 }
 `
 
+type OrderV2 struct {
+	DB     *sql.DB
+	Client *graphify.Client
+}
+
 func (s *OrderServiceOp) Get(ctx context.Context, id graphql.ID) (*model.Order, error) {
 	q := fmt.Sprintf(`
 		query order($id: ID!) {
@@ -315,7 +316,7 @@ func (s *OrderServiceOp) List(ctx context.Context, opts ListOptions) ([]*model.O
 	q = strings.ReplaceAll(q, "$query", opts.Query)
 
 	res := []*model.Order{}
-	err := s.client.BulkOperation.BulkQuery(ctx, q, &res)
+	err := s.client.BulkOperations.BulkQuery(ctx, q, &res)
 	if err != nil {
 		return nil, fmt.Errorf("bulk query: %w", err)
 	}
@@ -346,7 +347,7 @@ func (s *OrderServiceOp) ListAll(ctx context.Context) ([]*model.Order, error) {
 	`, orderBaseQuery, lineItemFragment)
 
 	res := []*model.Order{}
-	err := s.client.BulkOperation.BulkQuery(ctx, q, &res)
+	err := s.client.BulkOperations.BulkQuery(ctx, q, &res)
 	if err != nil {
 		return nil, fmt.Errorf("bulk query: %w", err)
 	}

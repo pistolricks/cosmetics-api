@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"log/slog"
+	"net/http"
 	"os"
 	"runtime"
 	"strings"
@@ -70,20 +71,28 @@ type config struct {
 type CreditCard struct {
 }
 
+type Transport struct {
+	accessToken  string
+	apiKey       string
+	apiBasePath  string
+	roundTripper http.RoundTripper
+}
+
 type application struct {
-	config   config
-	logger   *slog.Logger
-	envars   *Envars
-	page     *rod.Page
-	browser  *rod.Browser
-	cookies  []*proto.NetworkCookie
-	models   data.Models
-	riman    riman.Riman
-	shopify  shopify.ShopClient
-	chromium chromium.ChromeConnector
-	v2       v2.Api
-	mailer   mailer.Mailer
-	wg       sync.WaitGroup
+	config    config
+	logger    *slog.Logger
+	envars    *Envars
+	page      *rod.Page
+	browser   *rod.Browser
+	cookies   []*proto.NetworkCookie
+	models    data.Models
+	riman     riman.Riman
+	shopify   shopify.ShopClient
+	chromium  chromium.ChromeConnector
+	v2        v2.Api
+	transport *Transport
+	mailer    mailer.Mailer
+	wg        sync.WaitGroup
 }
 
 func main() {

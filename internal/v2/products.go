@@ -6,14 +6,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/pistolricks/cosmetics-api/graph/model"
 	graphify "github.com/vinhluan/go-shopify-graphql"
-	"github.com/vinhluan/go-shopify-graphql/model"
 )
-
-type ProductV2 struct {
-	DB     *sql.DB
-	Client *graphify.Client
-}
 
 func (v2 ProductV2) Collections() {
 
@@ -27,7 +22,6 @@ func (v2 ProductV2) Collections() {
 	}
 }
 
-//go:generate mockgen -destination=./mock/product_service.go -package=mock . ProductService
 type ProductService interface {
 	List(ctx context.Context, query string) ([]*model.Product, error)
 	ListAll(ctx context.Context) ([]*model.Product, error)
@@ -207,6 +201,11 @@ var productBulkQuery = fmt.Sprintf(`
 	}
 `, productBaseQuery)
 
+type ProductV2 struct {
+	DB     *sql.DB
+	Client *graphify.Client
+}
+
 func (s *ProductServiceOp) ListAll(ctx context.Context) ([]*model.Product, error) {
 	q := fmt.Sprintf(`
 		{
@@ -221,7 +220,7 @@ func (s *ProductServiceOp) ListAll(ctx context.Context) ([]*model.Product, error
 	`, productBulkQuery)
 
 	res := []*model.Product{}
-	err := s.client.BulkOperation.BulkQuery(ctx, q, &res)
+	err := s.client.BulkOperations.BulkQuery(ctx, q, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -245,7 +244,7 @@ func (s *ProductServiceOp) List(ctx context.Context, query string) ([]*model.Pro
 	q = strings.ReplaceAll(q, "$query", query)
 
 	res := []*model.Product{}
-	err := s.client.BulkOperation.BulkQuery(ctx, q, &res)
+	err := s.client.BulkOperations.BulkQuery(ctx, q, &res)
 	if err != nil {
 		return nil, fmt.Errorf("bulk query: %w", err)
 	}

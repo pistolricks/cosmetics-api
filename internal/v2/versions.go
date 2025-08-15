@@ -8,10 +8,18 @@ import (
 )
 
 type Api struct {
-	Service     ServiceV2
-	Orders      OrderV2
-	Products    ProductV2
-	Collections CollectionV2
+	Service        ServiceV2
+	Orders         OrderV2
+	Products       ProductV2
+	Collections    CollectionV2
+	Transport      TransportV2
+	Variants       VariantV2
+	Inventory      InventoryV2
+	Fulfillments   FulfillmentV2
+	Locations      LocationV2
+	Metafields     MetafieldV2
+	BulkOperations BulkOperationV2
+	Webhooks       WebhookV2
 }
 
 func V2(db *sql.DB, client *graphify.Client) Api {
