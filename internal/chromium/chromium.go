@@ -10,6 +10,10 @@ type ChromeConfig struct {
 	Page    *rod.Page
 }
 
+type ChromeClient struct {
+	Client *ChromeConfig
+}
+
 type ChromeConnector struct {
 	Chrome ChromeClient
 }
@@ -34,5 +38,9 @@ func ChromeBrowser() *rod.Browser {
 	browser := rod.New().ControlURL(u).MustConnect().NoDefaultDevice()
 
 	return browser
+}
 
+func ChromePage(browser *rod.Browser) *rod.Page {
+	page := browser.MustPage()
+	return page
 }

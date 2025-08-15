@@ -6,10 +6,6 @@ import (
 	"github.com/go-rod/rod/lib/proto"
 )
 
-type ChromeClient struct {
-	Client *ChromeConfig
-}
-
 func (chrome ChromeClient) GetEventDetails() *proto.NetworkResponse {
 
 	page := chrome.Client.Browser.MustPage().MustWindowNormal()

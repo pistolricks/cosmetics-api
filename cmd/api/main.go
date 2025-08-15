@@ -13,9 +13,7 @@ import (
 	"sync"
 	"time"
 
-	goshopify "github.com/bold-commerce/go-shopify/v4"
 	"github.com/go-rod/rod"
-	"github.com/go-rod/rod/lib/launcher"
 	"github.com/go-rod/rod/lib/proto"
 	"github.com/joho/godotenv"
 	"github.com/pistolricks/cosmetics-api/internal/chromium"
@@ -84,10 +82,10 @@ type application struct {
 	shopify  shopify.ShopClient
 	chromium chromium.ChromeConnector
 	v2       v2.Api
-	client   *riman.Client
-	session  *riman.Session
-	mailer   mailer.Mailer
-	wg       sync.WaitGroup
+	// client   *riman.Client
+	// session  *riman.Session
+	mailer mailer.Mailer
+	wg     sync.WaitGroup
 }
 
 func main() {
@@ -195,12 +193,7 @@ func main() {
 	}
 	defer db.Close()
 
-	ShopifyV2 := v2.ShopifyV2()
-	chromeConfig := &chromium.ChromeConfig{Browser: chromium.ChromeBrowser()}
-	shopClient := shopify.NewShopClient(shopify.ShopConfig),
-		chromium.NewChromeConnector(chromeConfig),
-
-		logger.Info("database connection pool established")
+	logger.Info("database connection pool established")
 
 	expvar.NewString("version").Set(version)
 
@@ -220,14 +213,25 @@ func main() {
 
 	fmt.Println(vars)
 
-	app := &application{
-		config: cfg,
-		logger: logger,
-		envars: vars,
-		models: data.NewModels(db),
-		riman:  riman.NewRiman(db),
+	client := v2.ShopifyV2()
 
-		chromium: chromium.NewChromeConnector(chromeConfig),
+	shopifyClient := shopify.NewShopClient(shopify.ShopifyV1())
+
+	browser := chromium.ChromeBrowser()
+
+	page := chromium.ChromePage(browser)
+
+	web := chromium.ChromeConfig{browser, page}
+
+	app := &application{
+		config:   cfg,
+		logger:   logger,
+		envars:   vars,
+		models:   data.NewModels(db),
+		riman:    riman.NewRiman(db),
+		shopify:  shopifyClient,
+		chromium: chromium.NewChromeConnector(&web),
+		v2:       v2.V2(db, client),
 		mailer:   mailer.New(cfg.smtp.host, cfg.smtp.port, cfg.smtp.username, cfg.smtp.password, cfg.smtp.sender),
 	}
 
