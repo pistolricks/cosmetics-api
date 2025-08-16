@@ -7,7 +7,6 @@ import (
 
 	"github.com/pistolricks/cosmetics-api/graph/model"
 	"github.com/pistolricks/cosmetics-api/internal/services"
-	graphify "github.com/vinhluan/go-shopify-graphql"
 )
 
 type LocationService interface {
@@ -15,14 +14,14 @@ type LocationService interface {
 }
 
 type LocationServiceOp struct {
-	client *services.Client
+	Client *services.ClientApi
 }
 
 var _ LocationService = &LocationServiceOp{}
 
 type LocationV2 struct {
 	DB     *sql.DB
-	Client *graphify.Client
+	Client *services.ClientApi
 }
 
 func (s *LocationServiceOp) Get(ctx context.Context, id string) (*model.Location, error) {

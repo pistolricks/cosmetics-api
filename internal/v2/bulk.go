@@ -15,10 +15,9 @@ import (
 
 	"github.com/goccy/go-json"
 	jsoniter "github.com/json-iterator/go"
-	"github.com/pistolricks/cosmetics-api/graph/model"
 	"github.com/pistolricks/cosmetics-api/internal/services"
 	log "github.com/sirupsen/logrus"
-	graphify "github.com/vinhluan/go-shopify-graphql"
+	"github.com/vinhluan/go-shopify-graphql/model"
 	"github.com/vinhluan/go-shopify-graphql/rand"
 	"github.com/vinhluan/go-shopify-graphql/utils"
 	"gopkg.in/guregu/null.v4"
@@ -40,12 +39,6 @@ type BulkOperationService interface {
 	CancelRunningBulkQuery(ctx context.Context) error
 }
 
-type BulkOperationServiceOp struct {
-	client *services.Client
-}
-
-// var _ BulkOperationService = &BulkOperationServiceOp{}
-
 type mutationBulkOperationRunQuery struct {
 	BulkOperationRunQueryResult model.BulkOperationRunQueryPayload `graphql:"bulkOperationRunQuery(query: $query)" json:"bulkOperationRunQuery"`
 }
@@ -61,8 +54,9 @@ func init() {
 }
 
 type BulkOperationV2 struct {
-	DB     *sql.DB
-	Client *graphify.Client
+	DB                   *sql.DB
+	Client               *services.ClientApi
+	BulkOperationService *BulkOperationService
 }
 
 func (s BulkOperationV2) PostBulkQuery(ctx context.Context, query string) (*string, error) {

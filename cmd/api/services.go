@@ -24,6 +24,5 @@ func (app *application) RoundTrip(req *http.Request) (*http.Response, error) {
 
 func (app *application) clientWithToken() *services.ClientApi {
 
-	return app.services.NewClientWithToken(os.Getenv("SHOPIFY_TOKEN"), os.Getenv("STORE_NAME"))
+	return services.NewClientWithToken(os.Getenv("SHOPIFY_TOKEN"), os.Getenv("STORE_NAME"))
 }
-x

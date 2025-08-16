@@ -7,7 +7,6 @@ import (
 
 	"github.com/pistolricks/cosmetics-api/graph/model"
 	"github.com/pistolricks/cosmetics-api/internal/services"
-	graphify "github.com/vinhluan/go-shopify-graphql"
 )
 
 type WebhookService interface {
@@ -19,7 +18,7 @@ type WebhookService interface {
 }
 
 type WebhookServiceOp struct {
-	client *services.Client
+	Client *services.ClientApi
 }
 
 var _ WebhookService = &WebhookServiceOp{}
@@ -75,7 +74,7 @@ webhookSubscription {
 
 type WebhookV2 struct {
 	DB     *sql.DB
-	Client *graphify.Client
+	Client *services.ClientApi
 }
 
 func (s WebhookServiceOp) CreateWebhookSubscription(ctx context.Context, topic model.WebhookSubscriptionTopic, input model.WebhookSubscriptionInput) (*model.WebhookSubscription, error) {
@@ -84,7 +83,7 @@ func (s WebhookServiceOp) CreateWebhookSubscription(ctx context.Context, topic m
 		"topic":               topic,
 		"webhookSubscription": input,
 	}
-	err := s.client.Mutate(ctx, &m, vars)
+	err := s.Client.Mutate(ctx, &m, vars)
 	if err != nil {
 		return nil, fmt.Errorf("mutation: %w", err)
 	}
@@ -103,7 +102,7 @@ func (s WebhookServiceOp) CreateEventBridgeWebhookSubscription(ctx context.Conte
 		"webhookSubscription": input,
 	}
 
-	err := s.client.Mutate(ctx, &m, vars)
+	err := s.Client.Mutate(ctx, &m, vars)
 	if err != nil {
 		return nil, fmt.Errorf("mutation: %w", err)
 	}
@@ -120,7 +119,7 @@ func (s WebhookServiceOp) DeleteWebhook(ctx context.Context, webhookID string) (
 	vars := map[string]interface{}{
 		"id": webhookID,
 	}
-	err := s.client.Mutate(ctx, &m, vars)
+	err := s.Client.Mutate(ctx, &m, vars)
 	if err != nil {
 		return nil, fmt.Errorf("mutation: %w", err)
 	}
@@ -186,7 +185,7 @@ func (s WebhookServiceOp) ListWebhookSubscriptions(ctx context.Context, topics [
 		} else {
 			query = fmt.Sprintf(queryFormat, "", "")
 		}
-		err := s.client.QueryString(ctx, query, vars, &out)
+		err := s.Client.QueryString(ctx, query, vars, &out)
 		if err != nil {
 			return nil, fmt.Errorf("query: %w", err)
 		}
@@ -208,7 +207,7 @@ func (s WebhookServiceOp) UpdateWebhookSubscription(ctx context.Context, webhook
 		"id":                  webhookID,
 		"webhookSubscription": input,
 	}
-	err := s.client.Mutate(ctx, &m, vars)
+	err := s.Client.Mutate(ctx, &m, vars)
 	if err != nil {
 		return nil, fmt.Errorf("mutation: %w", err)
 	}

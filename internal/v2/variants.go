@@ -6,20 +6,13 @@ import (
 
 	"context"
 
-	"github.com/pistolricks/cosmetics-api/graph/model"
 	"github.com/pistolricks/cosmetics-api/internal/services"
-	graphify "github.com/vinhluan/go-shopify-graphql"
+	"github.com/vinhluan/go-shopify-graphql/model"
 )
 
 type VariantService interface {
 	Update(ctx context.Context, variant model.ProductVariantInput) error
 }
-
-type VariantServiceOp struct {
-	client *services.Client
-}
-
-var _ VariantService = &VariantServiceOp{}
 
 type mutationProductVariantUpdate struct {
 	ProductVariantUpdateResult struct {
@@ -29,10 +22,10 @@ type mutationProductVariantUpdate struct {
 
 type VariantV2 struct {
 	DB     *sql.DB
-	Client *graphify.Client
+	Client *services.ClientApi
 }
 
-func (s *VariantServiceOp) Update(ctx context.Context, variant model.ProductVariantInput) error {
+func (s *VariantV2) Update(ctx context.Context, variant model.ProductVariantInput) error {
 	m := mutationProductVariantUpdate{}
 
 	vars := map[string]interface{}{

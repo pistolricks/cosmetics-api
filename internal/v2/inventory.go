@@ -5,9 +5,8 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/pistolricks/cosmetics-api/graph/model"
 	"github.com/pistolricks/cosmetics-api/internal/services"
-	graphify "github.com/vinhluan/go-shopify-graphql"
+	"github.com/vinhluan/go-shopify-graphql/model"
 )
 
 type InventoryService interface {
@@ -17,7 +16,7 @@ type InventoryService interface {
 }
 
 type InventoryServiceOp struct {
-	client *services.Client
+	Client *services.ClientApi
 }
 
 var _ InventoryService = &InventoryServiceOp{}
@@ -42,7 +41,7 @@ type mutationInventoryActivate struct {
 
 type InventoryV2 struct {
 	DB     *sql.DB
-	Client *graphify.Client
+	Client *services.ClientApi
 }
 
 func (s *InventoryServiceOp) Update(ctx context.Context, id string, input model.InventoryItemUpdateInput) error {
@@ -51,7 +50,7 @@ func (s *InventoryServiceOp) Update(ctx context.Context, id string, input model.
 		"id":    id,
 		"input": input,
 	}
-	err := s.client.Mutate(ctx, &m, vars)
+	err := s.Client.Mutate(ctx, &m, vars)
 	if err != nil {
 		return fmt.Errorf("mutation: %w", err)
 	}
@@ -69,7 +68,7 @@ func (s *InventoryServiceOp) Adjust(ctx context.Context, locationID string, inpu
 		"locationId":               locationID,
 		"inventoryItemAdjustments": input,
 	}
-	err := s.client.Mutate(ctx, &m, vars)
+	err := s.Client.Mutate(ctx, &m, vars)
 	if err != nil {
 		return fmt.Errorf("mutation: %w", err)
 	}
@@ -87,7 +86,7 @@ func (s *InventoryServiceOp) ActivateInventory(ctx context.Context, locationID s
 		"itemID":     id,
 		"locationId": locationID,
 	}
-	err := s.client.Mutate(ctx, &m, vars)
+	err := s.Client.Mutate(ctx, &m, vars)
 	if err != nil {
 		return fmt.Errorf("mutation: %w", err)
 	}

@@ -8,7 +8,6 @@ import (
 
 	"github.com/pistolricks/cosmetics-api/graph/model"
 	"github.com/pistolricks/cosmetics-api/internal/services"
-	graphify "github.com/vinhluan/go-shopify-graphql"
 )
 
 func (v2 ProductV2) Collections() {
@@ -39,7 +38,7 @@ type ProductService interface {
 }
 
 type ProductServiceOp struct {
-	client *services.Client
+	Client *services.ClientApi
 }
 
 var _ ProductService = &ProductServiceOp{}
@@ -204,7 +203,7 @@ var productBulkQuery = fmt.Sprintf(`
 
 type ProductV2 struct {
 	DB     *sql.DB
-	Client *graphify.Client
+	Client *services.ClientApi
 }
 
 func (s *ProductServiceOp) ListAll(ctx context.Context) ([]*model.Product, error) {

@@ -10,7 +10,6 @@ import (
 	"github.com/pistolricks/cosmetics-api/graph/model"
 	"github.com/pistolricks/cosmetics-api/internal/services"
 	log "github.com/sirupsen/logrus"
-	graphify "github.com/vinhluan/go-shopify-graphql"
 )
 
 type MetafieldService interface {
@@ -24,7 +23,7 @@ type MetafieldService interface {
 }
 
 type MetafieldServiceOp struct {
-	client *services.Client
+	Client *services.ClientApi
 }
 
 var _ MetafieldService = &MetafieldServiceOp{}
@@ -37,7 +36,7 @@ type mutationMetafieldDelete struct {
 
 type MetafieldV2 struct {
 	DB     *sql.DB
-	Client *graphify.Client
+	Client *services.ClientApi
 }
 
 func (s *MetafieldServiceOp) ListAllShopMetafields(ctx context.Context) ([]*model.Metafield, error) {

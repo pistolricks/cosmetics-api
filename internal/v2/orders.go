@@ -9,7 +9,6 @@ import (
 	"github.com/pistolricks/cosmetics-api/graph/model"
 	"github.com/pistolricks/cosmetics-api/internal/services"
 	"github.com/vinhluan/go-graphql-client"
-	graphify "github.com/vinhluan/go-shopify-graphql"
 )
 
 func (v2 OrderV2) Orders() {
@@ -234,7 +233,7 @@ fragment lineItem on LineItem {
 
 type OrderV2 struct {
 	DB     *sql.DB
-	Client *graphify.Client
+	Client *services.ClientApi
 }
 
 func (s *OrderServiceOp) Get(ctx context.Context, id graphql.ID) (*model.Order, error) {

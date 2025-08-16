@@ -25,6 +25,7 @@ import (
 	"github.com/pistolricks/cosmetics-api/internal/shopify"
 	v2 "github.com/pistolricks/cosmetics-api/internal/v2"
 	"github.com/pistolricks/cosmetics-api/internal/vcs"
+	"github.com/r0busta/graphql"
 	graphify "github.com/vinhluan/go-graphql-client"
 )
 
@@ -274,12 +275,15 @@ func main() {
 
 	web := chromium.ChromeConfig{browser, page}
 
+	arr := services.NewClientWithToken(os.Getenv("SHOPIFY_TOKEN"), os.Getenv("STORE_NAME"))
+
 	app := &application{
 		config:   cfg,
 		logger:   logger,
 		envars:   vars,
 		models:   data.NewModels(db),
 		riman:    riman.NewRiman(db),
+		services: services.Services{Client: arr},
 		shopify:  shopifyClient,
 		chromium: chromium.NewChromeConnector(&web),
 		v2:       v2.V2(db, graphql.Client{}),

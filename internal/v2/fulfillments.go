@@ -7,7 +7,6 @@ import (
 
 	"github.com/pistolricks/cosmetics-api/graph/model"
 	"github.com/pistolricks/cosmetics-api/internal/services"
-	graphify "github.com/vinhluan/go-shopify-graphql"
 )
 
 type FulfillmentService interface {
@@ -15,7 +14,7 @@ type FulfillmentService interface {
 }
 
 type FulfillmentServiceOp struct {
-	client *services.Client
+	Client *services.ClientApi
 }
 
 var _ FulfillmentService = &FulfillmentServiceOp{}
@@ -28,7 +27,7 @@ type mutationFulfillmentCreateV2 struct {
 
 type FulfillmentV2 struct {
 	DB     *sql.DB
-	Client *graphify.Client
+	Client *services.ClientApi
 }
 
 func (s *FulfillmentServiceOp) Create(ctx context.Context, fulfillment model.FulfillmentV2Input) error {
@@ -37,7 +36,7 @@ func (s *FulfillmentServiceOp) Create(ctx context.Context, fulfillment model.Ful
 	vars := map[string]interface{}{
 		"fulfillment": fulfillment,
 	}
-	err := s.client.Mutate(ctx, &m, vars)
+	err := s.Client.Mutate(ctx, &m, vars)
 	if err != nil {
 		return fmt.Errorf("mutation: %w", err)
 	}

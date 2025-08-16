@@ -5,10 +5,9 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/pistolricks/cosmetics-api/graph/model"
 	"github.com/pistolricks/cosmetics-api/internal/services"
 	log "github.com/sirupsen/logrus"
-	graphify "github.com/vinhluan/go-shopify-graphql"
+	"github.com/vinhluan/go-shopify-graphql/model"
 )
 
 type CollectionService interface {
@@ -21,12 +20,6 @@ type CollectionService interface {
 
 	Update(ctx context.Context, collection model.CollectionInput) error
 }
-
-type CollectionServiceOp struct {
-	client *services.Client
-}
-
-var _ CollectionService = &CollectionServiceOp{}
 
 type mutationCollectionCreate struct {
 	CollectionCreateResult struct {
@@ -70,10 +63,10 @@ var collectionBulkQuery = `
 
 type CollectionV2 struct {
 	DB     *sql.DB
-	Client *graphify.Client
+	Client *services.ClientApi
 }
 
-func (s *CollectionServiceOp) ListAll(ctx context.Context) ([]*model.Collection, error) {
+func (s CollectionV2) ListAll(ctx context.Context) ([]*model.Collection, error) {
 	q := fmt.Sprintf(`
 		{
 			collections{
@@ -87,7 +80,7 @@ func (s *CollectionServiceOp) ListAll(ctx context.Context) ([]*model.Collection,
 	`, collectionBulkQuery)
 
 	res := []*model.Collection{}
-	err := s.client.BulkOperations.BulkQuery(ctx, q, &res)
+	err := BulkOperationService.BulkQuery(ctx, q, &res)
 	if err != nil {
 		return nil, fmt.Errorf("bulk query: %w", err)
 	}
@@ -95,7 +88,7 @@ func (s *CollectionServiceOp) ListAll(ctx context.Context) ([]*model.Collection,
 	return res, nil
 }
 
-func (s *CollectionServiceOp) Get(ctx context.Context, id string) (*model.Collection, error) {
+func (s CollectionV2) Get(ctx context.Context, id string) (*model.Collection, error) {
 	out, err := s.getPage(ctx, id, "")
 	if err != nil {
 		return nil, err
@@ -116,7 +109,7 @@ func (s *CollectionServiceOp) Get(ctx context.Context, id string) (*model.Collec
 	return out, nil
 }
 
-func (s *CollectionServiceOp) getPage(ctx context.Context, id string, cursor string) (*model.Collection, error) {
+func (s CollectionV2) getPage(ctx context.Context, id string, cursor string) (*model.Collection, error) {
 	q := fmt.Sprintf(`
 		query collection($id: ID!, $cursor: String) {
 			collection(id: $id){
@@ -135,7 +128,7 @@ func (s *CollectionServiceOp) getPage(ctx context.Context, id string, cursor str
 	out := struct {
 		Collection *model.Collection `json:"collection"`
 	}{}
-	err := s.client.QueryString(ctx, q, vars, &out)
+	err := s.Client.QueryString(ctx, q, vars, &out)
 	if err != nil {
 		return nil, fmt.Errorf("query: %w", err)
 	}
@@ -143,9 +136,9 @@ func (s *CollectionServiceOp) getPage(ctx context.Context, id string, cursor str
 	return out.Collection, nil
 }
 
-func (s *CollectionServiceOp) CreateBulk(ctx context.Context, collections []model.CollectionInput) error {
+func (s CollectionV2) CreateBulk(ctx context.Context, collections []model.CollectionInput) error {
 	for _, c := range collections {
-		_, err := s.client.Collections.Create(ctx, c)
+		_, err := s.Create(ctx, c)
 		if err != nil {
 			log.Warnf("Couldn't create collection (%v): %s", c, err)
 		}
@@ -154,13 +147,13 @@ func (s *CollectionServiceOp) CreateBulk(ctx context.Context, collections []mode
 	return nil
 }
 
-func (s *CollectionServiceOp) Create(ctx context.Context, collection model.CollectionInput) (*string, error) {
+func (s CollectionV2) Create(ctx context.Context, collection model.CollectionInput) (*string, error) {
 	m := mutationCollectionCreate{}
 
 	vars := map[string]interface{}{
 		"input": collection,
 	}
-	err := s.client.Mutate(ctx, &m, vars)
+	err := s.Client.Mutate(ctx, &m, vars)
 	if err != nil {
 		return nil, fmt.Errorf("mutation: %w", err)
 	}
@@ -172,13 +165,13 @@ func (s *CollectionServiceOp) Create(ctx context.Context, collection model.Colle
 	return &m.CollectionCreateResult.Collection.ID, nil
 }
 
-func (s *CollectionServiceOp) Update(ctx context.Context, collection model.CollectionInput) error {
+func (s CollectionV2) Update(ctx context.Context, collection model.CollectionInput) error {
 	m := mutationCollectionUpdate{}
 
 	vars := map[string]interface{}{
 		"input": collection,
 	}
-	err := s.client.Mutate(ctx, &m, vars)
+	err := s.Client.Mutate(ctx, &m, vars)
 	if err != nil {
 		return fmt.Errorf("mutation: %w", err)
 	}
