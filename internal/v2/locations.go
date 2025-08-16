@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/pistolricks/cosmetics-api/graph/model"
+	"github.com/pistolricks/cosmetics-api/internal/services"
 	graphify "github.com/vinhluan/go-shopify-graphql"
 )
 
@@ -14,7 +15,7 @@ type LocationService interface {
 }
 
 type LocationServiceOp struct {
-	client *Client
+	client *services.Client
 }
 
 var _ LocationService = &LocationServiceOp{}

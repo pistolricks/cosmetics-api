@@ -16,6 +16,7 @@ import (
 	"github.com/goccy/go-json"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/pistolricks/cosmetics-api/graph/model"
+	"github.com/pistolricks/cosmetics-api/internal/services"
 	log "github.com/sirupsen/logrus"
 	graphify "github.com/vinhluan/go-shopify-graphql"
 	"github.com/vinhluan/go-shopify-graphql/rand"
@@ -40,7 +41,7 @@ type BulkOperationService interface {
 }
 
 type BulkOperationServiceOp struct {
-	client *Client
+	client *services.Client
 }
 
 // var _ BulkOperationService = &BulkOperationServiceOp{}

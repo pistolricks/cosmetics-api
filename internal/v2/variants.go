@@ -7,6 +7,7 @@ import (
 	"context"
 
 	"github.com/pistolricks/cosmetics-api/graph/model"
+	"github.com/pistolricks/cosmetics-api/internal/services"
 	graphify "github.com/vinhluan/go-shopify-graphql"
 )
 
@@ -15,7 +16,7 @@ type VariantService interface {
 }
 
 type VariantServiceOp struct {
-	client *Client
+	client *services.Client
 }
 
 var _ VariantService = &VariantServiceOp{}

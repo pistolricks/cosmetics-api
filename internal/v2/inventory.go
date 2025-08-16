@@ -6,20 +6,21 @@ import (
 	"fmt"
 
 	"github.com/pistolricks/cosmetics-api/graph/model"
+	"github.com/pistolricks/cosmetics-api/internal/services"
 	graphify "github.com/vinhluan/go-shopify-graphql"
 )
 
-type Inventoryervice interface {
+type InventoryService interface {
 	Update(ctx context.Context, id string, input model.InventoryItemUpdateInput) error
 	Adjust(ctx context.Context, locationID string, input []model.InventoryAdjustItemInput) error
 	ActivateInventory(ctx context.Context, locationID string, id string) error
 }
 
-type InventoryerviceOp struct {
-	client *Client
+type InventoryServiceOp struct {
+	client *services.Client
 }
 
-var _ Inventoryervice = &InventoryerviceOp{}
+var _ InventoryService = &InventoryServiceOp{}
 
 type mutationInventoryItemUpdate struct {
 	InventoryItemUpdateResult struct {
@@ -44,7 +45,7 @@ type InventoryV2 struct {
 	Client *graphify.Client
 }
 
-func (s *InventoryerviceOp) Update(ctx context.Context, id string, input model.InventoryItemUpdateInput) error {
+func (s *InventoryServiceOp) Update(ctx context.Context, id string, input model.InventoryItemUpdateInput) error {
 	m := mutationInventoryItemUpdate{}
 	vars := map[string]interface{}{
 		"id":    id,
@@ -62,7 +63,7 @@ func (s *InventoryerviceOp) Update(ctx context.Context, id string, input model.I
 	return nil
 }
 
-func (s *InventoryerviceOp) Adjust(ctx context.Context, locationID string, input []model.InventoryAdjustItemInput) error {
+func (s *InventoryServiceOp) Adjust(ctx context.Context, locationID string, input []model.InventoryAdjustItemInput) error {
 	m := mutationInventoryBulkAdjustQuantityAtLocation{}
 	vars := map[string]interface{}{
 		"locationId":               locationID,
@@ -80,7 +81,7 @@ func (s *InventoryerviceOp) Adjust(ctx context.Context, locationID string, input
 	return nil
 }
 
-func (s *InventoryerviceOp) ActivateInventory(ctx context.Context, locationID string, id string) error {
+func (s *InventoryServiceOp) ActivateInventory(ctx context.Context, locationID string, id string) error {
 	m := mutationInventoryActivate{}
 	vars := map[string]interface{}{
 		"itemID":     id,

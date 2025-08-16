@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/pistolricks/cosmetics-api/graph/model"
+	"github.com/pistolricks/cosmetics-api/internal/services"
 	"github.com/vinhluan/go-graphql-client"
 	graphify "github.com/vinhluan/go-shopify-graphql"
 )
@@ -35,7 +36,7 @@ type OrderService interface {
 }
 
 type OrderServiceOp struct {
-	client *Client
+	client *services.Client
 }
 
 var _ OrderService = &OrderServiceOp{}

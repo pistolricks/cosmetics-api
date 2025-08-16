@@ -1,4 +1,4 @@
-package main
+package services
 
 import (
 	"context"
@@ -8,6 +8,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/pistolricks/cosmetics-api/internal/v2"
 	log "github.com/sirupsen/logrus"
 	"github.com/vinhluan/go-graphql-client"
 )
@@ -22,36 +23,29 @@ const (
 	defaultHttpTimeout       = time.Second * 10
 )
 
-type ListOptions struct {
-	Query   string
-	First   int
-	Last    int
-	After   string
-	Before  string
-	Reverse bool
-}
-type Client struct {
-	gql            graphql.GraphQL
-	accessToken    string
-	apiKey         string
-	apiBasePath    string
-	retries        int
-	timeout        time.Duration
-	transport      http.RoundTripper
-	Products       ProductService
-	Variants       VariantService
-	Inventory      InventoryService
-	Collections    CollectionService
-	Orders         OrderService
-	Fulfillments   FulfillmentService
-	Locations      LocationService
-	Metafields     MetafieldService
-	BulkOperations BulkOperationService
-	Webhooks       WebhookService
+// Product       v2.ProductService
+// Variant       v2.VariantService
+// Inventory     v2.InventoryService
+// Collection    v2.CollectionService
+// Order         v2.OrderService
+// Fulfillment   v2.FulfillmentService
+// Location      v2.LocationService
+// Metafield     v2.MetafieldService
+// BulkOperation v2.BulkOperationService
+// Webhook       v2.WebhookService
+
+type ClientApi struct {
+	gql         graphql.GraphQL
+	accessToken string
+	apiKey      string
+	apiBasePath string
+	retries     int
+	timeout     time.Duration
+	transport   http.RoundTripper
 }
 
-func NewClient(shopName string, opts ...Option) *Client {
-	c := &Client{
+func (c ClientApi) NewClient(shopName string, opts ...v2.Option) *ClientApi {
+	c := ClientApi{
 		apiBasePath: defaultAPIBasePath,
 		timeout:     defaultHttpTimeout,
 		transport:   http.DefaultTransport,
@@ -62,7 +56,7 @@ func NewClient(shopName string, opts ...Option) *Client {
 	}
 
 	if c.gql == nil {
-		apiEndpoint := buildAPIEndpoint(shopName, c.apiBasePath)
+		apiEndpoint := v2.buildAPIEndpoint(shopName, c.apiBasePath)
 		httpClient := &http.Client{
 			Timeout: c.timeout,
 			Transport: &transport{
@@ -75,21 +69,10 @@ func NewClient(shopName string, opts ...Option) *Client {
 		c.gql = graphql.NewClient(apiEndpoint, httpClient)
 	}
 
-	c.Products = &ProductServiceOp{client: c}
-	c.Variants = &VariantServiceOp{client: c}
-	c.Inventorys = &InventoryServiceOp{client: c}
-	c.Collections = &CollectionServiceOp{client: c}
-	c.Orders = &OrderServiceOp{client: c}
-	c.Fulfillments = &FulfillmentServiceOp{client: c}
-	c.Locations = &LocationServiceOp{client: c}
-	c.Metafields = &MetafieldServiceOp{client: c}
-	c.BulkOperations = &BulkOperationServiceOp{client: c}
-	c.Webhooks = &WebhookServiceOp{client: c}
-
 	return c
 }
 
-func NewDefaultClient() *Client {
+func (c ClientApi) NewDefaultClient() *ClientApi {
 	apiKey := os.Getenv("STORE_API_KEY")
 	accessToken := os.Getenv("STORE_PASSWORD")
 	storeName := os.Getenv("STORE_NAME")
@@ -97,35 +80,35 @@ func NewDefaultClient() *Client {
 		log.Fatalln("Shopify Admin API Key and/or Password (aka access token) and/or store name not set")
 	}
 
-	return NewClient(storeName, WithPrivateAppAuth(apiKey, accessToken), WithVersion(defaultShopifyAPIVersion))
+	return c.NewClient(storeName, v2.WithPrivateAppAuth(apiKey, accessToken), v2.WithVersion(defaultShopifyAPIVersion))
 }
 
-func NewClientWithToken(accessToken string, storeName string) *Client {
+func (c ClientApi) NewClientWithToken(accessToken string, storeName string) *ClientApi {
 	if accessToken == "" || storeName == "" {
 		log.Fatalln("Shopify Admin API access token and/or store name not set")
 	}
 
-	return NewClient(storeName, WithToken(accessToken), WithVersion(defaultShopifyAPIVersion))
+	return c.NewClient(storeName, v2.WithToken(accessToken), v2.WithVersion(defaultShopifyAPIVersion))
 }
 
-func (c *Client) GraphQLClient() graphql.GraphQL {
+func (c ClientApi) GraphQLClient() graphql.GraphQL {
 	return c.gql
 }
 
-func (c *Client) Mutate(ctx context.Context, m interface{}, variables map[string]interface{}) error {
+func (c ClientApi) Mutate(ctx context.Context, m interface{}, variables map[string]interface{}) error {
 	var retries = 0
 	for {
 		r, err := c.gql.Mutate(ctx, m, variables)
 		if err != nil {
 			if r != nil {
-				wait := CalculateWaitTime(r.Extensions)
+				wait := v2.CalculateWaitTime(r.Extensions)
 				if wait > 0 {
 					retries++
 					time.Sleep(wait)
 					continue
 				}
 			}
-			if IsConnectionError(err) {
+			if v2.IsConnectionError(err) {
 				retries++
 				if retries > c.retries {
 					return fmt.Errorf("after %v tries: %w", retries, err)
@@ -141,20 +124,20 @@ func (c *Client) Mutate(ctx context.Context, m interface{}, variables map[string
 	return nil
 }
 
-func (c *Client) Query(ctx context.Context, q interface{}, variables map[string]interface{}) error {
+func (c ClientApi) Query(ctx context.Context, q interface{}, variables map[string]interface{}) error {
 	var retries = 0
 	for {
 		r, err := c.gql.Query(ctx, q, variables)
 		if err != nil {
 			if r != nil {
-				wait := CalculateWaitTime(r.Extensions)
+				wait := v2.CalculateWaitTime(r.Extensions)
 				if wait > 0 {
 					retries++
 					time.Sleep(wait)
 					continue
 				}
 			}
-			if uerr, isURLErr := err.(*url.Error); isURLErr && (uerr.Timeout() || uerr.Temporary()) || IsConnectionError(err) {
+			if uerr, isURLErr := err.(*url.Error); isURLErr && (uerr.Timeout() || uerr.Temporary()) || v2.IsConnectionError(err) {
 				retries++
 				if retries > c.retries {
 					return fmt.Errorf("after %v tries: %w", retries, err)
@@ -170,20 +153,20 @@ func (c *Client) Query(ctx context.Context, q interface{}, variables map[string]
 	return nil
 }
 
-func (c *Client) QueryString(ctx context.Context, q string, variables map[string]interface{}, out interface{}) error {
+func (c ClientApi) QueryString(ctx context.Context, q string, variables map[string]interface{}, out interface{}) error {
 	var retries = 0
 	for {
 		r, err := c.gql.QueryString(ctx, q, variables, out)
 		if err != nil {
 			if r != nil {
-				wait := CalculateWaitTime(r.Extensions)
+				wait := v2.CalculateWaitTime(r.Extensions)
 				if wait > 0 {
 					retries++
 					time.Sleep(wait)
 					continue
 				}
 			}
-			if uerr, isURLErr := err.(*url.Error); isURLErr && (uerr.Timeout() || uerr.Temporary()) || IsConnectionError(err) {
+			if uerr, isURLErr := err.(*url.Error); isURLErr && (uerr.Timeout() || uerr.Temporary()) || v2.IsConnectionError(err) {
 				retries++
 				if retries > c.retries {
 					return fmt.Errorf("after %v tries: %w", retries, err)

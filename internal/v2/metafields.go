@@ -8,6 +8,7 @@ import (
 	"context"
 
 	"github.com/pistolricks/cosmetics-api/graph/model"
+	"github.com/pistolricks/cosmetics-api/internal/services"
 	log "github.com/sirupsen/logrus"
 	graphify "github.com/vinhluan/go-shopify-graphql"
 )
@@ -23,7 +24,7 @@ type MetafieldService interface {
 }
 
 type MetafieldServiceOp struct {
-	client *Client
+	client *services.Client
 }
 
 var _ MetafieldService = &MetafieldServiceOp{}

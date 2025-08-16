@@ -21,11 +21,10 @@ import (
 	"github.com/pistolricks/cosmetics-api/internal/data"
 	"github.com/pistolricks/cosmetics-api/internal/mailer"
 	"github.com/pistolricks/cosmetics-api/internal/riman"
+	"github.com/pistolricks/cosmetics-api/internal/services"
 	"github.com/pistolricks/cosmetics-api/internal/shopify"
 	v2 "github.com/pistolricks/cosmetics-api/internal/v2"
 	"github.com/pistolricks/cosmetics-api/internal/vcs"
-	"github.com/r0busta/graphql"
-
 	graphify "github.com/vinhluan/go-graphql-client"
 )
 
@@ -124,8 +123,8 @@ type application struct {
 	cookies   []*proto.NetworkCookie
 	models    data.Models
 	riman     riman.Riman
+	services  services.Services
 	shopify   shopify.ShopClient
-	graphqql  graphqlClient
 	chromium  chromium.ChromeConnector
 	v2        v2.Api
 	transport *Transport

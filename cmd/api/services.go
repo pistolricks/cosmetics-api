@@ -2,6 +2,9 @@ package main
 
 import (
 	"net/http"
+	"os"
+
+	"github.com/pistolricks/cosmetics-api/internal/services"
 )
 
 const shopifyAccessTokenHeader = "X-Shopify-Access-Token"
@@ -18,3 +21,9 @@ func (app *application) RoundTrip(req *http.Request) (*http.Response, error) {
 
 	return app.transport.roundTripper.RoundTrip(req)
 }
+
+func (app *application) clientWithToken() *services.ClientApi {
+
+	return app.services.NewClientWithToken(os.Getenv("SHOPIFY_TOKEN"), os.Getenv("STORE_NAME"))
+}
+x

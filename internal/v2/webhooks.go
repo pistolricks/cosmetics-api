@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/pistolricks/cosmetics-api/graph/model"
+	"github.com/pistolricks/cosmetics-api/internal/services"
 	graphify "github.com/vinhluan/go-shopify-graphql"
 )
 
@@ -18,7 +19,7 @@ type WebhookService interface {
 }
 
 type WebhookServiceOp struct {
-	client *Client
+	client *services.Client
 }
 
 var _ WebhookService = &WebhookServiceOp{}
