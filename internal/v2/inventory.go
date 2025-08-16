@@ -15,11 +15,10 @@ type InventoryService interface {
 	ActivateInventory(ctx context.Context, locationID string, id string) error
 }
 
-type InventoryServiceOp struct {
+type InventoryV2 struct {
+	DB     *sql.DB
 	Client *services.ClientApi
 }
-
-var _ InventoryService = &InventoryServiceOp{}
 
 type mutationInventoryItemUpdate struct {
 	InventoryItemUpdateResult struct {
@@ -39,12 +38,7 @@ type mutationInventoryActivate struct {
 	} `graphql:"inventoryActivate(inventoryItemId: $itemID, locationId: $locationId)" json:"inventoryActivate"`
 }
 
-type InventoryV2 struct {
-	DB     *sql.DB
-	Client *services.ClientApi
-}
-
-func (s *InventoryServiceOp) Update(ctx context.Context, id string, input model.InventoryItemUpdateInput) error {
+func (s *InventoryV2) Update(ctx context.Context, id string, input model.InventoryItemUpdateInput) error {
 	m := mutationInventoryItemUpdate{}
 	vars := map[string]interface{}{
 		"id":    id,
@@ -62,7 +56,7 @@ func (s *InventoryServiceOp) Update(ctx context.Context, id string, input model.
 	return nil
 }
 
-func (s *InventoryServiceOp) Adjust(ctx context.Context, locationID string, input []model.InventoryAdjustItemInput) error {
+func (s *InventoryV2) Adjust(ctx context.Context, locationID string, input []model.InventoryAdjustItemInput) error {
 	m := mutationInventoryBulkAdjustQuantityAtLocation{}
 	vars := map[string]interface{}{
 		"locationId":               locationID,
@@ -80,7 +74,7 @@ func (s *InventoryServiceOp) Adjust(ctx context.Context, locationID string, inpu
 	return nil
 }
 
-func (s *InventoryServiceOp) ActivateInventory(ctx context.Context, locationID string, id string) error {
+func (s *InventoryV2) ActivateInventory(ctx context.Context, locationID string, id string) error {
 	m := mutationInventoryActivate{}
 	vars := map[string]interface{}{
 		"itemID":     id,

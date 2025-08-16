@@ -21,6 +21,11 @@ type CollectionService interface {
 	Update(ctx context.Context, collection model.CollectionInput) error
 }
 
+type CollectionV2 struct {
+	DB     *sql.DB
+	Client *services.ClientApi.BulkOperation
+}
+
 type mutationCollectionCreate struct {
 	CollectionCreateResult struct {
 		Collection *struct {
@@ -61,11 +66,6 @@ var collectionBulkQuery = `
 	title
 `
 
-type CollectionV2 struct {
-	DB     *sql.DB
-	Client *services.ClientApi
-}
-
 func (s CollectionV2) ListAll(ctx context.Context) ([]*model.Collection, error) {
 	q := fmt.Sprintf(`
 		{
@@ -80,7 +80,7 @@ func (s CollectionV2) ListAll(ctx context.Context) ([]*model.Collection, error) 
 	`, collectionBulkQuery)
 
 	res := []*model.Collection{}
-	err := BulkOperationService.BulkQuery(ctx, q, &res)
+	err := s.Client.BulkOperation.BulkQuery(ctx, q, &res)
 	if err != nil {
 		return nil, fmt.Errorf("bulk query: %w", err)
 	}
@@ -88,7 +88,7 @@ func (s CollectionV2) ListAll(ctx context.Context) ([]*model.Collection, error) 
 	return res, nil
 }
 
-func (s CollectionV2) Get(ctx context.Context, id string) (*model.Collection, error) {
+func (s *CollectionV2) Get(ctx context.Context, id string) (*model.Collection, error) {
 	out, err := s.getPage(ctx, id, "")
 	if err != nil {
 		return nil, err
@@ -109,7 +109,7 @@ func (s CollectionV2) Get(ctx context.Context, id string) (*model.Collection, er
 	return out, nil
 }
 
-func (s CollectionV2) getPage(ctx context.Context, id string, cursor string) (*model.Collection, error) {
+func (s *CollectionV2) getPage(ctx context.Context, id string, cursor string) (*model.Collection, error) {
 	q := fmt.Sprintf(`
 		query collection($id: ID!, $cursor: String) {
 			collection(id: $id){
@@ -136,9 +136,9 @@ func (s CollectionV2) getPage(ctx context.Context, id string, cursor string) (*m
 	return out.Collection, nil
 }
 
-func (s CollectionV2) CreateBulk(ctx context.Context, collections []model.CollectionInput) error {
+func (s *CollectionV2) CreateBulk(ctx context.Context, collections []model.CollectionInput) error {
 	for _, c := range collections {
-		_, err := s.Create(ctx, c)
+		_, err := s.Client.Collection.Create(ctx, c)
 		if err != nil {
 			log.Warnf("Couldn't create collection (%v): %s", c, err)
 		}
@@ -147,7 +147,7 @@ func (s CollectionV2) CreateBulk(ctx context.Context, collections []model.Collec
 	return nil
 }
 
-func (s CollectionV2) Create(ctx context.Context, collection model.CollectionInput) (*string, error) {
+func (s *CollectionV2) Create(ctx context.Context, collection model.CollectionInput) (*string, error) {
 	m := mutationCollectionCreate{}
 
 	vars := map[string]interface{}{
@@ -165,7 +165,7 @@ func (s CollectionV2) Create(ctx context.Context, collection model.CollectionInp
 	return &m.CollectionCreateResult.Collection.ID, nil
 }
 
-func (s CollectionV2) Update(ctx context.Context, collection model.CollectionInput) error {
+func (s *CollectionV2) Update(ctx context.Context, collection model.CollectionInput) error {
 	m := mutationCollectionUpdate{}
 
 	vars := map[string]interface{}{

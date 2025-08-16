@@ -8,8 +8,10 @@ import (
 	"os"
 	"time"
 
+	v2 "github.com/pistolricks/cosmetics-api/internal/v2"
 	log "github.com/sirupsen/logrus"
 	"github.com/vinhluan/go-graphql-client"
+	"github.com/vinhluan/go-shopify-graphql"
 )
 
 const (
@@ -22,13 +24,23 @@ const (
 )
 
 type ClientApi struct {
-	gql         graphql.GraphQL
-	accessToken string
-	apiKey      string
-	apiBasePath string
-	retries     int
-	timeout     time.Duration
-	transport   http.RoundTripper
+	gql           graphql.GraphQL
+	accessToken   string
+	apiKey        string
+	apiBasePath   string
+	retries       int
+	timeout       time.Duration
+	transport     http.RoundTripper
+	Product       *shopify.ProductService
+	Variant       *shopify.VariantService
+	Inventory     *shopify.InventoryService
+	Collection    *shopify.CollectionService
+	Order         *shopify.OrderService
+	Fulfillment   *shopify.FulfillmentService
+	Location      *shopify.LocationService
+	Metafield     *shopify.MetafieldService
+	BulkOperation *shopify.BulkOperationService
+	Webhook       *shopify.WebhookService
 }
 
 func NewClient(shopName string, opts ...Option) *ClientApi {
@@ -56,6 +68,17 @@ func NewClient(shopName string, opts ...Option) *ClientApi {
 		c.gql = graphql.NewClient(apiEndpoint, httpClient)
 	}
 
+	c.Product = &v2.ProductV2{DB: db, client: c}
+	c.Variant = &v2.VariantV2{DB: db, client client c, errors: k}
+	c.Inventory = &InventoryV2{client: c}
+	c.Collection = &CollectionV2{client: c}
+	c.Order = &OrderV2{client: c}
+	c.Fulfillment = &FulfillmentV2{client: c}
+	c.Location = &LocationV2{client: c}
+	c.Metafield = &MetafieldV2{client: c}
+	c.BulkOperation = &BulkOperationV2{client: c}
+	c.Webhook = &WebhookV2{client: c}
+
 	return c
 }
 
@@ -78,8 +101,8 @@ func NewClientWithToken(accessToken string, storeName string) *ClientApi {
 	return NewClient(storeName, WithToken(accessToken), WithVersion(defaultShopifyAPIVersion))
 }
 
-func (c ClientApi) GraphQLClient() graphql.GraphQL {
-	return c.gql
+func (c ClientApi) GraphQLClient() (graphql.GraphQL, graphql.GraphQL) {
+	return c.gql, nil
 }
 
 func (c ClientApi) Mutate(ctx context.Context, m interface{}, variables map[string]interface{}) error {

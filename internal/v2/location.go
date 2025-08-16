@@ -5,26 +5,23 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/pistolricks/cosmetics-api/graph/model"
 	"github.com/pistolricks/cosmetics-api/internal/services"
+	"github.com/vinhluan/go-shopify-graphql/model"
 )
 
+//go:generate mockgen -destination=./mock/location_service.go -package=mock . LocationService
 type LocationService interface {
 	Get(ctx context.Context, id string) (*model.Location, error)
 }
-
-type LocationServiceOp struct {
-	Client *services.ClientApi
-}
-
-var _ LocationService = &LocationServiceOp{}
 
 type LocationV2 struct {
 	DB     *sql.DB
 	Client *services.ClientApi
 }
 
-func (s *LocationServiceOp) Get(ctx context.Context, id string) (*model.Location, error) {
+var _ LocationService = &LocationV2{}
+
+func (s *LocationV2) Get(ctx context.Context, id string) (*model.Location, error) {
 	q := `query location($id: ID!) {
 		location(id: $id){
 			id
@@ -39,7 +36,7 @@ func (s *LocationServiceOp) Get(ctx context.Context, id string) (*model.Location
 	var out struct {
 		*model.Location `json:"location"`
 	}
-	err := s.client.QueryString(ctx, q, vars, &out)
+	err := s.Client.QueryString(ctx, q, vars, &out)
 	if err != nil {
 		return nil, fmt.Errorf("query: %w", err)
 	}

@@ -1,28 +1,29 @@
 package v2
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
-
-	"context"
 
 	"github.com/pistolricks/cosmetics-api/internal/services"
 	"github.com/vinhluan/go-shopify-graphql/model"
 )
 
-type VariantService interface {
+type Variant interface {
 	Update(ctx context.Context, variant model.ProductVariantInput) error
-}
-
-type mutationProductVariantUpdate struct {
-	ProductVariantUpdateResult struct {
-		UserErrors []model.UserError `json:"userErrors,omitempty"`
-	} `graphql:"productVariantUpdate(input: $input)" json:"productVariantUpdate"`
 }
 
 type VariantV2 struct {
 	DB     *sql.DB
 	Client *services.ClientApi
+}
+
+var _ Variant = &VariantV2{}
+
+type mutationProductVariantUpdate struct {
+	ProductVariantUpdateResult struct {
+		UserErrors []model.UserError `json:"userErrors,omitempty"`
+	} `graphql:"productVariantUpdate(input: $input)" json:"productVariantUpdate"`
 }
 
 func (s *VariantV2) Update(ctx context.Context, variant model.ProductVariantInput) error {
@@ -31,7 +32,7 @@ func (s *VariantV2) Update(ctx context.Context, variant model.ProductVariantInpu
 	vars := map[string]interface{}{
 		"input": variant,
 	}
-	err := s.client.Mutate(ctx, &m, vars)
+	err := s.Client.Mutate(ctx, &m, vars)
 	if err != nil {
 		return fmt.Errorf("mutation: %w", err)
 	}

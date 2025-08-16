@@ -10,6 +10,7 @@ require (
 	github.com/json-iterator/go v1.1.12
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/lib/pq v1.10.9
+	github.com/r0busta/graphql v1.2.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cast v1.5.1
 	github.com/tomasen/realip v0.0.0-20180522021738-f0c99a92ddce

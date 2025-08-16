@@ -6,23 +6,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/pistolricks/cosmetics-api/graph/model"
 	"github.com/pistolricks/cosmetics-api/internal/services"
 	"github.com/vinhluan/go-graphql-client"
+	"github.com/vinhluan/go-shopify-graphql/model"
 )
 
-func (v2 OrderV2) Orders() {
-
-	orders, err := v2.Client.Order.ListAll(context.Background())
-	if err != nil {
-		panic(err)
-	}
-
-	for _, c := range orders {
-		fmt.Println(c)
-	}
-}
-
+//go:generate mockgen -destination=./mock/order_service.go -package=mock . OrderService
 type OrderService interface {
 	Get(ctx context.Context, id graphql.ID) (*model.Order, error)
 
@@ -35,7 +24,8 @@ type OrderService interface {
 }
 
 type OrderServiceOp struct {
-	client *services.Client
+	DB     *sql.DB
+	Client *services.ClientApi
 }
 
 var _ OrderService = &OrderServiceOp{}
@@ -231,11 +221,6 @@ fragment lineItem on LineItem {
 }
 `
 
-type OrderV2 struct {
-	DB     *sql.DB
-	Client *services.ClientApi
-}
-
 func (s *OrderServiceOp) Get(ctx context.Context, id graphql.ID) (*model.Order, error) {
 	q := fmt.Sprintf(`
 		query order($id: ID!) {
@@ -283,7 +268,7 @@ func (s *OrderServiceOp) Get(ctx context.Context, id graphql.ID) (*model.Order, 
 	out := struct {
 		Order *model.Order `json:"node"`
 	}{}
-	err := s.client.QueryString(ctx, q, vars, &out)
+	err := s.Client.QueryString(ctx, q, vars, &out)
 	if err != nil {
 		return nil, fmt.Errorf("query: %w", err)
 	}
@@ -316,7 +301,7 @@ func (s *OrderServiceOp) List(ctx context.Context, opts ListOptions) ([]*model.O
 	q = strings.ReplaceAll(q, "$query", opts.Query)
 
 	res := []*model.Order{}
-	err := s.client.BulkOperations.BulkQuery(ctx, q, &res)
+	err := s.Client.BulkOperation.BulkQuery(ctx, q, &res)
 	if err != nil {
 		return nil, fmt.Errorf("bulk query: %w", err)
 	}
@@ -347,7 +332,7 @@ func (s *OrderServiceOp) ListAll(ctx context.Context) ([]*model.Order, error) {
 	`, orderBaseQuery, lineItemFragment)
 
 	res := []*model.Order{}
-	err := s.client.BulkOperations.BulkQuery(ctx, q, &res)
+	err := s.Client.BulkOperation.BulkQuery(ctx, q, &res)
 	if err != nil {
 		return nil, fmt.Errorf("bulk query: %w", err)
 	}
@@ -410,7 +395,7 @@ func (s *OrderServiceOp) ListAfterCursor(ctx context.Context, opts ListOptions) 
 			} `json:"pageInfo,omitempty"`
 		} `json:"orders,omitempty"`
 	}{}
-	err := s.client.QueryString(ctx, q, vars, &out)
+	err := s.Client.QueryString(ctx, q, vars, &out)
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("query: %w", err)
 	}
@@ -435,7 +420,7 @@ func (s *OrderServiceOp) Update(ctx context.Context, input model.OrderInput) err
 	vars := map[string]interface{}{
 		"input": input,
 	}
-	err := s.client.Mutate(ctx, &m, vars)
+	err := s.Client.Mutate(ctx, &m, vars)
 	if err != nil {
 		return fmt.Errorf("mutation: %w", err)
 	}

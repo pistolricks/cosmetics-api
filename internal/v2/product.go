@@ -6,21 +6,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/pistolricks/cosmetics-api/graph/model"
 	"github.com/pistolricks/cosmetics-api/internal/services"
+	"github.com/vinhluan/go-shopify-graphql/model"
 )
-
-func (v2 ProductV2) Collections() {
-
-	collections, err := v2.Client.Product.ListAll(context.Background())
-	if err != nil {
-		panic(err)
-	}
-
-	for _, c := range collections {
-		fmt.Println(c.Handle)
-	}
-}
 
 type ProductService interface {
 	List(ctx context.Context, query string) ([]*model.Product, error)
@@ -37,11 +25,10 @@ type ProductService interface {
 	VariantsBulkReorder(ctx context.Context, id string, input []model.ProductVariantPositionInput) error
 }
 
-type ProductServiceOp struct {
+type ProductV2 struct {
+	DB     *sql.DB
 	Client *services.ClientApi
 }
-
-var _ ProductService = &ProductServiceOp{}
 
 type mutationProductCreate struct {
 	ProductCreateResult model.ProductCreatePayload `graphql:"productCreate(input: $input, media: $media)" json:"productCreate"`
@@ -201,12 +188,7 @@ var productBulkQuery = fmt.Sprintf(`
 	}
 `, productBaseQuery)
 
-type ProductV2 struct {
-	DB     *sql.DB
-	Client *services.ClientApi
-}
-
-func (s *ProductServiceOp) ListAll(ctx context.Context) ([]*model.Product, error) {
+func (s *ProductV2) ListAll(ctx context.Context) ([]*model.Product, error) {
 	q := fmt.Sprintf(`
 		{
 			products{
@@ -220,7 +202,7 @@ func (s *ProductServiceOp) ListAll(ctx context.Context) ([]*model.Product, error
 	`, productBulkQuery)
 
 	res := []*model.Product{}
-	err := s.client.BulkOperations.BulkQuery(ctx, q, &res)
+	err := s.Client.BulkOperation.BulkQuery(ctx, q, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -228,7 +210,7 @@ func (s *ProductServiceOp) ListAll(ctx context.Context) ([]*model.Product, error
 	return res, nil
 }
 
-func (s *ProductServiceOp) List(ctx context.Context, query string) ([]*model.Product, error) {
+func (s *ProductV2) List(ctx context.Context, query string) ([]*model.Product, error) {
 	q := fmt.Sprintf(`
 		{
 			products(query: "$query"){
@@ -244,7 +226,7 @@ func (s *ProductServiceOp) List(ctx context.Context, query string) ([]*model.Pro
 	q = strings.ReplaceAll(q, "$query", query)
 
 	res := []*model.Product{}
-	err := s.client.BulkOperations.BulkQuery(ctx, q, &res)
+	err := s.Client.BulkOperation.BulkQuery(ctx, q, &res)
 	if err != nil {
 		return nil, fmt.Errorf("bulk query: %w", err)
 	}
@@ -252,7 +234,7 @@ func (s *ProductServiceOp) List(ctx context.Context, query string) ([]*model.Pro
 	return res, nil
 }
 
-func (s *ProductServiceOp) Get(ctx context.Context, id string) (*model.Product, error) {
+func (s *ProductV2) Get(ctx context.Context, id string) (*model.Product, error) {
 	out, err := s.getPage(ctx, id, "")
 	if err != nil {
 		return nil, err
@@ -273,7 +255,7 @@ func (s *ProductServiceOp) Get(ctx context.Context, id string) (*model.Product, 
 	return out, nil
 }
 
-func (s *ProductServiceOp) getPage(ctx context.Context, id string, cursor string) (*model.Product, error) {
+func (s *ProductV2) getPage(ctx context.Context, id string, cursor string) (*model.Product, error) {
 	q := fmt.Sprintf(`
 		query product($id: ID!, $cursor: String) {
 			product(id: $id){
@@ -292,7 +274,7 @@ func (s *ProductServiceOp) getPage(ctx context.Context, id string, cursor string
 	out := struct {
 		Product *model.Product `json:"product"`
 	}{}
-	err := s.client.QueryString(ctx, q, vars, &out)
+	err := s.Client.QueryString(ctx, q, vars, &out)
 	if err != nil {
 		return nil, fmt.Errorf("query: %w", err)
 	}
@@ -300,7 +282,7 @@ func (s *ProductServiceOp) getPage(ctx context.Context, id string, cursor string
 	return out.Product, nil
 }
 
-func (s *ProductServiceOp) Create(ctx context.Context, product model.ProductInput, media []model.CreateMediaInput) (*model.Product, error) {
+func (s *ProductV2) Create(ctx context.Context, product model.ProductInput, media []model.CreateMediaInput) (*model.Product, error) {
 	m := mutationProductCreate{}
 
 	vars := map[string]interface{}{
@@ -308,7 +290,7 @@ func (s *ProductServiceOp) Create(ctx context.Context, product model.ProductInpu
 		"media": media,
 	}
 
-	err := s.client.Mutate(ctx, &m, vars)
+	err := s.Client.Mutate(ctx, &m, vars)
 	if err != nil {
 		return nil, fmt.Errorf("mutation: %w", err)
 	}
@@ -320,13 +302,13 @@ func (s *ProductServiceOp) Create(ctx context.Context, product model.ProductInpu
 	return m.ProductCreateResult.Product, nil
 }
 
-func (s *ProductServiceOp) Update(ctx context.Context, product model.ProductInput) (*model.Product, error) {
+func (s *ProductV2) Update(ctx context.Context, product model.ProductInput) (*model.Product, error) {
 	m := mutationProductUpdate{}
 
 	vars := map[string]interface{}{
 		"input": product,
 	}
-	err := s.client.Mutate(ctx, &m, vars)
+	err := s.Client.Mutate(ctx, &m, vars)
 	if err != nil {
 		return nil, fmt.Errorf("mutation: %w", err)
 	}
@@ -338,13 +320,13 @@ func (s *ProductServiceOp) Update(ctx context.Context, product model.ProductInpu
 	return m.ProductUpdateResult.Product, nil
 }
 
-func (s *ProductServiceOp) Delete(ctx context.Context, product model.ProductDeleteInput) error {
+func (s *ProductV2) Delete(ctx context.Context, product model.ProductDeleteInput) error {
 	m := mutationProductDelete{}
 
 	vars := map[string]interface{}{
 		"input": product,
 	}
-	err := s.client.Mutate(ctx, &m, vars)
+	err := s.Client.Mutate(ctx, &m, vars)
 	if err != nil {
 		return fmt.Errorf("mutation: %w", err)
 	}
@@ -356,14 +338,14 @@ func (s *ProductServiceOp) Delete(ctx context.Context, product model.ProductDele
 	return nil
 }
 
-func (s *ProductServiceOp) VariantsBulkCreate(ctx context.Context, id string, input []model.ProductVariantsBulkInput) error {
+func (s *ProductV2) VariantsBulkCreate(ctx context.Context, id string, input []model.ProductVariantsBulkInput) error {
 	m := mutationProductVariantsBulkCreate{}
 
 	vars := map[string]interface{}{
 		"productId": id,
 		"variants":  input,
 	}
-	err := s.client.Mutate(ctx, &m, vars)
+	err := s.Client.Mutate(ctx, &m, vars)
 	if err != nil {
 		return fmt.Errorf("mutation: %w", err)
 	}
@@ -375,14 +357,14 @@ func (s *ProductServiceOp) VariantsBulkCreate(ctx context.Context, id string, in
 	return nil
 }
 
-func (s *ProductServiceOp) VariantsBulkUpdate(ctx context.Context, id string, input []model.ProductVariantsBulkInput) error {
+func (s *ProductV2) VariantsBulkUpdate(ctx context.Context, id string, input []model.ProductVariantsBulkInput) error {
 	m := mutationProductVariantsBulkUpdate{}
 
 	vars := map[string]interface{}{
 		"productId": id,
 		"variants":  input,
 	}
-	err := s.client.Mutate(ctx, &m, vars)
+	err := s.Client.Mutate(ctx, &m, vars)
 	if err != nil {
 		return fmt.Errorf("mutation: %w", err)
 	}
@@ -394,14 +376,14 @@ func (s *ProductServiceOp) VariantsBulkUpdate(ctx context.Context, id string, in
 	return nil
 }
 
-func (s *ProductServiceOp) VariantsBulkReorder(ctx context.Context, id string, input []model.ProductVariantPositionInput) error {
+func (s *ProductV2) VariantsBulkReorder(ctx context.Context, id string, input []model.ProductVariantPositionInput) error {
 	m := mutationProductVariantsBulkReorder{}
 
 	vars := map[string]interface{}{
 		"productId": id,
 		"positions": input,
 	}
-	err := s.client.Mutate(ctx, &m, vars)
+	err := s.Client.Mutate(ctx, &m, vars)
 	if err != nil {
 		return fmt.Errorf("mutation: %w", err)
 	}

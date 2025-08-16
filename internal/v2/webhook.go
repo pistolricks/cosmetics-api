@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/pistolricks/cosmetics-api/graph/model"
 	"github.com/pistolricks/cosmetics-api/internal/services"
+	"github.com/vinhluan/go-shopify-graphql/model"
 )
 
 type WebhookService interface {
@@ -17,11 +17,12 @@ type WebhookService interface {
 	UpdateWebhookSubscription(ctx context.Context, webhookID string, input model.WebhookSubscriptionInput) (*model.WebhookSubscription, error)
 }
 
-type WebhookServiceOp struct {
+type Webhook struct {
+	DB     *sql.DB
 	Client *services.ClientApi
 }
 
-var _ WebhookService = &WebhookServiceOp{}
+var _ WebhookService = &Webhook{}
 
 type mutationWebhookCreate struct {
 	WebhookCreateResult *model.WebhookSubscriptionCreatePayload `graphql:"webhookSubscriptionCreate(topic: $topic, webhookSubscription: $webhookSubscription)" json:"webhookSubscriptionCreate"`
@@ -72,12 +73,7 @@ webhookSubscription {
 	}
 }`
 
-type WebhookV2 struct {
-	DB     *sql.DB
-	Client *services.ClientApi
-}
-
-func (s WebhookServiceOp) CreateWebhookSubscription(ctx context.Context, topic model.WebhookSubscriptionTopic, input model.WebhookSubscriptionInput) (*model.WebhookSubscription, error) {
+func (s Webhook) CreateWebhookSubscription(ctx context.Context, topic model.WebhookSubscriptionTopic, input model.WebhookSubscriptionInput) (*model.WebhookSubscription, error) {
 	m := mutationWebhookCreate{}
 	vars := map[string]interface{}{
 		"topic":               topic,
@@ -95,7 +91,7 @@ func (s WebhookServiceOp) CreateWebhookSubscription(ctx context.Context, topic m
 	return m.WebhookCreateResult.WebhookSubscription, nil
 }
 
-func (s WebhookServiceOp) CreateEventBridgeWebhookSubscription(ctx context.Context, topic model.WebhookSubscriptionTopic, input model.EventBridgeWebhookSubscriptionInput) (*model.WebhookSubscription, error) {
+func (s Webhook) CreateEventBridgeWebhookSubscription(ctx context.Context, topic model.WebhookSubscriptionTopic, input model.EventBridgeWebhookSubscriptionInput) (*model.WebhookSubscription, error) {
 	m := mutationEventBridgeWebhookCreate{}
 	vars := map[string]interface{}{
 		"topic":               topic,
@@ -114,7 +110,7 @@ func (s WebhookServiceOp) CreateEventBridgeWebhookSubscription(ctx context.Conte
 	return m.EventBridgeWebhookCreateResult.WebhookSubscription, nil
 }
 
-func (s WebhookServiceOp) DeleteWebhook(ctx context.Context, webhookID string) (*string, error) {
+func (s Webhook) DeleteWebhook(ctx context.Context, webhookID string) (*string, error) {
 	m := mutationWebhookDelete{}
 	vars := map[string]interface{}{
 		"id": webhookID,
@@ -130,7 +126,7 @@ func (s WebhookServiceOp) DeleteWebhook(ctx context.Context, webhookID string) (
 	return m.WebhookDeleteResult.DeletedWebhookSubscriptionID, nil
 }
 
-func (s WebhookServiceOp) ListWebhookSubscriptions(ctx context.Context, topics []model.WebhookSubscriptionTopic) ([]*model.WebhookSubscription, error) {
+func (s Webhook) ListWebhookSubscriptions(ctx context.Context, topics []model.WebhookSubscriptionTopic) ([]*model.WebhookSubscription, error) {
 	queryFormat := `query webhookSubscriptions($first: Int!, $topics: [WebhookSubscriptionTopic!]%s) {
 		webhookSubscriptions(first: $first, topics: $topics%s) {
 			edges {
@@ -201,7 +197,7 @@ func (s WebhookServiceOp) ListWebhookSubscriptions(ctx context.Context, topics [
 	return output, nil
 }
 
-func (s WebhookServiceOp) UpdateWebhookSubscription(ctx context.Context, webhookID string, input model.WebhookSubscriptionInput) (*model.WebhookSubscription, error) {
+func (s Webhook) UpdateWebhookSubscription(ctx context.Context, webhookID string, input model.WebhookSubscriptionInput) (*model.WebhookSubscription, error) {
 	m := mutationWebhookUpdate{}
 	vars := map[string]interface{}{
 		"id":                  webhookID,

@@ -5,15 +5,17 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/pistolricks/cosmetics-api/graph/model"
 	"github.com/pistolricks/cosmetics-api/internal/services"
+	"github.com/vinhluan/go-shopify-graphql/model"
 )
 
+//go:generate mockgen -destination=./mock/fulfillment_service.go -package=mock . FulfillmentService
 type FulfillmentService interface {
 	Create(ctx context.Context, input model.FulfillmentV2Input) error
 }
 
 type FulfillmentServiceOp struct {
+	DB     *sql.DB
 	Client *services.ClientApi
 }
 
@@ -25,18 +27,13 @@ type mutationFulfillmentCreateV2 struct {
 	} `graphql:"fulfillmentCreateV2(fulfillment: $fulfillment)" json:"fulfillmentCreateV2"`
 }
 
-type FulfillmentV2 struct {
-	DB     *sql.DB
-	Client *services.ClientApi
-}
-
 func (s *FulfillmentServiceOp) Create(ctx context.Context, fulfillment model.FulfillmentV2Input) error {
 	m := mutationFulfillmentCreateV2{}
 
 	vars := map[string]interface{}{
 		"fulfillment": fulfillment,
 	}
-	err := s.Client.Mutate(ctx, &m, vars)
+	err := s.client.Mutate(ctx, &m, vars)
 	if err != nil {
 		return fmt.Errorf("mutation: %w", err)
 	}

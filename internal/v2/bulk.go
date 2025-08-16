@@ -39,6 +39,11 @@ type BulkOperationService interface {
 	CancelRunningBulkQuery(ctx context.Context) error
 }
 
+type BulkV2 struct {
+	DB     *sql.DB
+	Client *services.ClientApi
+}
+
 type mutationBulkOperationRunQuery struct {
 	BulkOperationRunQueryResult model.BulkOperationRunQueryPayload `graphql:"bulkOperationRunQuery(query: $query)" json:"bulkOperationRunQuery"`
 }
@@ -53,13 +58,7 @@ func init() {
 	gidRegex = regexp.MustCompile(`^gid://shopify/(\w+)/\d+$`)
 }
 
-type BulkOperationV2 struct {
-	DB                   *sql.DB
-	Client               *services.ClientApi
-	BulkOperationService *BulkOperationService
-}
-
-func (s BulkOperationV2) PostBulkQuery(ctx context.Context, query string) (*string, error) {
+func (s *BulkV2) PostBulkQuery(ctx context.Context, query string) (*string, error) {
 	m := mutationBulkOperationRunQuery{}
 	vars := map[string]interface{}{
 		"query": null.StringFrom(query),
@@ -77,7 +76,7 @@ func (s BulkOperationV2) PostBulkQuery(ctx context.Context, query string) (*stri
 	return &m.BulkOperationRunQueryResult.BulkOperation.ID, nil
 }
 
-func (s BulkOperationV2) GetCurrentBulkQuery(ctx context.Context) (*model.BulkOperation, error) {
+func (s *BulkV2) GetCurrentBulkQuery(ctx context.Context) (*model.BulkOperation, error) {
 	var q struct {
 		CurrentBulkOperation struct {
 			model.BulkOperation
@@ -90,11 +89,11 @@ func (s BulkOperationV2) GetCurrentBulkQuery(ctx context.Context) (*model.BulkOp
 	return &q.CurrentBulkOperation.BulkOperation, nil
 }
 
-func (s BulkOperationV2) GetCurrentBulkQueryResultURL(ctx context.Context) (*string, error) {
+func (s *BulkV2) GetCurrentBulkQueryResultURL(ctx context.Context) (*string, error) {
 	return s.ShouldGetBulkQueryResultURL(ctx, nil)
 }
 
-func (s BulkOperationV2) ShouldGetBulkQueryResultURL(ctx context.Context, id *string) (*string, error) {
+func (s *BulkV2) ShouldGetBulkQueryResultURL(ctx context.Context, id *string) (*string, error) {
 	q, err := s.GetCurrentBulkQuery(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("error getting current bulk operation: %w", err)
@@ -124,7 +123,7 @@ func (s BulkOperationV2) ShouldGetBulkQueryResultURL(ctx context.Context, id *st
 	return q.URL, nil
 }
 
-func (s BulkOperationV2) WaitForCurrentBulkQuery(ctx context.Context, interval time.Duration) (*model.BulkOperation, error) {
+func (s *BulkV2) WaitForCurrentBulkQuery(ctx context.Context, interval time.Duration) (*model.BulkOperation, error) {
 	q, err := s.GetCurrentBulkQuery(ctx)
 	if err != nil {
 		return q, fmt.Errorf("CurrentBulkOperation query error: %w", err)
@@ -144,7 +143,7 @@ func (s BulkOperationV2) WaitForCurrentBulkQuery(ctx context.Context, interval t
 	return q, nil
 }
 
-func (s BulkOperationV2) CancelRunningBulkQuery(ctx context.Context) error {
+func (s *BulkV2) CancelRunningBulkQuery(ctx context.Context) error {
 	q, err := s.GetCurrentBulkQuery(ctx)
 	if err != nil {
 		return err
@@ -184,7 +183,7 @@ func (s BulkOperationV2) CancelRunningBulkQuery(ctx context.Context) error {
 	return nil
 }
 
-func (s BulkOperationV2) BulkQuery(ctx context.Context, query string, out interface{}) error {
+func (s *BulkV2) BulkQuery(ctx context.Context, query string, out interface{}) error {
 	_, err := s.WaitForCurrentBulkQuery(ctx, 1*time.Second)
 	if err != nil {
 		return err

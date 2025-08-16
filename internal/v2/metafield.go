@@ -1,17 +1,17 @@
 package v2
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"strings"
 
-	"context"
-
-	"github.com/pistolricks/cosmetics-api/graph/model"
 	"github.com/pistolricks/cosmetics-api/internal/services"
 	log "github.com/sirupsen/logrus"
+	"github.com/vinhluan/go-shopify-graphql/model"
 )
 
+//go:generate mockgen -destination=./mock/metafield_service.go -package=mock . MetafieldService
 type MetafieldService interface {
 	ListAllShopMetafields(ctx context.Context) ([]*model.Metafield, error)
 	ListShopMetafieldsByNamespace(ctx context.Context, namespace string) ([]*model.Metafield, error)
@@ -23,6 +23,7 @@ type MetafieldService interface {
 }
 
 type MetafieldServiceOp struct {
+	DB     *sql.DB
 	Client *services.ClientApi
 }
 
@@ -32,11 +33,6 @@ type mutationMetafieldDelete struct {
 	MetafieldDeleteResult struct {
 		UserErrors []model.UserError `json:"userErrors,omitempty"`
 	} `graphql:"metafieldDelete(input: $input)" json:"metafieldDelete"`
-}
-
-type MetafieldV2 struct {
-	DB     *sql.DB
-	Client *services.ClientApi
 }
 
 func (s *MetafieldServiceOp) ListAllShopMetafields(ctx context.Context) ([]*model.Metafield, error) {
@@ -64,7 +60,7 @@ func (s *MetafieldServiceOp) ListAllShopMetafields(ctx context.Context) ([]*mode
 `
 
 	res := []*model.Metafield{}
-	err := s.client.BulkOperations.BulkQuery(ctx, q, &res)
+	err := s.Client.BulkOperation.BulkQuery(ctx, q, &res)
 	if err != nil {
 		return nil, fmt.Errorf("bulk query: %w", err)
 	}
@@ -98,7 +94,7 @@ func (s *MetafieldServiceOp) ListShopMetafieldsByNamespace(ctx context.Context, 
 	q = strings.ReplaceAll(q, "$namespace", namespace)
 
 	res := []*model.Metafield{}
-	err := s.client.BulkOperations.BulkQuery(ctx, q, &res)
+	err := s.Client.BulkOperation.BulkQuery(ctx, q, &res)
 	if err != nil {
 		return nil, fmt.Errorf("bulk query: %w", err)
 	}
@@ -117,7 +113,7 @@ func (s *MetafieldServiceOp) GetShopMetafieldByKey(ctx context.Context, namespac
 		"key":       key,
 	}
 
-	err := s.client.Query(ctx, &q, vars)
+	err := s.Client.Query(ctx, &q, vars)
 	if err != nil {
 		return nil, fmt.Errorf("query: %w", err)
 	}
@@ -142,7 +138,7 @@ func (s *MetafieldServiceOp) Delete(ctx context.Context, metafield model.Metafie
 	vars := map[string]interface{}{
 		"input": metafield,
 	}
-	err := s.client.Mutate(ctx, &m, vars)
+	err := s.Client.Mutate(ctx, &m, vars)
 	if err != nil {
 		return fmt.Errorf("mutation: %w", err)
 	}
