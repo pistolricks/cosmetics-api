@@ -37,8 +37,8 @@ func (v ServiceV2) Mutate(ctx context.Context, m interface{}, variables map[stri
 					time.Sleep(wait)
 					continue
 				}
-			}
-			if IsConnectionError(err) {
+
+				if IsConnectionError(err) {
 				retries++
 				if retries > c.retries {
 					return fmt.Errorf("after %v tries: %w", retries, err)
