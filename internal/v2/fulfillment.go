@@ -9,7 +9,6 @@ import (
 	"github.com/vinhluan/go-shopify-graphql/model"
 )
 
-//go:generate mockgen -destination=./mock/fulfillment_service.go -package=mock . FulfillmentService
 type FulfillmentService interface {
 	Create(ctx context.Context, input model.FulfillmentV2Input) error
 }
@@ -33,7 +32,7 @@ func (s *FulfillmentServiceOp) Create(ctx context.Context, fulfillment model.Ful
 	vars := map[string]interface{}{
 		"fulfillment": fulfillment,
 	}
-	err := s.client.Mutate(ctx, &m, vars)
+	err := s.Client.Mutate(ctx, &m, vars)
 	if err != nil {
 		return fmt.Errorf("mutation: %w", err)
 	}

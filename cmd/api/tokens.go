@@ -13,8 +13,9 @@ import (
 func (app *application) createAuthenticationTokenHandler(w http.ResponseWriter, r *http.Request) {
 
 	var input struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
+		Email     string `json:"email"`
+		Password  string `json:"password"`
+		UUserName string `json:"userName"`
 	}
 
 	err := app.readJSON(w, r, &input)

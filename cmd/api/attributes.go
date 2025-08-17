@@ -41,7 +41,7 @@ func (app *application) updateOrderFields(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	metaRad := goshopify.Metafield{Id: 29021818519600, Value: app.client.Username}
+	metaRad := goshopify.Metafield{Id: 29021818519600, Value: app.envars.Username}
 
 	metaRid := goshopify.Metafield{Id: 29021818519600, Value: input.OrderId}
 

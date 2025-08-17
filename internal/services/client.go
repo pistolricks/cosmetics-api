@@ -3,12 +3,12 @@ package services
 import (
 	"context"
 	"fmt"
+
 	"net/http"
 	"net/url"
 	"os"
 	"time"
 
-	v2 "github.com/pistolricks/cosmetics-api/internal/v2"
 	log "github.com/sirupsen/logrus"
 	"github.com/vinhluan/go-graphql-client"
 	"github.com/vinhluan/go-shopify-graphql"
@@ -67,17 +67,6 @@ func NewClient(shopName string, opts ...Option) *ClientApi {
 		}
 		c.gql = graphql.NewClient(apiEndpoint, httpClient)
 	}
-
-	c.Product = &v2.ProductV2{DB: db, client: c}
-	c.Variant = &v2.VariantV2{DB: db, client client c, errors: k}
-	c.Inventory = &InventoryV2{client: c}
-	c.Collection = &CollectionV2{client: c}
-	c.Order = &OrderV2{client: c}
-	c.Fulfillment = &FulfillmentV2{client: c}
-	c.Location = &LocationV2{client: c}
-	c.Metafield = &MetafieldV2{client: c}
-	c.BulkOperation = &BulkOperationV2{client: c}
-	c.Webhook = &WebhookV2{client: c}
 
 	return c
 }

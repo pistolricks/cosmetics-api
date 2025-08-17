@@ -5,6 +5,12 @@ import (
 	"strings"
 )
 
+const (
+	shopifyBaseDomain  = "myshopify.com"
+	defaultAPIProtocol = "https"
+	defaultAPIEndpoint = "graphql.json"
+)
+
 // shopFullName returns the full shop name, including .myshopify.com
 func shopFullName(name string) string {
 	name = strings.TrimSpace(name)

@@ -202,7 +202,8 @@ func (s *ProductV2) ListAll(ctx context.Context) ([]*model.Product, error) {
 	`, productBulkQuery)
 
 	res := []*model.Product{}
-	err := s.Client.BulkOperation.BulkQuery(ctx, q, &res)
+	bulk := &BulkV2{Client: s.Client}
+	err := bulk.BulkQuery(ctx, q, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -226,7 +227,8 @@ func (s *ProductV2) List(ctx context.Context, query string) ([]*model.Product, e
 	q = strings.ReplaceAll(q, "$query", query)
 
 	res := []*model.Product{}
-	err := s.Client.BulkOperation.BulkQuery(ctx, q, &res)
+	bulk := &BulkV2{Client: s.Client}
+	err := bulk.BulkQuery(ctx, q, &res)
 	if err != nil {
 		return nil, fmt.Errorf("bulk query: %w", err)
 	}

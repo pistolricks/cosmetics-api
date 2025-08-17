@@ -23,7 +23,7 @@ type CollectionService interface {
 
 type CollectionV2 struct {
 	DB     *sql.DB
-	Client *services.ClientApi.BulkOperation
+	Client *services.ClientApi
 }
 
 type mutationCollectionCreate struct {
@@ -80,7 +80,8 @@ func (s CollectionV2) ListAll(ctx context.Context) ([]*model.Collection, error) 
 	`, collectionBulkQuery)
 
 	res := []*model.Collection{}
-	err := s.Client.BulkOperation.BulkQuery(ctx, q, &res)
+	bulk := &BulkV2{Client: s.Client}
+	err := bulk.BulkQuery(ctx, q, &res)
 	if err != nil {
 		return nil, fmt.Errorf("bulk query: %w", err)
 	}
@@ -138,7 +139,7 @@ func (s *CollectionV2) getPage(ctx context.Context, id string, cursor string) (*
 
 func (s *CollectionV2) CreateBulk(ctx context.Context, collections []model.CollectionInput) error {
 	for _, c := range collections {
-		_, err := s.Client.Collection.Create(ctx, c)
+		_, err := s.Create(ctx, c)
 		if err != nil {
 			log.Warnf("Couldn't create collection (%v): %s", c, err)
 		}

@@ -301,7 +301,8 @@ func (s *OrderServiceOp) List(ctx context.Context, opts ListOptions) ([]*model.O
 	q = strings.ReplaceAll(q, "$query", opts.Query)
 
 	res := []*model.Order{}
-	err := s.Client.BulkOperation.BulkQuery(ctx, q, &res)
+	bulk := &BulkV2{Client: s.Client}
+	err := bulk.BulkQuery(ctx, q, &res)
 	if err != nil {
 		return nil, fmt.Errorf("bulk query: %w", err)
 	}
@@ -332,7 +333,8 @@ func (s *OrderServiceOp) ListAll(ctx context.Context) ([]*model.Order, error) {
 	`, orderBaseQuery, lineItemFragment)
 
 	res := []*model.Order{}
-	err := s.Client.BulkOperation.BulkQuery(ctx, q, &res)
+	bulk := &BulkV2{Client: s.Client}
+	err := bulk.BulkQuery(ctx, q, &res)
 	if err != nil {
 		return nil, fmt.Errorf("bulk query: %w", err)
 	}

@@ -127,7 +127,7 @@ type application struct {
 	services  services.Services
 	shopify   shopify.ShopClient
 	chromium  chromium.ChromeConnector
-	v2        v2.Api
+	v2        services.ClientApi
 	transport *Transport
 	mailer    mailer.Mailer
 	wg        sync.WaitGroup
@@ -264,8 +264,6 @@ func main() {
 	vars := &Envars{StoreName: storeName, RimanStoreName: rimanStoreName, LoginUrl: loginUrl, Username: username, Password: password, ShopifyToken: shopifyToken, ShopifyKey: shopifyKey, ShopifySecret: shopifySecret, Token: token}
 
 	fmt.Println(vars)
-
-	client := v2.V2(db, v2.ShopifyV2)
 
 	shopifyClient := shopify.NewShopClient(shopify.ShopifyV1())
 

@@ -60,7 +60,8 @@ func (s *MetafieldServiceOp) ListAllShopMetafields(ctx context.Context) ([]*mode
 `
 
 	res := []*model.Metafield{}
-	err := s.Client.BulkOperation.BulkQuery(ctx, q, &res)
+	bulk := &BulkV2{Client: s.Client}
+	err := bulk.BulkQuery(ctx, q, &res)
 	if err != nil {
 		return nil, fmt.Errorf("bulk query: %w", err)
 	}
@@ -94,7 +95,8 @@ func (s *MetafieldServiceOp) ListShopMetafieldsByNamespace(ctx context.Context, 
 	q = strings.ReplaceAll(q, "$namespace", namespace)
 
 	res := []*model.Metafield{}
-	err := s.Client.BulkOperation.BulkQuery(ctx, q, &res)
+	bulk := &BulkV2{Client: s.Client}
+	err := bulk.BulkQuery(ctx, q, &res)
 	if err != nil {
 		return nil, fmt.Errorf("bulk query: %w", err)
 	}
