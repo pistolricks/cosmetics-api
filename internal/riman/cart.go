@@ -99,3 +99,20 @@ func (m ClientModel) Patch(cartKey string, token string) (*Cart, error) {
 
 	return res.Result().(*Cart), err
 }
+
+func DeleteProductFromCart(token string, cartKey string, id string) error {
+
+	deleteProductUrl := fmt.Sprintf("https://cart-api.riman.com/api/v1/shopping/%s/items/%s", cartKey, id)
+
+	client := resty.New()
+	defer client.Close()
+
+	res, err := client.R().
+		SetHeader("Content-Type", "application/json").
+		SetAuthToken(token).
+		Delete(deleteProductUrl)
+
+	fmt.Println(err, res)
+
+	return err
+}

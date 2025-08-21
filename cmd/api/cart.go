@@ -83,3 +83,29 @@ func (app *application) updateCartHandler(w http.ResponseWriter, r *http.Request
 		app.serverErrorResponse(w, r, err)
 	}
 }
+
+func (app *application) deleteCartProductHandler(w http.ResponseWriter, r *http.Request) {
+
+	var input struct {
+		Token   string `json:"token"`
+		CartKey string `json:"cart_key"`
+		Id      string `json:"id"`
+	}
+
+	err := app.readJSON(w, r, &input)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	err = riman.DeleteProductFromCart(input.Token, input.CartKey, input.Id)
+
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"item": input.Id, "cart": input.CartKey, "deleted": true}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+}
