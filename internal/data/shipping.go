@@ -77,6 +77,8 @@ func OrderUpdateTracking(orderId string, token string) ([]TrackingInfo, error) {
 		return nil, fmt.Errorf("client: could not unmarshal response body: %w", err)
 	}
 
+	fmt.Println(trackingInfo)
+
 	return trackingInfo, nil
 }
 

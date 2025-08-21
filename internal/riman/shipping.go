@@ -43,11 +43,10 @@ func (m ShipModel) ShipmentTracker(orderId string, token string) ([]*ProductTrac
 	defer client.Close()
 
 	shipmentUrl := fmt.Sprintf("https://cart-api.riman.com/api/v1/orders/%s/shipment-products?token=%s", orderId, token)
-	// https://cart-api.riman.com/api/v1/orders/2318156/shipment-products?token=
+
 	res, err := client.R().
-		// SetAuthToken(token).
 		SetResult(&ProductTracking{}). // or SetResult(LoginResponse{}).
-		SetError(&Errors{}).           // or SetError(LoginError{}).
+		SetError(&Errors{}). // or SetError(LoginError{}).
 		Post(shipmentUrl)
 
 	if err != nil {

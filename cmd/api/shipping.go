@@ -7,10 +7,8 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"strconv"
 	"strings"
 
-	goshopify "github.com/bold-commerce/go-shopify/v4"
 	"github.com/pistolricks/cosmetics-api/internal/data"
 )
 
@@ -100,22 +98,22 @@ func (app *application) getShipmentHandler(w http.ResponseWriter, r *http.Reques
 }
 
 func (app *application) trackingHandler(w http.ResponseWriter, r *http.Request) {
+	/*
+		ctx := r.Context()
 
-	ctx := r.Context()
+		shopApp := goshopify.App{
+			ApiKey:      app.envars.ShopifyKey,
+			ApiSecret:   app.envars.ShopifySecret,
+			RedirectUrl: "https://example.com/callback",
+			Scope:       "read_orders, write_orders, read_fulfillments, write_fulfillments",
+		}
 
-	shopApp := goshopify.App{
-		ApiKey:      app.envars.ShopifyKey,
-		ApiSecret:   app.envars.ShopifySecret,
-		RedirectUrl: "https://example.com/callback",
-		Scope:       "read_orders",
-	}
-
-	client, err := goshopify.NewClient(shopApp, app.envars.StoreName, app.envars.ShopifyToken)
-	if err != nil {
-		app.serverErrorResponse(w, r, err)
-		return
-	}
-
+			client, err := goshopify.NewClient(shopApp, app.envars.StoreName, app.envars.ShopifyToken)
+			if err != nil {
+				app.serverErrorResponse(w, r, err)
+				return
+			}
+	*/
 	var input struct {
 		Token         string
 		OrderId       string
@@ -146,7 +144,7 @@ func (app *application) trackingHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	tracking, trErr := data.OrderUpdateTracking(input.OrderId, token)
+	tracking, trErr := data.OrderUpdateTracking(input.OrderId, input.Token)
 	if trErr != nil {
 		if errors.Is(trErr, data.ErrUnauthorized) {
 			app.invalidAuthenticationTokenResponse(w, r)
@@ -156,44 +154,46 @@ func (app *application) trackingHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	fId, err := strconv.ParseUint(input.FulfillmentId, 10, 64)
-	if err != nil {
-		app.badRequestResponse(w, r, fmt.Errorf("invalid fulfillment_id: %w", err))
-		return
-	}
+	/*
 
-	id, err := strconv.ParseUint(input.ID, 10, 64)
-	if err != nil {
-		app.badRequestResponse(w, r, fmt.Errorf("invalid id: %w", err))
-		return
-	}
-
-	fulfillment := goshopify.Fulfillment{}
-
-	// Guard against empty tracking slice
-	if len(tracking) == 0 || tracking[0].TrackingNumber == "" {
-		// No tracking available; return 200 with empty tracking info
-		err = app.writeJSON(w, http.StatusOK, envelope{"tracking": tracking, "fulfillment": fulfillment}, nil)
+		fId, err := strconv.ParseUint(input.FulfillmentId, 10, 64)
 		if err != nil {
-			app.serverErrorResponse(w, r, err)
+			app.badRequestResponse(w, r, fmt.Errorf("invalid fulfillment_id: %w", err))
+			return
 		}
-		return
-	}
 
-	fulfillment = goshopify.Fulfillment{
-		Id:              fId,
-		TrackingUrl:     tracking[0].TrackingLink,
-		TrackingNumber:  tracking[0].TrackingNumber,
-		TrackingCompany: "Other",
-	}
-	_, err = client.Order.UpdateFulfillment(ctx, id, fulfillment)
-	if err != nil {
-		// Return the tracking data even if fulfillment update failed
-		app.serverErrorResponse(w, r, err)
-		return
-	}
+		id, err := strconv.ParseUint(input.ID, 10, 64)
+		if err != nil {
+			app.badRequestResponse(w, r, fmt.Errorf("invalid id: %w", err))
+			return
+		}
 
-	err = app.writeJSON(w, http.StatusOK, envelope{"tracking": tracking, "fulfillment": fulfillment}, nil)
+		fulfillment := goshopify.Fulfillment{}
+
+		// Guard against empty tracking slice
+		if len(tracking) == 0 || tracking[0].TrackingNumber == "" {
+			// No tracking available; return 200 with empty tracking info
+			err = app.writeJSON(w, http.StatusOK, envelope{"tracking": tracking, "fulfillment": fulfillment}, nil)
+			if err != nil {
+				app.serverErrorResponse(w, r, err)
+			}
+			return
+		}
+
+		fulfillment = goshopify.Fulfillment{
+			Id:              fId,
+			TrackingUrl:     tracking[0].TrackingLink,
+			TrackingNumber:  tracking[0].TrackingNumber,
+			TrackingCompany: "Other",
+		}
+		_, err = client.Order.UpdateFulfillment(ctx, id, fulfillment)
+		if err != nil {
+			// Return the tracking data even if fulfillment update failed
+			app.serverErrorResponse(w, r, err)
+			return
+		}
+	*/
+	err := app.writeJSON(w, http.StatusOK, envelope{"tracking": tracking}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -261,9 +261,9 @@ func (app *application) shippingHandler(w http.ResponseWriter, r *http.Request) 
 	}
 	fmt.Printf("client: response body: %s\n", resBody)
 
-	// bodyString := string(resBody)
+	bodyString := string(resBody)
 
-	err = app.writeJSON(w, http.StatusOK, envelope{"body": resBody}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"body": bodyString}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}

@@ -14,7 +14,7 @@ type ProductModel struct {
 	DB *sql.DB
 }
 
-func (m ProductModel) GetProducts() (*[]RimanProduct, error) {
+func (m ProductModel) GetProducts() (*[]Product, error) {
 
 	client := resty.New()
 	defer client.Close()
@@ -28,11 +28,11 @@ func (m ProductModel) GetProducts() (*[]RimanProduct, error) {
 			"repSiteUrl":  "rmnsocial",
 		}).
 		SetHeader("Accept", "application/json").
-		SetResult(&[]RimanProduct{}).
+		SetResult(&[]Product{}).
 		Get("https://cart-api.riman.com/api/v2/products")
 
 	fmt.Println(err, res)
-	products := res.Result().(*[]RimanProduct)
+	products := res.Result().(*[]Product)
 
 	return products, err
 }
