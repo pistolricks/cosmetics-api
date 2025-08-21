@@ -12,7 +12,7 @@ import (
 	graphify "github.com/vinhluan/go-shopify-graphql"
 )
 
-func (app *application) RimanApiListProductsHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) rimanApiListProductsHandler(w http.ResponseWriter, r *http.Request) {
 	// create a Resty client
 
 	products, err := app.riman.Products.GetProducts()
@@ -25,7 +25,7 @@ func (app *application) RimanApiListProductsHandler(w http.ResponseWriter, r *ht
 }
 
 // SaveRimanProductsHandler fetches products from the Riman API and saves them into Postgres.
-func (app *application) SaveRimanProductsHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) saveRimanProductsHandler(w http.ResponseWriter, r *http.Request) {
 	products, err := app.riman.Products.GetProducts()
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
@@ -44,7 +44,7 @@ func (app *application) SaveRimanProductsHandler(w http.ResponseWriter, r *http.
 	}
 }
 
-func (app *application) ShopifyApiListProductsHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) shopifyApiListProductsHandler(w http.ResponseWriter, r *http.Request) {
 
 	shopApp := goshopify.App{
 		ApiKey:      app.envars.ShopifyKey,

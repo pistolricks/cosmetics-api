@@ -16,7 +16,7 @@ func (app *application) routes() http.Handler {
 
 	router.HandlerFunc(http.MethodGet, "/v1/healthcheck", app.healthcheckHandler)
 
-	router.HandlerFunc(http.MethodGet, "/v1/platform/products", app.ShopifyApiListProductsHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/platform/products", app.shopifyApiListProductsHandler)
 	router.HandlerFunc(http.MethodPost, "/v1/platform/notes", app.orderUpdateHandler)
 	router.HandlerFunc(http.MethodPost, "/v1/platform/fields", app.updateOrderFields)
 	router.HandlerFunc(http.MethodPost, "/v1/platform/tracking", app.updateFulfillmentHandler)
@@ -25,8 +25,8 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/platform/orders/all", app.listAllShopifyOrders)
 
 	router.HandlerFunc(http.MethodPost, "/v1/vendors/login", app.createRimanSessionHandler)
-	router.HandlerFunc(http.MethodGet, "/v1/vendors/products", app.RimanApiListProductsHandler)
-	router.HandlerFunc(http.MethodPost, "/v1/vendors/products/save", app.SaveRimanProductsHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/vendors/products", app.rimanApiListProductsHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/vendors/products/save", app.saveRimanProductsHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/vendors/carts", app.getCartHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/vendors/orders", app.listRimanOrders)
 	router.HandlerFunc(http.MethodGet, "/v1/vendors/tracking", app.trackingHandler)
