@@ -46,7 +46,7 @@ func (m ShipModel) ShipmentTracker(orderId string, token string) ([]*ProductTrac
 
 	res, err := client.R().
 		SetResult(&ProductTracking{}). // or SetResult(LoginResponse{}).
-		SetError(&Errors{}). // or SetError(LoginError{}).
+		SetError(&Errors{}).           // or SetError(LoginError{}).
 		Post(shipmentUrl)
 
 	if err != nil {

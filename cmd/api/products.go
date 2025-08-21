@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"context"
+
 	goshopify "github.com/bold-commerce/go-shopify/v4"
 	"github.com/pistolricks/cosmetics-api/internal/shopify"
 
@@ -21,6 +22,26 @@ func (app *application) RimanApiListProductsHandler(w http.ResponseWriter, r *ht
 		app.serverErrorResponse(w, r, err)
 	}
 
+}
+
+// SaveRimanProductsHandler fetches products from the Riman API and saves them into Postgres.
+func (app *application) SaveRimanProductsHandler(w http.ResponseWriter, r *http.Request) {
+	products, err := app.riman.Products.GetProducts()
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	saved, err := app.riman.Products.SaveProducts(products)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"saved": saved}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
 }
 
 func (app *application) ShopifyApiListProductsHandler(w http.ResponseWriter, r *http.Request) {

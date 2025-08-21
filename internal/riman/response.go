@@ -31,12 +31,12 @@ type PackageItem struct {
 }
 
 type Pricing struct {
-	PriceType      string `json:"priceType"`
-	CurrencySymbol string `json:"currencySymbol"`
-	Price          int    `json:"price"`
-	NoVatPrice     int    `json:"noVatPrice"`
-	FormattedPrice string `json:"formattedPrice"`
-	PriceWarning   string `json:"priceWarning"`
+	PriceType      string  `json:"priceType"`
+	CurrencySymbol string  `json:"currencySymbol"`
+	Price          float64 `json:"price"`
+	NoVatPrice     float64 `json:"noVatPrice"`
+	FormattedPrice string  `json:"formattedPrice"`
+	PriceWarning   string  `json:"priceWarning"`
 }
 
 type ImageUrl struct {
@@ -132,7 +132,7 @@ type ProductInformation struct {
 	ProductBrand                 interface{}      `json:"productBrand"`
 	Name                         string           `json:"name"`
 	ImageUrl                     string           `json:"imageUrl"`
-	Weight                       int              `json:"weight"`
+	Weight                       float64          `json:"weight"`
 	IsComingSoon                 bool             `json:"isComingSoon"`
 	ComingSoonMessage            interface{}      `json:"comingSoonMessage"`
 	IsPackage                    bool             `json:"isPackage"`
@@ -143,8 +143,8 @@ type ProductInformation struct {
 	AutoshipProductPk            int              `json:"autoshipProductPk"`
 	MaxLimit                     int              `json:"maxLimit"`
 	Points                       float64          `json:"points"`
-	Bv                           int              `json:"bv"`
-	Sp                           int              `json:"sp"`
+	Bv                           float64          `json:"bv"`
+	Sp                           float64          `json:"sp"`
 	ProductMenuId                int              `json:"productMenuId"`
 	ProductMenu                  string           `json:"productMenu"`
 	Configurations               []interface{}    `json:"configurations"`

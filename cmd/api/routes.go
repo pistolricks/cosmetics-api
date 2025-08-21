@@ -26,6 +26,7 @@ func (app *application) routes() http.Handler {
 
 	router.HandlerFunc(http.MethodPost, "/v1/vendors/login", app.createRimanSessionHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/vendors/products", app.RimanApiListProductsHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/vendors/products/save", app.SaveRimanProductsHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/vendors/carts", app.getCartHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/vendors/orders", app.listRimanOrders)
 	router.HandlerFunc(http.MethodGet, "/v1/vendors/tracking", app.trackingHandler)
