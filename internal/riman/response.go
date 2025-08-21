@@ -1,6 +1,69 @@
 package riman
 
-import "time"
+import (
+	"time"
+
+	"gopkg.in/guregu/null.v4"
+)
+
+type AddProductPayload struct {
+	ConfigFk        null.String `json:"configFk"`
+	Discount        float64     `json:"discount"`
+	ExtraFee        float64     `json:"extraFee"`
+	MainCartFk      string      `json:"mainCartFk"`
+	MainCartItemsPk int         `json:"mainCartItemsPk"`
+	ProductFk       int         `json:"productFk"`
+	Quantity        int         `json:"quantity"`
+	SetupForAs      bool        `json:"setupForAs"`
+}
+
+type ProductAddedResponse struct {
+	Id                          int           `json:"id"`
+	Quantity                    int           `json:"quantity"`
+	ProductFk                   int           `json:"productFk"`
+	PackageFk                   interface{}   `json:"packageFk"`
+	Name                        string        `json:"name"`
+	ImageUrl                    string        `json:"imageUrl"`
+	SetupForAs                  bool          `json:"setupForAs"`
+	ConfigFk                    interface{}   `json:"configFk"`
+	PriceListFk                 int           `json:"priceListFk"`
+	IsPaCItem                   bool          `json:"isPaCItem"`
+	IsSignup                    bool          `json:"isSignup"`
+	Sku                         string        `json:"sku"`
+	PriceType                   string        `json:"priceType"`
+	CountryCode                 string        `json:"countryCode"`
+	CurrencyPK                  int           `json:"currencyPK"`
+	CurrencyCode                string        `json:"currencyCode"`
+	CurrencySymbol              string        `json:"currencySymbol"`
+	ExtraFee                    interface{}   `json:"extraFee"`
+	Discount                    float64       `json:"discount"`
+	FormattedDiscount           string        `json:"formattedDiscount"`
+	BasePrice                   float64       `json:"basePrice"`
+	FormattedBasePrice          string        `json:"formattedBasePrice"`
+	UnitPrice                   float64       `json:"unitPrice"`
+	FormattedUnitPrice          string        `json:"formattedUnitPrice"`
+	RetailTaxablePrice          float64       `json:"retailTaxablePrice"`
+	FormattedRetailTaxablePrice string        `json:"formattedRetailTaxablePrice"`
+	Cv                          float64       `json:"cv"`
+	Sp                          float64       `json:"sp"`
+	MaxLimit                    int           `json:"maxLimit"`
+	Points                      float64       `json:"points"`
+	IsShippable                 bool          `json:"isShippable"`
+	IsStarterKit                bool          `json:"isStarterKit"`
+	BrandName                   string        `json:"brandName"`
+	LineSubTotal                float64       `json:"lineSubTotal"`
+	FormattedLineSubTotal       string        `json:"formattedLineSubTotal"`
+	LineTotal                   float64       `json:"lineTotal"`
+	FormattedLineTotal          string        `json:"formattedLineTotal"`
+	OfferAffiliateProgram       bool          `json:"offerAffiliateProgram"`
+	IsVolumeBasedRSB            bool          `json:"isVolumeBasedRSB"`
+	OfferPreferredCust          bool          `json:"offerPreferredCust"`
+	OfferLoyaltyProgram         bool          `json:"offerLoyaltyProgram"`
+	ShowSDCheckbox              bool          `json:"showSDCheckbox"`
+	JoinMaxLifetimeLimitCatCode string        `json:"joinMaxLifetimeLimitCatCode"`
+	JoinMaxLifetimeLimit        int           `json:"joinMaxLifetimeLimit"`
+	ChildItems                  []interface{} `json:"childItems"`
+}
 
 type ShippedProductResponse struct {
 	PackagePk                 int         `json:"packagePk"`
@@ -122,6 +185,53 @@ type Product struct {
 	AdminGraphqlApiId string `json:"admin_graphql_api_id"`
 }
 
+type CartItem struct {
+	Id                          int           `json:"id"`
+	Quantity                    int           `json:"quantity"`
+	ProductFk                   int           `json:"productFk"`
+	PackageFk                   interface{}   `json:"packageFk"`
+	Name                        string        `json:"name"`
+	ImageUrl                    string        `json:"imageUrl"`
+	SetupForAs                  bool          `json:"setupForAs"`
+	ConfigFk                    interface{}   `json:"configFk"`
+	PriceListFk                 int           `json:"priceListFk"`
+	IsPaCItem                   bool          `json:"isPaCItem"`
+	IsSignup                    bool          `json:"isSignup"`
+	Sku                         string        `json:"sku"`
+	PriceType                   string        `json:"priceType"`
+	CountryCode                 string        `json:"countryCode"`
+	CurrencyPK                  int           `json:"currencyPK"`
+	CurrencyCode                string        `json:"currencyCode"`
+	CurrencySymbol              string        `json:"currencySymbol"`
+	ExtraFee                    interface{}   `json:"extraFee"`
+	Discount                    float64       `json:"discount"`
+	FormattedDiscount           string        `json:"formattedDiscount"`
+	BasePrice                   float64       `json:"basePrice"`
+	FormattedBasePrice          string        `json:"formattedBasePrice"`
+	UnitPrice                   float64       `json:"unitPrice"`
+	FormattedUnitPrice          string        `json:"formattedUnitPrice"`
+	RetailTaxablePrice          float64       `json:"retailTaxablePrice"`
+	FormattedRetailTaxablePrice string        `json:"formattedRetailTaxablePrice"`
+	Cv                          float64       `json:"cv"`
+	Sp                          float64       `json:"sp"`
+	MaxLimit                    int           `json:"maxLimit"`
+	Points                      float64       `json:"points"`
+	IsShippable                 bool          `json:"isShippable"`
+	IsStarterKit                bool          `json:"isStarterKit"`
+	BrandName                   string        `json:"brandName"`
+	LineSubTotal                float64       `json:"lineSubTotal"`
+	FormattedLineSubTotal       string        `json:"formattedLineSubTotal"`
+	LineTotal                   float64       `json:"lineTotal"`
+	FormattedLineTotal          string        `json:"formattedLineTotal"`
+	OfferAffiliateProgram       bool          `json:"offerAffiliateProgram"`
+	IsVolumeBasedRSB            bool          `json:"isVolumeBasedRSB"`
+	OfferPreferredCust          bool          `json:"offerPreferredCust"`
+	OfferLoyaltyProgram         bool          `json:"offerLoyaltyProgram"`
+	ShowSDCheckbox              bool          `json:"showSDCheckbox"`
+	JoinMaxLifetimeLimitCatCode string        `json:"joinMaxLifetimeLimitCatCode"`
+	JoinMaxLifetimeLimit        int           `json:"joinMaxLifetimeLimit"`
+	ChildItems                  []interface{} `json:"childItems"`
+}
 type ProductInformation struct {
 	ProductPK                    int              `json:"productPK"`
 	ProductCode                  string           `json:"productCode"`
@@ -354,54 +464,8 @@ type Cart struct {
 		IsPOBox           interface{} `json:"isPOBox"`
 		IsResidential     interface{} `json:"isResidential"`
 	} `json:"billingAddress"`
-	FormattedAutoshipSubtotal string `json:"formattedAutoshipSubtotal"`
-	CartItems                 []struct {
-		Id                          int           `json:"id"`
-		Quantity                    int           `json:"quantity"`
-		ProductFk                   int           `json:"productFk"`
-		PackageFk                   interface{}   `json:"packageFk"`
-		Name                        string        `json:"name"`
-		ImageUrl                    string        `json:"imageUrl"`
-		SetupForAs                  bool          `json:"setupForAs"`
-		ConfigFk                    interface{}   `json:"configFk"`
-		PriceListFk                 int           `json:"priceListFk"`
-		IsPaCItem                   bool          `json:"isPaCItem"`
-		IsSignup                    bool          `json:"isSignup"`
-		Sku                         string        `json:"sku"`
-		PriceType                   string        `json:"priceType"`
-		CountryCode                 string        `json:"countryCode"`
-		CurrencyPK                  int           `json:"currencyPK"`
-		CurrencyCode                string        `json:"currencyCode"`
-		CurrencySymbol              string        `json:"currencySymbol"`
-		ExtraFee                    interface{}   `json:"extraFee"`
-		Discount                    int           `json:"discount"`
-		FormattedDiscount           string        `json:"formattedDiscount"`
-		BasePrice                   int           `json:"basePrice"`
-		FormattedBasePrice          string        `json:"formattedBasePrice"`
-		UnitPrice                   int           `json:"unitPrice"`
-		FormattedUnitPrice          string        `json:"formattedUnitPrice"`
-		RetailTaxablePrice          int           `json:"retailTaxablePrice"`
-		FormattedRetailTaxablePrice string        `json:"formattedRetailTaxablePrice"`
-		Cv                          int           `json:"cv"`
-		Sp                          int           `json:"sp"`
-		MaxLimit                    int           `json:"maxLimit"`
-		Points                      float64       `json:"points"`
-		IsShippable                 bool          `json:"isShippable"`
-		IsStarterKit                bool          `json:"isStarterKit"`
-		BrandName                   string        `json:"brandName"`
-		LineSubTotal                int           `json:"lineSubTotal"`
-		FormattedLineSubTotal       string        `json:"formattedLineSubTotal"`
-		LineTotal                   int           `json:"lineTotal"`
-		FormattedLineTotal          string        `json:"formattedLineTotal"`
-		OfferAffiliateProgram       bool          `json:"offerAffiliateProgram"`
-		IsVolumeBasedRSB            bool          `json:"isVolumeBasedRSB"`
-		OfferPreferredCust          bool          `json:"offerPreferredCust"`
-		OfferLoyaltyProgram         bool          `json:"offerLoyaltyProgram"`
-		ShowSDCheckbox              bool          `json:"showSDCheckbox"`
-		JoinMaxLifetimeLimitCatCode string        `json:"joinMaxLifetimeLimitCatCode"`
-		JoinMaxLifetimeLimit        int           `json:"joinMaxLifetimeLimit"`
-		ChildItems                  []interface{} `json:"childItems"`
-	} `json:"cartItems"`
+	FormattedAutoshipSubtotal string     `json:"formattedAutoshipSubtotal"`
+	CartItems                 []CartItem `json:"cartItems"`
 }
 
 type BillingAddress struct {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
@@ -91,4 +92,31 @@ func (m ProductModel) SaveProducts(products *[]ProductInformation) (int, error) 
 	}
 
 	return saved, nil
+}
+
+func (m ProductModel) GetByFk(productPk int64) (*ProductInformation, error) {
+	query := `
+        SELECT product_pk
+        FROM riman_products
+        WHERE product_pk = $1`
+
+	var pInformation ProductInformation
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	err := m.DB.QueryRowContext(ctx, query, productPk).Scan(
+		&pInformation.ProductPK,
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return nil, ErrRecordNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return &pInformation, nil
 }

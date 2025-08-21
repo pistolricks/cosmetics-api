@@ -83,14 +83,6 @@ func (app *application) chromeHomePageHandler(w http.ResponseWriter, r *http.Req
 
 	app.cookies = cookies
 
-	token := app.findCookieValue()
-	if token == nil {
-		app.invalidCredentialsResponse(w, r)
-		return
-	}
-	fmt.Println("TOKEN")
-	fmt.Println(token)
-
 	/* ADD SESSION HERE */
 
 	client, err := app.riman.Clients.GetByClientUserName(rimanRid)
@@ -104,8 +96,8 @@ func (app *application) chromeHomePageHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	cookie := app.findCookieValue()
-	if cookie == nil {
+	token := app.findCookieValue()
+	if token == nil {
 		app.invalidCredentialsResponse(w, r)
 		return
 	}
@@ -116,11 +108,17 @@ func (app *application) chromeHomePageHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	fmt.Println("TOKEN")
+	fmt.Println(token)
+
 	session, err := app.riman.Session.NewRimanSession(client.ID, 24*time.Hour, riman.ScopeAuthentication, *token, *cartKey, envelope{"cookies": cookies})
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
 	}
+
+	app.envars.Token = session.Plaintext
+	app.envars.CartKey = session.CartKey
 
 	fmt.Println("SESSION CLIENT ID")
 	fmt.Println(session.ClientID)

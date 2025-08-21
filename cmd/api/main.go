@@ -39,6 +39,7 @@ type Envars struct {
 	ShopifyKey     string
 	ShopifySecret  string
 	Token          string
+	CartKey        string
 }
 
 type ListOptions struct {
