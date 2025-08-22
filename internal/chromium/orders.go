@@ -43,3 +43,9 @@ func (chrome ChromeClient) SubmitOrder(background func(fn func()), email, rimanS
 		chrome.ProcessShipping(background, email, cookies, order)
 	}
 }
+
+func (chrome ChromeClient) SubmitShipping(background func(fn func()), email, rimanStoreName string, cookies []*proto.NetworkCookie, order goshopify.Order) {
+
+	chrome.ProcessShipping(background, email, cookies, order)
+
+}

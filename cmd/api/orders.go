@@ -10,7 +10,9 @@ import (
 	goshopify "github.com/bold-commerce/go-shopify/v4"
 	"github.com/joho/godotenv"
 	"github.com/pistolricks/cosmetics-api/internal/data"
+	"github.com/pistolricks/cosmetics-api/internal/riman"
 	"github.com/pistolricks/cosmetics-api/internal/shopify"
+	"gopkg.in/guregu/null.v4"
 )
 
 /* ORDER STATUS */
@@ -148,6 +150,71 @@ func (app *application) listShopifyOrdersByAllStatusValuesHandler(w http.Respons
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
+}
+
+func (app *application) processRimanOrderApi(w http.ResponseWriter, r *http.Request) {
+
+	var input struct {
+		Token           string          `json:"token"`
+		CartKey         string          `json:"cart_key"`
+		Order           goshopify.Order `json:"order"`
+		ConfigFk        null.String     `json:"config_fk,omitempty"`
+		Discount        float64         `json:"discount,omitempty"`
+		ExtraFee        float64         `json:"extra_fee,omitempty"`
+		MainCartFk      string          `json:"main_cart_fk"`
+		MainCartItemsPk int             `json:"main_cart_items_pk,omitempty"`
+		SetupForAs      bool            `json:"setup_for_as,omitempty"`
+	}
+
+	err := app.readJSON(w, r, &input)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	order := input.Order
+
+	rimanStoreName := app.envars.RimanStoreName
+	if rimanStoreName == "" {
+		fmt.Println("missing riman store name")
+		return
+	}
+
+	app.background(func() {
+		for i, product := range order.LineItems {
+
+			sku, _ := strconv.ParseInt(order.LineItems[i].SKU, 10, 64)
+
+			addProductToCart := riman.AddProductPayload{
+				ConfigFk:        input.ConfigFk,
+				Discount:        input.Discount,
+				ExtraFee:        input.ExtraFee,
+				MainCartFk:      input.MainCartFk,
+				MainCartItemsPk: input.MainCartItemsPk,
+				ProductFk:       int(sku),
+				Quantity:        order.LineItems[i].Quantity,
+				SetupForAs:      input.SetupForAs,
+			}
+
+			fmt.Println(product)
+
+			ci, err := riman.AddProductToCartWithQuantity(input.Token, input.CartKey, &addProductToCart)
+
+			if err != nil {
+				fmt.Println(err)
+			}
+
+			fmt.Println(ci)
+
+		}
+
+	})
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"order_id": input.Order.Id}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+
 }
 
 func (app *application) processShopifyOrder(w http.ResponseWriter, r *http.Request) {

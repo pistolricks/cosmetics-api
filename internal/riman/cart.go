@@ -27,7 +27,7 @@ func GetCart(token string, cartKey string) (*Cart, error) {
 		SetHeader("Accept", "application/json").
 		SetResult(&Cart{}).
 		SetError(&CartErrors{}).
-		Patch(cartUrl)
+		Get(cartUrl)
 
 	if err != nil {
 		return nil, err
@@ -50,7 +50,7 @@ func AddProductToCart(token string, cartKey string, addProductPayload *AddProduc
 	res, err := client.R().
 		SetHeader("Content-Type", "application/json").
 		SetAuthToken(token).
-		SetBody(map[string]any{
+		SetBody(Body{
 			"configFk":        addProductPayload.ConfigFk,
 			"discount":        addProductPayload.Discount,
 			"extraFee":        addProductPayload.ExtraFee,
@@ -69,9 +69,9 @@ func AddProductToCart(token string, cartKey string, addProductPayload *AddProduc
 	return cartResponse, err
 }
 
-func (m ClientModel) Patch(cartKey string, token string) (*Cart, error) {
+func PatchLocale(token string, cartKey string, mainFk int) (*Cart, error) {
 
-	cartUrl := fmt.Sprintf("https://cart-api.riman.com/api/v1/shopping/%s", "")
+	cartUrl := fmt.Sprintf("https://cart-api.riman.com/api/v1/shopping/%s", cartKey)
 
 	fmt.Println(cartUrl)
 
@@ -79,11 +79,42 @@ func (m ClientModel) Patch(cartKey string, token string) (*Cart, error) {
 	defer client.Close()
 
 	res, err := client.R().
-		SetAuthToken("").
+		SetAuthToken(token).
 		SetHeader("Accept", "application/json").
 		SetBody(&Body{
-			"CountryCode": "US",
-			"Culture":     "en-US",
+			"countryCode": "US",
+			"culture":     "en-US",
+			"mainFk":      mainFk,
+		}).
+		SetResult(&Cart{}).
+		SetError(&CartErrors{}).
+		Patch(cartUrl)
+
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println(res.String())
+	fmt.Println("string | cart")
+	fmt.Println(res.Result().(*Cart))
+
+	return res.Result().(*Cart), err
+}
+
+func Patch(token string, cartKey string) (*Cart, error) {
+
+	cartUrl := fmt.Sprintf("https://cart-api.riman.com/api/v1/shopping/%s", cartKey)
+
+	fmt.Println(cartUrl)
+
+	client := resty.New()
+	defer client.Close()
+
+	res, err := client.R().
+		SetAuthToken(token).
+		SetHeader("Accept", "application/json").
+		SetBody(&Body{
+			"shippingTypeFk": 1163,
 		}).
 		SetResult(&Cart{}).
 		SetError(&CartErrors{}).
@@ -115,4 +146,13 @@ func DeleteProductFromCart(token string, cartKey string, id string) error {
 	fmt.Println(err, res)
 
 	return err
+}
+
+func AddProductToCartWithQuantity(token string, cartKey string, payload *AddProductPayload) (*CartItem, error) {
+	ci, err := AddProductToCart(token, cartKey, payload)
+	if err != nil {
+		return ci, err
+	}
+
+	return ci, err
 }

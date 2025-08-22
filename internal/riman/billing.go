@@ -29,3 +29,7 @@ type State struct {
 	Name  string      `json:"name"`
 	Name2 interface{} `json:"-"`
 }
+
+func ValidateBilling() {
+
+}

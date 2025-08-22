@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	goshopify "github.com/bold-commerce/go-shopify/v4"
 	"github.com/pistolricks/cosmetics-api/internal/riman"
 	"gopkg.in/guregu/null.v4"
 )
@@ -18,7 +19,7 @@ func (app *application) getCartHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(app.riman.Session.CartKey)
 	fmt.Println(input.CartKey)
 
-	cart, err := app.riman.Clients.Patch(input.CartKey, input.Token)
+	cart, err := riman.GetCart(input.CartKey, input.Token)
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"cart": cart, "error": err}, nil)
 	if err != nil {
@@ -108,4 +109,22 @@ func (app *application) deleteCartProductHandler(w http.ResponseWriter, r *http.
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
+}
+
+func (app *application) updateShippingAddress(w http.ResponseWriter, r *http.Request) {
+
+	var input struct {
+		CartKey string          `json:"cart_key"`
+		Email   string          `json:"email"`
+		Order   goshopify.Order `json:"order"`
+	}
+
+	err := app.readJSON(w, r, &input)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	app.chromium.Chrome.ProcessShipment(input.CartKey, input.Email, input.Order)
+
 }
