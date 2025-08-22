@@ -16,6 +16,12 @@ func (app *application) getCartHandler(w http.ResponseWriter, r *http.Request) {
 		Token   string `json:"token"`
 	}
 
+	err := app.readJSON(w, r, &input)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
 	fmt.Println(app.riman.Session.CartKey)
 	fmt.Println(input.CartKey)
 

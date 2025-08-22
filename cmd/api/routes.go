@@ -27,7 +27,7 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodPost, "/v1/vendors/login", app.createRimanSessionHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/vendors/products", app.rimanApiListProductsHandler)
 	router.HandlerFunc(http.MethodPost, "/v1/vendors/products/save", app.saveRimanProductsHandler)
-	router.HandlerFunc(http.MethodGet, "/v1/vendors/carts", app.getCartHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/vendors/carts", app.getCartHandler)
 	router.HandlerFunc(http.MethodPost, "/v1/vendors/carts/products/update", app.updateCartHandler)
 	router.HandlerFunc(http.MethodDelete, "/v1/vendors/carts/products/delete", app.deleteCartProductHandler)
 
