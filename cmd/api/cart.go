@@ -125,6 +125,11 @@ func (app *application) updateShippingAddress(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	app.chromium.Chrome.ProcessShipment(input.CartKey, input.Email, input.Order)
+	app.chromium.Chrome.ProcessShipping(app.background, input.Email, app.cookies, input.Order)
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"shipment": true}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
 
 }

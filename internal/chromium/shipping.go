@@ -9,14 +9,6 @@ import (
 	"github.com/go-rod/rod/lib/proto"
 )
 
-func (chrome ChromeClient) ProcessShipment(cartKey string, email string, order goshopify.Order) {
-
-	checkoutUrl := fmt.Sprintf("https://mall.riman.com/checkout/shipping?cartKey=%s", cartKey)
-
-	chrome.InsertShippingInfo(email, checkoutUrl, order)
-
-}
-
 func (chrome ChromeClient) ProcessShipping(background func(fn func()), email string, cookies []*proto.NetworkCookie, order goshopify.Order) {
 
 	background(func() {
@@ -101,6 +93,7 @@ func (chrome ChromeClient) InsertShippingInfo(email string, checkoutUrl string, 
 
 	chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Tab).MustDo()
 
+	return
 	/* Need to add Province/State */
 	// chrome.Client.Page.MustElement("#state0").MustSelectAllText().MustInput(province)
 }
