@@ -16,7 +16,7 @@ type CartModel struct {
 	DB *sql.DB
 }
 
-func GetCart(token string, cartKey string) (*Cart, error) {
+func GetCart(cartKey string) (*Cart, error) {
 
 	cartUrl := fmt.Sprintf("https://cart-api.riman.com/api/v1/shopping/%s", cartKey)
 
@@ -36,6 +36,8 @@ func GetCart(token string, cartKey string) (*Cart, error) {
 	fmt.Println(res.String())
 	fmt.Println("string | cart")
 	fmt.Println(res.Result().(*Cart))
+
+	fmt.Println(err)
 
 	return res.Result().(*Cart), err
 }

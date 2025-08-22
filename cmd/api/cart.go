@@ -13,7 +13,6 @@ func (app *application) getCartHandler(w http.ResponseWriter, r *http.Request) {
 
 	var input struct {
 		CartKey string `json:"cart_key"`
-		Token   string `json:"token"`
 	}
 
 	err := app.readJSON(w, r, &input)
@@ -22,10 +21,10 @@ func (app *application) getCartHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(app.riman.Session.CartKey)
+	fmt.Println(&app.riman.Session.CartKey)
 	fmt.Println(input.CartKey)
 
-	cart, err := riman.GetCart(input.CartKey, input.Token)
+	cart, err := riman.GetCart(input.CartKey)
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"cart": cart, "error": err}, nil)
 	if err != nil {
