@@ -324,6 +324,8 @@ func (app *application) addressValidation(w http.ResponseWriter, r *http.Request
 
 	fmt.Println(address)
 
+	name := fmt.Sprintf("%s %s", address.FirstName, address.LastName)
+
 	postalAddress := postaladdress.PostalAddress{
 		RegionCode:         address.CountryCode,
 		PostalCode:         address.Zip,
@@ -331,6 +333,7 @@ func (app *application) addressValidation(w http.ResponseWriter, r *http.Request
 		Locality:           address.City,
 		Sublocality:        address.City,
 		AddressLines:       lines{address.Address1, address.Address2},
+		Recipients:         lines{name, address.Name},
 		Organization:       address.Company,
 	}
 

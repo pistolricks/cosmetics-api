@@ -4,24 +4,25 @@ import (
 	"fmt"
 	"strconv"
 
+	addressvalidation "cloud.google.com/go/maps/addressvalidation/apiv1"
 	goshopify "github.com/bold-commerce/go-shopify/v4"
 	"github.com/go-rod/rod/lib/proto"
 )
 
-func (chrome ChromeClient) ProcessOrders(background func(fn func()), email, rimanStoreName string, cookies []*proto.NetworkCookie, orders []goshopify.Order) {
+func (chrome ChromeClient) ProcessOrders(background func(fn func()), addressClient *addressvalidation.Client, email, rimanStoreName string, cookies []*proto.NetworkCookie, orders []goshopify.Order) {
 	orderCount := len(orders)
 
 	switch orderCount := orderCount; {
 	case orderCount == 1:
-		chrome.SubmitOrder(background, email, rimanStoreName, cookies, orders[0])
+		chrome.SubmitOrder(background, addressClient, email, rimanStoreName, cookies, orders[0])
 	case orderCount > 1:
 		for _, order := range orders {
-			chrome.SubmitOrder(background, email, rimanStoreName, cookies, order)
+			chrome.SubmitOrder(background, addressClient, email, rimanStoreName, cookies, order)
 		}
 	}
 }
 
-func (chrome ChromeClient) SubmitOrder(background func(fn func()), email, rimanStoreName string, cookies []*proto.NetworkCookie, order goshopify.Order) {
+func (chrome ChromeClient) SubmitOrder(background func(fn func()), addressClient *addressvalidation.Client, email, rimanStoreName string, cookies []*proto.NetworkCookie, order goshopify.Order) {
 
 	count := len(order.LineItems)
 
@@ -40,12 +41,12 @@ func (chrome ChromeClient) SubmitOrder(background func(fn func()), email, rimanS
 		println(i + 1)
 		println(count)
 
-		chrome.ProcessShipping(background, email, cookies, order)
+		chrome.ProcessShipping(background, addressClient, email, cookies, order)
 	}
 }
 
-func (chrome ChromeClient) SubmitShipping(background func(fn func()), email, rimanStoreName string, cookies []*proto.NetworkCookie, order goshopify.Order) {
+func (chrome ChromeClient) SubmitShipping(background func(fn func()), addressClient *addressvalidation.Client, email, rimanStoreName string, cookies []*proto.NetworkCookie, order goshopify.Order) {
 
-	chrome.ProcessShipping(background, email, cookies, order)
+	chrome.ProcessShipping(background, addressClient, email, cookies, order)
 
 }
