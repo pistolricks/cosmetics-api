@@ -133,9 +133,11 @@ func Patch(token string, cartKey string) (*Cart, error) {
 	return res.Result().(*Cart), err
 }
 
-func DeleteProductFromCart(token string, cartKey string, id string) error {
+func DeleteProductFromCart(token string, cartKey string, id string) (string, error) {
 
 	deleteProductUrl := fmt.Sprintf("https://cart-api.riman.com/api/v1/shopping/%s/items/%s", cartKey, id)
+
+	fmt.Println(deleteProductUrl)
 
 	client := resty.New()
 	defer client.Close()
@@ -147,7 +149,9 @@ func DeleteProductFromCart(token string, cartKey string, id string) error {
 
 	fmt.Println(err, res)
 
-	return err
+	var d = "Deleted"
+
+	return d, err
 }
 
 func AddProductToCartWithQuantity(token string, cartKey string, payload *AddProductPayload) (*CartItem, error) {

@@ -21,7 +21,7 @@ func (app *application) getCartHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(&app.riman.Session.CartKey)
+	fmt.Println(app.riman.Session.CartKey)
 	fmt.Println(input.CartKey)
 
 	cart, err := riman.GetCart(input.CartKey)
@@ -104,13 +104,13 @@ func (app *application) deleteCartProductHandler(w http.ResponseWriter, r *http.
 		return
 	}
 
-	err = riman.DeleteProductFromCart(input.Token, input.CartKey, input.Id)
+	s, err := riman.DeleteProductFromCart(input.Token, input.CartKey, input.Id)
 
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
 
-	err = app.writeJSON(w, http.StatusOK, envelope{"item": input.Id, "cart": input.CartKey, "deleted": true}, nil)
+	err = app.writeJSON(w, http.StatusOK, envelope{"is_deleted": s, "item": input.Id, "cart": input.CartKey, "deleted": true}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}

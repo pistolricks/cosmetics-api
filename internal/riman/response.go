@@ -232,6 +232,7 @@ type CartItem struct {
 	JoinMaxLifetimeLimit        int           `json:"joinMaxLifetimeLimit"`
 	ChildItems                  []interface{} `json:"childItems"`
 }
+
 type ProductInformation struct {
 	ProductPK                    int              `json:"productPK"`
 	ProductCode                  string           `json:"productCode"`
@@ -387,19 +388,19 @@ type Cart struct {
 	Phone                     string      `json:"phone"`
 	Email                     string      `json:"email"`
 	DateModified              string      `json:"dateModified"`
-	SubTotal                  int         `json:"subTotal"`
+	SubTotal                  float64     `json:"subTotal"`
 	FormattedSubTotal         string      `json:"formattedSubTotal"`
-	Tax                       int         `json:"tax"`
+	Tax                       float64     `json:"tax"`
 	FormattedTax              string      `json:"formattedTax"`
-	Shipping                  int         `json:"shipping"`
+	Shipping                  float64     `json:"shipping"`
 	FormattedShipping         string      `json:"formattedShipping"`
-	Discount                  int         `json:"discount"`
+	Discount                  float64     `json:"discount"`
 	FormattedDiscount         string      `json:"formattedDiscount"`
-	Total                     int         `json:"total"`
+	Total                     float64     `json:"total"`
 	FormattedTotal            string      `json:"formattedTotal"`
 	PointsTotal               float64     `json:"pointsTotal"`
 	ShipSignatureRequired     bool        `json:"shipSignatureRequired"`
-	ShipSignatureFee          int         `json:"shipSignatureFee"`
+	ShipSignatureFee          float64     `json:"shipSignatureFee"`
 	CurrencyFK                int         `json:"currencyFK"`
 	CurrencyCode              string      `json:"currencyCode"`
 	MainDiscountCode          string      `json:"mainDiscountCode"`
