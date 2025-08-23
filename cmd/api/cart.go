@@ -11,20 +11,10 @@ import (
 
 func (app *application) getCartHandler(w http.ResponseWriter, r *http.Request) {
 
-	var input struct {
-		CartKey string `json:"cart_key"`
-	}
+	id := app.readStringParam("cart_key", r)
+	fmt.Println(id)
 
-	err := app.readJSON(w, r, &input)
-	if err != nil {
-		app.badRequestResponse(w, r, err)
-		return
-	}
-
-	fmt.Println(app.riman.Session.CartKey)
-	fmt.Println(input.CartKey)
-
-	cart, err := riman.GetCart(input.CartKey)
+	cart, err := riman.GetCart(id)
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"cart": cart, "error": err}, nil)
 	if err != nil {

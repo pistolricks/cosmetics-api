@@ -14,6 +14,9 @@ import (
 	"sync"
 	"time"
 
+	addressvalidation "cloud.google.com/go/maps/addressvalidation/apiv1"
+	"google.golang.org/api/option"
+
 	"github.com/go-rod/rod"
 	"github.com/go-rod/rod/lib/proto"
 	"github.com/joho/godotenv"
@@ -117,21 +120,22 @@ func (t Transport) RoundTrip(request *http.Request) (*http.Response, error) {
 }
 
 type application struct {
-	config    config
-	logger    *slog.Logger
-	envars    *Envars
-	page      *rod.Page
-	browser   *rod.Browser
-	cookies   []*proto.NetworkCookie
-	models    data.Models
-	riman     riman.Riman
-	services  services.Services
-	shopify   shopify.ShopClient
-	chromium  chromium.ChromeConnector
-	v2        services.ClientApi
-	transport *Transport
-	mailer    mailer.Mailer
-	wg        sync.WaitGroup
+	config        config
+	logger        *slog.Logger
+	envars        *Envars
+	page          *rod.Page
+	browser       *rod.Browser
+	cookies       []*proto.NetworkCookie
+	models        data.Models
+	riman         riman.Riman
+	services      services.Services
+	shopify       shopify.ShopClient
+	chromium      chromium.ChromeConnector
+	v2            services.ClientApi
+	addressClient *addressvalidation.Client
+	transport     *Transport
+	mailer        mailer.Mailer
+	wg            sync.WaitGroup
 }
 
 func main() {
@@ -272,21 +276,34 @@ func main() {
 
 	page := chromium.ChromePage(browser)
 
-	web := chromium.ChromeConfig{browser, page}
+	web := chromium.ChromeConfig{Browser: browser, Page: page}
 
 	arr := services.NewClientWithToken(os.Getenv("SHOPIFY_TOKEN"), os.Getenv("STORE_NAME"))
 
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := addressvalidation.NewClient(ctx, option.WithAPIKey(os.Getenv("GMAPS_KEY")))
+	if err != nil {
+		logger.Error(err.Error())
+	}
+	defer c.Close()
+
 	app := &application{
-		config:   cfg,
-		logger:   logger,
-		envars:   vars,
-		models:   data.NewModels(db),
-		riman:    riman.NewRiman(db),
-		services: services.Services{Client: arr},
-		shopify:  shopifyClient,
-		chromium: chromium.NewChromeConnector(&web),
-		v2:       v2.V2(db, graphql.Client{}),
-		mailer:   mailer.New(cfg.smtp.host, cfg.smtp.port, cfg.smtp.username, cfg.smtp.password, cfg.smtp.sender),
+		config:        cfg,
+		logger:        logger,
+		envars:        vars,
+		models:        data.NewModels(db),
+		riman:         riman.NewRiman(db),
+		services:      services.Services{Client: arr},
+		shopify:       shopifyClient,
+		chromium:      chromium.NewChromeConnector(&web),
+		v2:            v2.V2(db, graphql.Client{}),
+		mailer:        mailer.New(cfg.smtp.host, cfg.smtp.port, cfg.smtp.username, cfg.smtp.password, cfg.smtp.sender),
+		addressClient: c,
 	}
 
 	err = app.serve()

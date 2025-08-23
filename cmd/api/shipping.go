@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -9,7 +10,10 @@ import (
 	"os"
 	"strings"
 
+	"cloud.google.com/go/maps/addressvalidation/apiv1/addressvalidationpb"
+	goshopify "github.com/bold-commerce/go-shopify/v4"
 	"github.com/pistolricks/cosmetics-api/internal/data"
+	"google.golang.org/genproto/googleapis/type/postaladdress"
 )
 
 type RimanOrder struct {
@@ -264,6 +268,81 @@ func (app *application) shippingHandler(w http.ResponseWriter, r *http.Request) 
 	bodyString := string(resBody)
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"body": bodyString}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+
+}
+
+func (app *application) addressValidation(w http.ResponseWriter, r *http.Request) {
+
+	var input struct {
+		Id           uint64  `json:"id,omitempty"`
+		Address1     string  `json:"address1,omitempty"`
+		Address2     string  `json:"address2,omitempty"`
+		City         string  `json:"city,omitempty"`
+		Company      string  `json:"company,omitempty"`
+		Country      string  `json:"country,omitempty"`
+		CountryCode  string  `json:"country_code,omitempty"`
+		FirstName    string  `json:"first_name,omitempty"`
+		LastName     string  `json:"last_name,omitempty"`
+		Latitude     float64 `json:"latitude,omitempty"`
+		Longitude    float64 `json:"longitude,omitempty"`
+		Name         string  `json:"name,omitempty"`
+		Phone        string  `json:"phone,omitempty"`
+		Province     string  `json:"province,omitempty"`
+		ProvinceCode string  `json:"province_code,omitempty"`
+		Zip          string  `json:"zip,omitempty"`
+	}
+
+	err := app.readJSON(w, r, &input)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	type lines []string
+
+	address := goshopify.Address{
+		Id:           input.Id,
+		Address1:     input.Address1,
+		Address2:     input.Address2,
+		City:         input.City,
+		Company:      input.Company,
+		Country:      input.Country,
+		CountryCode:  input.CountryCode,
+		FirstName:    input.FirstName,
+		LastName:     input.LastName,
+		Latitude:     input.Latitude,
+		Longitude:    input.Longitude,
+		Name:         input.Name,
+		Phone:        input.Phone,
+		Province:     input.Province,
+		ProvinceCode: input.ProvinceCode,
+		Zip:          input.Zip,
+	}
+
+	fmt.Println(address)
+
+	postalAddress := postaladdress.PostalAddress{
+		RegionCode:         address.CountryCode,
+		PostalCode:         address.Zip,
+		AdministrativeArea: address.Province,
+		Locality:           address.City,
+		Sublocality:        address.City,
+		AddressLines:       lines{address.Address1, address.Address2},
+		Organization:       address.Company,
+	}
+
+	req := &addressvalidationpb.ValidateAddressRequest{Address: &postalAddress}
+	resp, err := app.addressClient.ValidateAddress(context.Background(), req)
+	if err != nil {
+		fmt.Printf("client: could not create request: %s\n", err)
+	}
+
+	fmt.Println(resp)
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"address": resp, "errors": err}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
