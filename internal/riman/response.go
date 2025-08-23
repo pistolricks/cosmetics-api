@@ -380,7 +380,7 @@ type Cart struct {
 	ReferrerIsCorporate       bool        `json:"referrerIsCorporate"`
 	CustomerReferralId        string      `json:"customerReferralId"`
 	MainCreditCardsFK         interface{} `json:"mainCreditCardsFK"`
-	MainOrdersFK              interface{} `json:"mainOrdersFK"`
+	MainOrdersFK              uint64      `json:"mainOrdersFK"`
 	ShippingTypeFK            int         `json:"shippingTypeFK"`
 	CartStatus                interface{} `json:"cartStatus"`
 	FirstName                 string      `json:"firstName"`

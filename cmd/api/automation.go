@@ -10,7 +10,7 @@ func (app *application) inputShippingHandler(w http.ResponseWriter, r *http.Requ
 
 func (app *application) inputBillingHandler(w http.ResponseWriter, r *http.Request) {
 
-	isFinished := app.chromium.Chrome.InsertBillingInfo(app.envars.Username)
+	isFinished := app.chromium.Chrome.InsertBillingInfo(app.addressClient, app.envars.Username)
 
 	err := app.writeJSON(w, http.StatusOK, envelope{"isFinished": isFinished}, nil)
 	if err != nil {

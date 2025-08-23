@@ -120,9 +120,19 @@ func (app *application) updateShippingAddress(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	app.chromium.Chrome.ProcessShipping(app.background, app.addressClient, input.Email, app.cookies, input.Order)
+	isDone := app.chromium.Chrome.ProcessShipping(app.background, app.addressClient, input.Email, app.cookies, input.Order)
 
-	err = app.writeJSON(w, http.StatusOK, envelope{"shipment": true}, nil)
+	fmt.Println(isDone)
+
+	res, err := riman.GetCart(input.CartKey)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	fmt.Println(res.MainOrdersFK)
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"rid": res.MainOrdersFK, "order_id": input.Order.Id, "shipment": true}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
