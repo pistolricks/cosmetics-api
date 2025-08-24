@@ -1,9 +1,11 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"strconv"
+	"time"
 
 	iv2 "github.com/pistolricks/cosmetics-api/internal/v2"
 	"github.com/pistolricks/cosmetics-api/internal/validator"
@@ -13,11 +15,14 @@ import (
 // GET /v2/platform/orders
 // Query params: query, first, last, before, after, reverse
 func (app *application) shopifyV2ListOrdersHandler(w http.ResponseWriter, r *http.Request) {
+	// Ensure long-running GraphQL requests don't stall the server/client
+	ctx, cancel := context.WithTimeout(r.Context(), 15*time.Second)
+	defer cancel()
 	qs := r.URL.Query()
 	v := validator.New()
 
 	query := app.readString(qs, "query", "")
-	first := app.readInt(qs, "first", 25, v)
+	first := app.readInt(qs, "first", 10, v)
 	last := app.readInt(qs, "last", 0, v)
 	before := app.readString(qs, "before", "")
 	after := app.readString(qs, "after", "")
@@ -30,7 +35,7 @@ func (app *application) shopifyV2ListOrdersHandler(w http.ResponseWriter, r *htt
 	}
 
 	svc := &iv2.OrderServiceOp{Client: &app.v2}
-	orders, firstCursor, lastCursor, err := svc.ListAfterCursor(r.Context(), iv2.ListOptions{
+	orders, firstCursor, lastCursor, err := svc.ListAfterCursor(ctx, iv2.ListOptions{
 		Query:   query,
 		First:   first,
 		Last:    last,
@@ -60,6 +65,8 @@ func (app *application) shopifyV2ListOrdersHandler(w http.ResponseWriter, r *htt
 // POST /v2/platform/fulfillments
 // Body: { "fulfillment": model.FulfillmentV2Input }
 func (app *application) shopifyV2CreateFulfillmentHandler(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(r.Context(), 15*time.Second)
+	defer cancel()
 	var input struct {
 		Fulfillment model.FulfillmentV2Input `json:"fulfillment"`
 	}
@@ -69,7 +76,7 @@ func (app *application) shopifyV2CreateFulfillmentHandler(w http.ResponseWriter,
 	}
 
 	svc := &iv2.FulfillmentServiceOp{Client: &app.v2}
-	if err := svc.Create(r.Context(), input.Fulfillment); err != nil {
+	if err := svc.Create(ctx, input.Fulfillment); err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
 	}
@@ -79,6 +86,8 @@ func (app *application) shopifyV2CreateFulfillmentHandler(w http.ResponseWriter,
 
 // GET /v2/platform/locations/:id
 func (app *application) shopifyV2GetLocationHandler(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(r.Context(), 15*time.Second)
+	defer cancel()
 	id := app.readStringParam("id", r)
 	if id == "" {
 		app.badRequestResponse(w, r, errors.New("invalid id parameter"))
@@ -86,7 +95,7 @@ func (app *application) shopifyV2GetLocationHandler(w http.ResponseWriter, r *ht
 	}
 
 	svc := &iv2.LocationV2{Client: &app.v2}
-	loc, err := svc.Get(r.Context(), id)
+	loc, err := svc.Get(ctx, id)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
@@ -96,11 +105,13 @@ func (app *application) shopifyV2GetLocationHandler(w http.ResponseWriter, r *ht
 
 // GET /v2/platform/shop/metafields?namespace=...
 func (app *application) shopifyV2ListShopMetafieldsHandler(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(r.Context(), 15*time.Second)
+	defer cancel()
 	namespace := r.URL.Query().Get("namespace")
 	svc := &iv2.MetafieldServiceOp{Client: &app.v2}
 
 	if namespace != "" {
-		items, err := svc.ListShopMetafieldsByNamespace(r.Context(), namespace)
+		items, err := svc.ListShopMetafieldsByNamespace(ctx, namespace)
 		if err != nil {
 			app.serverErrorResponse(w, r, err)
 			return
@@ -109,7 +120,7 @@ func (app *application) shopifyV2ListShopMetafieldsHandler(w http.ResponseWriter
 		return
 	}
 
-	items, err := svc.ListAllShopMetafields(r.Context())
+	items, err := svc.ListAllShopMetafields(ctx)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return

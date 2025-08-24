@@ -103,7 +103,11 @@ func (c ClientApi) Mutate(ctx context.Context, m interface{}, variables map[stri
 				wait := CalculateWaitTime(r.Extensions)
 				if wait > 0 {
 					retries++
-					time.Sleep(wait)
+					select {
+					case <-time.After(wait):
+					case <-ctx.Done():
+						return ctx.Err()
+					}
 					continue
 				}
 			}
@@ -132,7 +136,11 @@ func (c ClientApi) Query(ctx context.Context, q interface{}, variables map[strin
 				wait := CalculateWaitTime(r.Extensions)
 				if wait > 0 {
 					retries++
-					time.Sleep(wait)
+					select {
+					case <-time.After(wait):
+					case <-ctx.Done():
+						return fmt.Errorf("after %v tries: %w", retries, ctx.Err())
+					}
 					continue
 				}
 			}
@@ -161,7 +169,11 @@ func (c ClientApi) QueryString(ctx context.Context, q string, variables map[stri
 				wait := CalculateWaitTime(r.Extensions)
 				if wait > 0 {
 					retries++
-					time.Sleep(wait)
+					select {
+					case <-time.After(wait):
+					case <-ctx.Done():
+						return fmt.Errorf("after %v tries: %w", retries, ctx.Err())
+					}
 					continue
 				}
 			}

@@ -131,7 +131,11 @@ func (s *BulkV2) WaitForCurrentBulkQuery(ctx context.Context, interval time.Dura
 
 	for q.Status == model.BulkOperationStatusCreated || q.Status == model.BulkOperationStatusRunning || q.Status == model.BulkOperationStatusCanceling {
 		log.Debugf("Bulk operation is still %s...", q.Status)
-		time.Sleep(interval)
+		select {
+		case <-time.After(interval):
+		case <-ctx.Done():
+			return q, ctx.Err()
+		}
 
 		q, err = s.GetCurrentBulkQuery(ctx)
 		if err != nil {
@@ -172,6 +176,11 @@ func (s *BulkV2) CancelRunningBulkQuery(ctx context.Context) error {
 		}
 		for q.Status == model.BulkOperationStatusCreated || q.Status == model.BulkOperationStatusRunning || q.Status == model.BulkOperationStatusCanceling {
 			log.Tracef("Bulk operation still %s...", q.Status)
+			select {
+			case <-time.After(500 * time.Millisecond):
+			case <-ctx.Done():
+				return ctx.Err()
+			}
 			q, err = s.GetCurrentBulkQuery(ctx)
 			if err != nil {
 				return fmt.Errorf("get current bulk query: %w", err)

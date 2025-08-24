@@ -292,6 +292,13 @@ func main() {
 	}
 	defer c.Close()
 
+	transport := &Transport{
+		accessToken:  os.Getenv("SHOPIFY_TOKEN"),
+		apiKey:       os.Getenv("SHOPIFY_KEY"),
+		apiBasePath:  "admin/api",
+		roundTripper: nil,
+	}
+
 	app := &application{
 		config:        cfg,
 		logger:        logger,
@@ -302,6 +309,7 @@ func main() {
 		shopify:       shopifyClient,
 		chromium:      chromium.NewChromeConnector(&web),
 		v2:            v2.V2(db, graphql.Client{}),
+		transport:     transport,
 		mailer:        mailer.New(cfg.smtp.host, cfg.smtp.port, cfg.smtp.username, cfg.smtp.password, cfg.smtp.sender),
 		addressClient: c,
 	}
