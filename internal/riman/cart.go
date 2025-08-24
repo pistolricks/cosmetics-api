@@ -10,7 +10,7 @@ import (
 type CartErrors struct {
 	Error string `json:"error"`
 }
-type Body map[any]any
+type Body map[string]any
 
 type CartModel struct {
 	DB *sql.DB

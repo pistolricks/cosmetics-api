@@ -51,7 +51,7 @@ func (chrome ChromeClient) ProcessShipping(background func(fn func()), addressCl
 	return true
 }
 
-func (chrome ChromeClient) InsertShippingInfo(addressClient *addressvalidation.Client, email string, checkoutUrl string, order goshopify.Order) {
+func (chrome ChromeClient) InsertShippingInfo(addressClient *addressvalidation.Client, email string, checkoutUrl string, order goshopify.Order) bool {
 
 	chrome.Client.Page.MustNavigate(checkoutUrl)
 
@@ -217,7 +217,7 @@ func (chrome ChromeClient) InsertShippingInfo(addressClient *addressvalidation.C
 		chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Enter).MustDo()
 	}
 
-	return
+	return true
 	/* Need to add Province/State */
 	// chrome.Client.Page.MustElement("#state0").MustSelectAllText().MustInput(province)
 }

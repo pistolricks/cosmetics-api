@@ -4,8 +4,6 @@ cloud.google.com/go/auth/oauth2adapt v0.2.8 h1:keo8NaayQZ6wimpNSmW5OPc283g65QNIi
 cloud.google.com/go/auth/oauth2adapt v0.2.8/go.mod h1:XQ9y31RkqZCcwJWNSx2Xvric3RrU88hAYYbjDWYDL+c=
 cloud.google.com/go/compute/metadata v0.7.0 h1:PBWF+iiAerVNe8UCHxdOt6eHLVc3ydFeOCw78U8ytSU=
 cloud.google.com/go/compute/metadata v0.7.0/go.mod h1:j5MvL9PprKL39t166CoB1uVHfQMs4tFQZZcKwksXUjo=
-cloud.google.com/go/language v1.14.5 h1:BVJ/POtlnJ55LElvnQY19UOxpMVtHoHHkFJW2uHJsVU=
-cloud.google.com/go/language v1.14.5/go.mod h1:nl2cyAVjcBct1Hk73tzxuKebk0t2eULFCaruhetdZIA=
 cloud.google.com/go/maps v1.23.0 h1:NGQM1vBXHZ7SgrlJ5q+KEoSw1B9pgYiFTNfuPa+2wOQ=
 cloud.google.com/go/maps v1.23.0/go.mod h1:8tjxLplMV7FEoR9FIwqoY7siDnaOdE7FBWnjaXK/xts=
 github.com/bold-commerce/go-shopify/v4 v4.7.0 h1:UlP830+MyskJ1TvHInEK/jHtyYrcW3Vq0wRzUAoAFT4=

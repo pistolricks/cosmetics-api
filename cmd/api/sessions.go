@@ -27,7 +27,7 @@ func (app *application) createRimanSessionHandler(w http.ResponseWriter, r *http
 
 	v := validator.New()
 
-	data.ValidateEmail(v, input.UserName)
+	data.ValidateUsername(v, input.UserName)
 	data.ValidatePasswordPlaintext(v, input.Password)
 
 	if !v.Valid() {

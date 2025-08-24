@@ -178,7 +178,7 @@ func (m SessionModel) Login(userName string, password string, token string) (*Lo
 
 	res, err := client.R().
 		SetHeader("Accept", "application/json").
-		SetAuthToken(token).
+		//	SetAuthToken(token).
 		SetBody(ClientCredentials{
 			UserName: userName,
 			Password: password,

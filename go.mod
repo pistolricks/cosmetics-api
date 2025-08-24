@@ -11,6 +11,7 @@ require (
 	github.com/json-iterator/go v1.1.12
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/lib/pq v1.10.9
+	github.com/nyaruka/phonenumbers v1.6.5
 	github.com/r0busta/graphql v1.2.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cast v1.5.1
@@ -20,6 +21,8 @@ require (
 	golang.org/x/crypto v0.41.0
 	golang.org/x/net v0.43.0
 	golang.org/x/time v0.12.0
+	google.golang.org/api v0.246.0
+	google.golang.org/genproto v0.0.0-20250603155806-513f23925822
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gopkg.in/guregu/null.v4 v4.0.0
 	resty.dev/v3 v3.0.0-beta.3
@@ -29,7 +32,6 @@ require (
 	cloud.google.com/go/auth v0.16.3 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
 	cloud.google.com/go/compute/metadata v0.7.0 // indirect
-	cloud.google.com/go/language v1.14.5 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
@@ -41,7 +43,6 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
-	github.com/nyaruka/phonenumbers v1.6.5 // indirect
 	github.com/shopspring/decimal v0.0.0-20200105231215-408a2507e114 // indirect
 	github.com/thoas/go-funk v0.9.3 // indirect
 	github.com/ysmood/fetchup v0.2.3 // indirect
@@ -60,8 +61,6 @@ require (
 	golang.org/x/sync v0.16.0 // indirect
 	golang.org/x/sys v0.35.0 // indirect
 	golang.org/x/text v0.28.0 // indirect
-	google.golang.org/api v0.246.0 // indirect
-	google.golang.org/genproto v0.0.0-20250603155806-513f23925822 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20250804133106-a7a43d27e69b // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250804133106-a7a43d27e69b // indirect
 	google.golang.org/grpc v1.74.2 // indirect

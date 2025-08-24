@@ -34,8 +34,8 @@ func (chrome ChromeClient) ChromeLogin(loginUrl string, rimanStoreName string, u
 	case strings.Contains(url, "https://myoffice-1.riman.com/login"):
 		fmt.Println("office login")
 
-		client.Page.MustElement("#username").MustSelectAllText().MustInput(username)
-		client.Page.MustElement("#password").MustSelectAllText().MustInput(password)
+		client.Page.MustElement("#username").MustSelectAllText().MustInput("WeKBeauty")
+		client.Page.MustElement("#password").MustSelectAllText().MustInput("Colin2015!")
 		client.Page.MustElement("#loginBtn").MustClick()
 
 	case strings.Contains(url, officeUrl):
