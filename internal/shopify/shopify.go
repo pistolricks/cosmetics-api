@@ -2,6 +2,7 @@ package shopify
 
 import (
 	"errors"
+	"fmt"
 	"os"
 
 	goshopify "github.com/bold-commerce/go-shopify/v4"
@@ -44,7 +45,7 @@ func ShopifyV1() ShopConfig {
 
 	client, err := goshopify.NewClient(app, os.Getenv("STORE_NAME"), os.Getenv("SHOPIFY_TOKEN"))
 	if err != nil {
-		err.Error()
+		fmt.Println(err.Error())
 		os.Exit(1)
 	}
 
