@@ -4,9 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/pistolricks/cosmetics-api/internal/services"
+	"github.com/vinhluan/go-shopify-graphql"
 	"github.com/vinhluan/go-shopify-graphql/model"
 )
 
@@ -395,4 +397,19 @@ func (s *ProductV2) VariantsBulkReorder(ctx context.Context, id string, input []
 	}
 
 	return nil
+}
+func clientWithToken() *shopify.Client {
+	return shopify.NewClientWithToken(os.Getenv("SHOPIFY_TOKEN"), os.Getenv("STORE_NAME"))
+}
+func Products() ([]*model.Product, error) {
+	// Get products
+	products, err := clientWithToken().Product.List(context.Background(), "")
+	if err != nil {
+		panic(err)
+	}
+
+	// Print out the result
+
+	return products, err
+
 }

@@ -4,12 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"context"
-
 	goshopify "github.com/bold-commerce/go-shopify/v4"
 	"github.com/pistolricks/cosmetics-api/internal/shopify"
-
-	graphify "github.com/vinhluan/go-shopify-graphql"
+	v2 "github.com/pistolricks/cosmetics-api/internal/v2"
 )
 
 func (app *application) rimanApiListProductsHandler(w http.ResponseWriter, r *http.Request) {
@@ -68,15 +65,13 @@ func (app *application) shopifyApiListProductsHandler(w http.ResponseWriter, r *
 	}
 }
 
-func (app *application) products(client *graphify.Client) {
+func (app *application) productsHandler(w http.ResponseWriter, r *http.Request) {
 	// Get products
-	products, err := client.Product.List(context.Background(), "")
-	if err != nil {
-		panic(err)
-	}
 
-	// Print out the result
-	for _, p := range products {
-		fmt.Println(p.Title)
+	products, err := v2.Products()
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"products": products, "errors": err}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
 	}
 }
