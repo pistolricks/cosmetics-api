@@ -25,9 +25,10 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/platform/orders/all", app.listAllShopifyOrders)
 
 	// v2 GraphQL endpoints
-	router.HandlerFunc(http.MethodGet, "/v2/platform/products", app.productsHandler)
+	//router.HandlerFunc(http.MethodGet, "/v2/platform/products", app.productsHandler)
 	router.HandlerFunc(http.MethodGet, "/v2/platform/orders", app.shopifyV2ListOrdersHandler)
 	router.HandlerFunc(http.MethodPost, "/v2/platform/fulfillments", app.shopifyV2CreateFulfillmentHandler)
+	router.HandlerFunc(http.MethodPost, "/v2/platform/fulfillments/tracking", app.shopifyV2FulfillmentTrackingUpdateHandler)
 	router.HandlerFunc(http.MethodGet, "/v2/platform/locations/:id", app.shopifyV2GetLocationHandler)
 	router.HandlerFunc(http.MethodGet, "/v2/platform/shop/metafields", app.shopifyV2ListShopMetafieldsHandler)
 

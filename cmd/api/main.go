@@ -134,6 +134,7 @@ type application struct {
 	v2            services.ClientApi
 	addressClient *addressvalidation.Client
 	transport     *Transport
+	graphify      *services.ClientApi
 	mailer        mailer.Mailer
 	wg            sync.WaitGroup
 }
@@ -299,6 +300,8 @@ func main() {
 		roundTripper: nil,
 	}
 
+	graphifyClient := services.NewClient(os.Getenv("STORE_NAME"), services.WithToken(os.Getenv("SHOPIFY_TOKEN")), services.WithVersion("2025-07"))
+
 	app := &application{
 		config:        cfg,
 		logger:        logger,
@@ -309,6 +312,7 @@ func main() {
 		shopify:       shopifyClient,
 		chromium:      chromium.NewChromeConnector(&web),
 		v2:            v2.V2(db, graphql.Client{}),
+		graphify:      graphifyClient,
 		transport:     transport,
 		mailer:        mailer.New(cfg.smtp.host, cfg.smtp.port, cfg.smtp.username, cfg.smtp.password, cfg.smtp.sender),
 		addressClient: c,

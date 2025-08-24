@@ -6,7 +6,6 @@ import (
 
 	goshopify "github.com/bold-commerce/go-shopify/v4"
 	"github.com/pistolricks/cosmetics-api/internal/shopify"
-	v2 "github.com/pistolricks/cosmetics-api/internal/v2"
 )
 
 func (app *application) rimanApiListProductsHandler(w http.ResponseWriter, r *http.Request) {
@@ -60,17 +59,6 @@ func (app *application) shopifyApiListProductsHandler(w http.ResponseWriter, r *
 	}
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"products": products, "count": count, "errors": err}, nil)
-	if err != nil {
-		app.serverErrorResponse(w, r, err)
-	}
-}
-
-func (app *application) productsHandler(w http.ResponseWriter, r *http.Request) {
-	// Get products
-
-	products, err := v2.Products()
-
-	err = app.writeJSON(w, http.StatusOK, envelope{"products": products, "errors": err}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}

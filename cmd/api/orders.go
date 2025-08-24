@@ -400,13 +400,13 @@ func (app *application) listShopifyOrders(w http.ResponseWriter, r *http.Request
 
 func (app *application) listRimanOrders(w http.ResponseWriter, r *http.Request) {
 
-	orderResponse, err := app.riman.Orders.GetOrders(app.envars.Username, app.envars.Token, app.cookies)
+	res, err := app.riman.Orders.GetOrders(app.envars.Username, app.envars.Token, app.cookies)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
 
-	orders := orderResponse.Orders
-	count := orderResponse.TotalCount
+	orders := res.Orders
+	count := res.TotalCount
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"orders": orders, "count": count}, nil)
 	if err != nil {

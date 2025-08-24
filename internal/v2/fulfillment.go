@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/pistolricks/cosmetics-api/internal/services"
+	"github.com/vinhluan/go-graphql-client"
 	"github.com/vinhluan/go-shopify-graphql/model"
 )
 
@@ -39,6 +40,32 @@ func (s *FulfillmentServiceOp) Create(ctx context.Context, fulfillment model.Ful
 
 	if len(m.FulfillmentCreateV2Result.UserErrors) > 0 {
 		return fmt.Errorf("UserErrors: %+v", m.FulfillmentCreateV2Result.UserErrors)
+	}
+
+	return nil
+}
+
+type mutationFulfillmentTrackingInfoUpdate struct {
+	FulfillmentTrackingInfoUpdateResult struct {
+		UserErrors []model.UserError `json:"userErrors,omitempty"`
+	} `graphql:"fulfillmentTrackingInfoUpdate(fulfillmentId: $fulfillmentId, trackingInfoInput: $trackingInfoInput, notifyCustomer: $notifyCustomer)" json:"fulfillmentTrackingInfoUpdate"`
+}
+
+func (s *FulfillmentServiceOp) FulfillmentTrackingUpdate(ctx context.Context, fulfillmentId string, trackingInfoInput model.FulfillmentTrackingInput, notifyCustomer graphql.Boolean) error {
+	m := mutationFulfillmentTrackingInfoUpdate{}
+
+	vars := map[string]interface{}{
+		"fulfillmentId":     fulfillmentId,
+		"trackingInfoInput": trackingInfoInput,
+		"notifyCustomer":    notifyCustomer,
+	}
+	err := s.Client.Mutate(ctx, &m, vars)
+	if err != nil {
+		return fmt.Errorf("mutation: %w", err)
+	}
+
+	if len(m.FulfillmentTrackingInfoUpdateResult.UserErrors) > 0 {
+		return fmt.Errorf("UserErrors: %+v", m.FulfillmentTrackingInfoUpdateResult.UserErrors)
 	}
 
 	return nil

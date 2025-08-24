@@ -9,11 +9,10 @@ import (
 
 	iv2 "github.com/pistolricks/cosmetics-api/internal/v2"
 	"github.com/pistolricks/cosmetics-api/internal/validator"
+	"github.com/vinhluan/go-graphql-client"
 	"github.com/vinhluan/go-shopify-graphql/model"
 )
 
-// GET /v2/platform/orders
-// Query params: query, first, last, before, after, reverse
 func (app *application) shopifyV2ListOrdersHandler(w http.ResponseWriter, r *http.Request) {
 	// Ensure long-running GraphQL requests don't stall the server/client
 	ctx, cancel := context.WithTimeout(r.Context(), 15*time.Second)
@@ -34,7 +33,50 @@ func (app *application) shopifyV2ListOrdersHandler(w http.ResponseWriter, r *htt
 		return
 	}
 
-	svc := &iv2.OrderServiceOp{Client: &app.v2}
+	svc := &iv2.OrderServiceOp{Client: app.graphify}
+	orders, err := svc.List(ctx, iv2.ListOptions{
+		Query:   query,
+		First:   first,
+		Last:    last,
+		After:   after,
+		Before:  before,
+		Reverse: reverse,
+	})
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	resp := envelope{"orders": orders}
+	if err := app.writeJSON(w, http.StatusOK, resp, nil); err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+}
+
+// GET /v2/platform/orders
+// Query params: query, first, last, before, after, reverse
+func (app *application) shopifyV2ListOrdersAfterCursorHandler(w http.ResponseWriter, r *http.Request) {
+	// Ensure long-running GraphQL requests don't stall the server/client
+	ctx, cancel := context.WithTimeout(r.Context(), 15*time.Second)
+	defer cancel()
+	qs := r.URL.Query()
+	v := validator.New()
+
+	query := app.readString(qs, "query", "")
+	first := app.readInt(qs, "first", 10, v)
+	last := app.readInt(qs, "last", 0, v)
+	before := app.readString(qs, "before", "")
+	after := app.readString(qs, "after", "")
+	reverseStr := app.readString(qs, "reverse", "false")
+	reverse, _ := strconv.ParseBool(reverseStr)
+
+	if !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	svc := &iv2.OrderServiceOp{Client: app.graphify}
 	orders, firstCursor, lastCursor, err := svc.ListAfterCursor(ctx, iv2.ListOptions{
 		Query:   query,
 		First:   first,
@@ -75,13 +117,35 @@ func (app *application) shopifyV2CreateFulfillmentHandler(w http.ResponseWriter,
 		return
 	}
 
-	svc := &iv2.FulfillmentServiceOp{Client: &app.v2}
+	svc := &iv2.FulfillmentServiceOp{Client: app.graphify}
 	if err := svc.Create(ctx, input.Fulfillment); err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
 	}
 
 	_ = app.writeJSON(w, http.StatusCreated, envelope{"status": "created"}, nil)
+}
+
+func (app *application) shopifyV2FulfillmentTrackingUpdateHandler(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(r.Context(), 15*time.Second)
+	defer cancel()
+	var input struct {
+		FulfillmentId            string                         `json:"fulfillmentId"`
+		NotifyCustomer           graphql.Boolean                `json:"notifyCustomer"`
+		FulfillmentTrackingInput model.FulfillmentTrackingInput `json:"trackingInfoInput"`
+	}
+	if err := app.readJSON(w, r, &input); err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	svc := &iv2.FulfillmentServiceOp{Client: app.graphify}
+	if err := svc.FulfillmentTrackingUpdate(ctx, input.FulfillmentId, input.FulfillmentTrackingInput, input.NotifyCustomer); err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, envelope{"status": "updated"}, nil)
 }
 
 // GET /v2/platform/locations/:id
@@ -94,7 +158,7 @@ func (app *application) shopifyV2GetLocationHandler(w http.ResponseWriter, r *ht
 		return
 	}
 
-	svc := &iv2.LocationV2{Client: &app.v2}
+	svc := &iv2.LocationV2{Client: app.graphify}
 	loc, err := svc.Get(ctx, id)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
@@ -108,7 +172,7 @@ func (app *application) shopifyV2ListShopMetafieldsHandler(w http.ResponseWriter
 	ctx, cancel := context.WithTimeout(r.Context(), 15*time.Second)
 	defer cancel()
 	namespace := r.URL.Query().Get("namespace")
-	svc := &iv2.MetafieldServiceOp{Client: &app.v2}
+	svc := &iv2.MetafieldServiceOp{Client: app.graphify}
 
 	if namespace != "" {
 		items, err := svc.ListShopMetafieldsByNamespace(ctx, namespace)

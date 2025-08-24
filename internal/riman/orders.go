@@ -37,50 +37,71 @@ type OrderModel struct {
 	DB *sql.DB
 }
 
-func (m OrderModel) GetOrders(username string, token string, cookies []*proto.NetworkCookie) (*OrderResponse, error) {
+func (m OrderModel) GetOrders(rimanStoreName string, token string, cookies []*proto.NetworkCookie) (*OrderResponse, error) {
 	client := resty.New()
 	defer client.Close()
 
-	mainSiteUrl := username
-	updatedCookies := restyCookies(cookies)
-
-	url := fmt.Sprintf("https://cart-api.riman.com/api/v1/orders")
-	// url := fmt.Sprintf("
-	//https://cart-api.riman.com/api/v1/orders?mainSiteUrl=%s&memberID=&getEnrollerOrders=&getCustomerOrders=&orderNumber=&shipmentNumber=&trackingNumber=&isRefunded=&paidStatus=true&orderType=&orderLevel=&weChatOrderNumber=&startDate=&endDate=&offset=0&limit=10&orderBy=-mainOrdersPK", mainSiteUrl)
 	res, err := client.R().
-		SetAuthToken(token).
-		SetCookies(updatedCookies).
 		SetQueryParams(map[string]string{
-			"mainSiteUrl":       mainSiteUrl,
-			"getEnrollerOrders": "",
-			"getCustomerOrders": "",
-			"orderNumber":       "",
-			"shipmentNumber":    "",
-			"trackingNumber":    "",
-			"isRefunded":        "",
-			"paidStatus":        "true",
-			"orderType":         "",
-			"orderLevel":        "",
-			"weChatOrderNumber": "",
-			"startDate":         "",
-			"endDate":           "",
-			"offset":            "0",
-			"limit":             "20",
-			"orderBy":           "-mainOrdersPK",
+			"mainSiteUrl": rimanStoreName,
+			"orderBy":     "-mainOrdersPK",
 		}).
+		SetHeader("Accept", "application/json").
 		SetResult(&OrderResponse{}).
 		SetError(&Errors{}).
-		Get(url)
+		Get("https://cart-api.riman.com/api/v1/orders")
 
 	fmt.Println(err, res)
-	orderResponse := res.Result().(*OrderResponse)
+	fmt.Println(res.Result().(*OrderResponse))
 
-	fmt.Println(orderResponse.Orders)
-	fmt.Println(url)
-
-	return orderResponse, err
+	return res.Result().(*OrderResponse), err
 }
 
+/*
+	func (m OrderModel) GetOrders(username string, token string, cookies []*proto.NetworkCookie) (*OrderResponse, error) {
+		client := resty.New()
+		defer client.Close()
+
+		mainSiteUrl := username
+		updatedCookies := restyCookies(cookies)
+
+		url := fmt.Sprintf("https://cart-api.riman.com/api/v1/orders")
+		// url := fmt.Sprintf("
+		//https://cart-api.riman.com/api/v1/orders?mainSiteUrl=%s&memberID=&getEnrollerOrders=&getCustomerOrders=&orderNumber=&shipmentNumber=&trackingNumber=&isRefunded=&paidStatus=true&orderType=&orderLevel=&weChatOrderNumber=&startDate=&endDate=&offset=0&limit=10&orderBy=-mainOrdersPK", mainSiteUrl)
+		res, err := client.R().
+			SetAuthToken(token).
+			SetCookies(updatedCookies).
+			SetQueryParams(map[string]string{
+				"mainSiteUrl":       mainSiteUrl,
+				"getEnrollerOrders": "",
+				"getCustomerOrders": "",
+				"orderNumber":       "",
+				"shipmentNumber":    "",
+				"trackingNumber":    "",
+				"isRefunded":        "",
+				"paidStatus":        "true",
+				"orderType":         "",
+				"orderLevel":        "",
+				"weChatOrderNumber": "",
+				"startDate":         "",
+				"endDate":           "",
+				"offset":            "0",
+				"limit":             "20",
+				"orderBy":           "-mainOrdersPK",
+			}).
+			SetResult(&OrderResponse{}).
+			SetError(&Errors{}).
+			Get(url)
+
+		fmt.Println(err, res)
+		orderResponse := res.Result().(*OrderResponse)
+
+		fmt.Println(orderResponse.Orders)
+		fmt.Println(url)
+
+		return orderResponse, err
+	}
+*/
 type RimanOrder struct {
 	OrderDate               string      `json:"orderDate"`
 	MainOrdersPK            int         `json:"mainOrdersPK"`

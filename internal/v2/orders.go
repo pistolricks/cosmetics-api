@@ -36,6 +36,14 @@ type mutationOrderUpdate struct {
 	} `graphql:"orderUpdate(input: $input)" json:"orderUpdate"`
 }
 
+const orderTinyQuery = `
+	id
+	name
+	createdAt
+	note
+	tags
+`
+
 const orderBaseQuery = `
 	id
 	legacyResourceId
@@ -220,6 +228,13 @@ fragment lineItem on LineItem {
 	variantTitle
 }
 `
+const lineItemFragmentTiny = `
+fragment lineItem on LineItem {
+	id
+	sku
+	quantity
+}
+`
 
 func (s *OrderServiceOp) Get(ctx context.Context, id graphql.ID) (*model.Order, error) {
 	q := fmt.Sprintf(`
@@ -296,7 +311,7 @@ func (s *OrderServiceOp) List(ctx context.Context, opts ListOptions) ([]*model.O
 		}
 
 		%s
-	`, orderBaseQuery, lineItemFragment)
+	`, orderTinyQuery, lineItemFragmentTiny)
 
 	q = strings.ReplaceAll(q, "$query", opts.Query)
 
