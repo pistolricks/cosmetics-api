@@ -52,7 +52,8 @@ CREATE TABLE IF NOT EXISTS clients
     lifetime_spend          float,
     most_recent_12_month_spend float,
     data                    json,
-    password_hash           bytea                       NOT NULL
+    password_hash           bytea                       NOT NULL,
+    token                   text
 );
 
 CREATE TABLE IF NOT EXISTS clients_addresses
