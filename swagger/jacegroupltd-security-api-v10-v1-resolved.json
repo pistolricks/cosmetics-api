@@ -1,0 +1,955 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "A Microsoft WebApi2 application. For use by Jeunesse and its Partners, this api has a focus on product and order creation",
+    "version": "v1",
+    "title": "Security-Api v1.0"
+  },
+  "host": "security-api.riman.com",
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/api/v1/token/joffice-token/{jofficeToken}": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "operationId": "Authentication_GetTokenForUser",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "jofficeToken",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "description": "The requested API version",
+            "required": false,
+            "type": "string",
+            "default": "1.0"
+          }
+        ],
+        "deprecated": false,
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/TokenViewModel"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/token": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "operationId": "Authentication_GetTokenForUser",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "tokenAuthenticationRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TokenAuthenticationRequest"
+            }
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "description": "The requested API version",
+            "required": false,
+            "type": "string",
+            "default": "1.0"
+          }
+        ],
+        "deprecated": false,
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/TokenViewModel"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/token/logout": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Updates Jet Session table with an end date when user logs out",
+        "operationId": "Authentication_Logout",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "api-version",
+            "in": "query",
+            "description": "The requested API version",
+            "required": false,
+            "type": "string",
+            "default": "1.0"
+          }
+        ],
+        "deprecated": false,
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/token/reissue": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "operationId": "Authentication_Reauthenticate",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "api-version",
+            "in": "query",
+            "description": "The requested API version",
+            "required": false,
+            "type": "string",
+            "default": "1.0"
+          }
+        ],
+        "deprecated": false,
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/TokenViewModel"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/token/tracking/{TrackingId}": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "operationId": "Authentication_GetTokenByTrackingId",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "TrackingId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "description": "The requested API version",
+            "required": false,
+            "type": "string",
+            "default": "1.0"
+          }
+        ],
+        "deprecated": false,
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/TokenViewModel"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/password/validate/{password}": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Validates if password follows the business rules for a password. Case, Digit, Special charactesr etc.",
+        "operationId": "Authentication_ValidatePassword",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "password",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "description": "The requested API version",
+            "required": false,
+            "type": "string",
+            "default": "1.0"
+          }
+        ],
+        "deprecated": false,
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/status": {
+      "get": {
+        "tags": [
+          "Maintenance"
+        ],
+        "summary": "GetMaintenanceStatus",
+        "operationId": "Maintenance_GetMaintenanceStatus",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "api-version",
+            "in": "query",
+            "description": "The requested API version",
+            "required": false,
+            "type": "string",
+            "default": "1.0"
+          }
+        ],
+        "deprecated": false,
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/points-archiving-running": {
+      "get": {
+        "tags": [
+          "Maintenance"
+        ],
+        "summary": "Check if Archive Points job is running",
+        "operationId": "Maintenance_IsPointsArchivingRunning",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "api-version",
+            "in": "query",
+            "description": "The requested API version",
+            "required": false,
+            "type": "string",
+            "default": "1.0"
+          }
+        ],
+        "deprecated": false,
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/general-notifications": {
+      "get": {
+        "tags": [
+          "Maintenance"
+        ],
+        "summary": "Check for any general application messages",
+        "operationId": "Maintenance_GetApplicaitonNotifications",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "api-version",
+            "in": "query",
+            "description": "The requested API version",
+            "required": false,
+            "type": "string",
+            "default": "1.0"
+          },
+          {
+            "name": "countryCode",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "culture",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "application",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "deprecated": false,
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/menu/invalidate": {
+      "get": {
+        "tags": [
+          "Menu"
+        ],
+        "summary": "Invalidates all Joffice menu cache",
+        "operationId": "Menu_InvalidateMenus",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "api-version",
+            "in": "query",
+            "description": "The requested API version",
+            "required": false,
+            "type": "string",
+            "default": "1.0"
+          }
+        ],
+        "deprecated": false,
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/menu/{appCode}/{sessionId}": {
+      "get": {
+        "tags": [
+          "Menu"
+        ],
+        "summary": "Gets the menu of selected app for the logged in user. Results are cached.",
+        "operationId": "Menu_GetMenu",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "appCode",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "description": "The requested API version",
+            "required": false,
+            "type": "string",
+            "default": "1.0"
+          }
+        ],
+        "deprecated": true,
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/menu/{appCode}": {
+      "get": {
+        "tags": [
+          "Menu"
+        ],
+        "summary": "Gets the menu of selected app for the logged in user.",
+        "description": "Data is not returned sorted.\r\n            \r\nCache Settings: ServerTimeSpan: 60 minutes, CacheKeyGenerator: SessionCultureCacheKeyGenerator",
+        "operationId": "Menu_GetMenu",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "appCode",
+            "in": "path",
+            "description": "App Code for the menu to return.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "description": "The requested API version",
+            "required": false,
+            "type": "string",
+            "default": "1.0"
+          },
+          {
+            "name": "culture",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "deprecated": false,
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/MenuModel"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/policies": {
+      "get": {
+        "tags": [
+          "Policy"
+        ],
+        "summary": "Returns policies for the logged in user.",
+        "operationId": "Policy_GetPolicies",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "api-version",
+            "in": "query",
+            "description": "The requested API version",
+            "required": false,
+            "type": "string",
+            "default": "1.0"
+          },
+          {
+            "name": "Query.path",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "deprecated": false,
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PolicyModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/policy/page": {
+      "get": {
+        "tags": [
+          "Policy"
+        ],
+        "summary": "Returns all the policies for a passed in page for the logged in user",
+        "operationId": "Policy_GetPolicyByPage",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "pageName",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "description": "The requested API version",
+            "required": false,
+            "type": "string",
+            "default": "1.0"
+          }
+        ],
+        "deprecated": true,
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/security/reset-questions/{mainPk}": {
+      "put": {
+        "tags": [
+          "Security"
+        ],
+        "operationId": "Security_ResetQuestions",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "mainPk",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "description": "The requested API version",
+            "required": false,
+            "type": "string",
+            "default": "1.0"
+          }
+        ],
+        "deprecated": false,
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/test": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "operationId": "Test_Get",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "api-version",
+            "in": "query",
+            "description": "The requested API version",
+            "required": false,
+            "type": "string",
+            "default": "1.0"
+          }
+        ],
+        "deprecated": false,
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/nuget-test": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "operationId": "Test_NugetTester",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "api-version",
+            "in": "query",
+            "description": "The requested API version",
+            "required": false,
+            "type": "string",
+            "default": "1.0"
+          }
+        ],
+        "deprecated": false,
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Gets the list of JET users.",
+        "description": "Data is returned sorted ASC on the Id column.",
+        "operationId": "Users_GetUsers",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "Active",
+            "in": "query",
+            "description": "Filter on Active column. Default: Both",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "Search",
+            "in": "query",
+            "description": "A keyword to search on UserName, FullName, Email, Phone. Default: Null",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "description": "The requested API version",
+            "required": false,
+            "type": "string",
+            "default": "1.0"
+          }
+        ],
+        "deprecated": false,
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/UserModel"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "apiKey": {
+      "description": "API Key Authentication",
+      "type": "apiKey",
+      "name": "authToken",
+      "in": "header"
+    }
+  },
+  "definitions": {
+    "TokenViewModel": {
+      "type": "object",
+      "properties": {
+        "customerId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "sessionId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "userName": {
+          "type": "string"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "createdDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expireDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "country": {
+          "type": "string"
+        },
+        "culture": {
+          "type": "string"
+        },
+        "claims": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "rememberMe": {
+          "type": "boolean"
+        },
+        "spoofingBy": {
+          "type": "string"
+        },
+        "signature": {
+          "type": "string"
+        },
+        "customerType": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "token": {
+          "type": "string"
+        },
+        "languageFk": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "TokenAuthenticationRequest": {
+      "type": "object",
+      "properties": {
+        "spoofedUserName": {
+          "type": "string"
+        },
+        "userName": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "customerId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "password": {
+          "type": "string"
+        },
+        "rememberMe": {
+          "type": "boolean"
+        },
+        "isAdmin": {
+          "type": "boolean"
+        }
+      }
+    },
+    "ApplicaitonNotificationQueryModel": {
+      "type": "object",
+      "properties": {
+        "countryCode": {
+          "type": "string"
+        },
+        "culture": {
+          "type": "string"
+        },
+        "application": {
+          "type": "string"
+        }
+      }
+    },
+    "GetMenuQueryModel": {
+      "type": "object",
+      "properties": {
+        "culture": {
+          "type": "string"
+        }
+      }
+    },
+    "MenuModel": {
+      "type": "object",
+      "properties": {
+        "menuItems": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MenuItemModel"
+          }
+        }
+      }
+    },
+    "MenuItemModel": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "translationKey": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "parentId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "sortId": {
+          "type": "number",
+          "format": "float"
+        },
+        "action": {
+          "type": "string"
+        },
+        "submenu": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MenuItemModel"
+          }
+        },
+        "icon": {
+          "type": "string"
+        },
+        "isWebsiteLink": {
+          "type": "boolean"
+        },
+        "isOpened": {
+          "type": "boolean"
+        },
+        "inNewTab": {
+          "type": "boolean"
+        }
+      }
+    },
+    "PolicyQueryModel": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string"
+        }
+      }
+    },
+    "PolicyModel": {
+      "type": "object",
+      "required": [
+        "code",
+        "id",
+        "value"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "code": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "UserModel": {
+      "type": "object",
+      "required": [
+        "active",
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "mainFk": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "siteUrl": {
+          "type": "string"
+        },
+        "fullName": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "active": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

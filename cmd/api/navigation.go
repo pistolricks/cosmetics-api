@@ -48,12 +48,6 @@ func (app *application) chromeLoginHandler(w http.ResponseWriter, r *http.Reques
 
 	page, browser, cookies := app.chromium.Chrome.ChromeLogin(input.LoginUrl, input.RimanStoreName, input.UserName, input.Password)
 
-	// Persist browser/page for later usage to avoid nil dereferences
-	app.page = page
-	app.browser = browser
-	app.cookies = cookies
-	fmt.Println(browser)
-
 	client, err := app.riman.Clients.GetByClientUserName(input.UserName)
 	if err != nil {
 		switch {
@@ -75,7 +69,7 @@ func (app *application) chromeHomePageHandler(w http.ResponseWriter, r *http.Req
 	// networkCookie := networkCookies(cookies)
 
 	rimanStoreName := app.envars.RimanStoreName // os.Getenv("RIMAN_STORE_NAME")
-	rimanRid := app.envars.Username             // os.Getenv("USERNAME")
+	rimanUsername := app.envars.Username        // os.Getenv("USERNAME")
 
 	cookies := app.chromium.Chrome.ChromeHomePage(rimanStoreName)
 
@@ -85,7 +79,9 @@ func (app *application) chromeHomePageHandler(w http.ResponseWriter, r *http.Req
 
 	/* ADD SESSION HERE */
 
-	client, err := app.riman.Clients.GetByClientUserName(rimanRid)
+	fmt.Println(rimanUsername)
+
+	client, err := app.riman.Clients.GetByClientUserName(rimanUsername)
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrRecordNotFound):
