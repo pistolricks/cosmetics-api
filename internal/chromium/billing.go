@@ -32,28 +32,20 @@ func (chrome ChromeClient) InsertBillingInfo(addressClient *addressvalidation.Cl
 		fmt.Printf("client: could not create request: %s\n", err)
 	}
 
-	location := resp.Result
+	fmt.Println(resp)
 
-	address10 := location.Address.FormattedAddress
-	address20 := fmt.Sprintf("%s", location.GetUspsData().StandardizedAddress.SecondAddressLine)
-	city0 := location.GetUspsData().StandardizedAddress.City
-	// state0 := location.GetUspsData().StandardizedAddress.State
-	zip0 := location.GetUspsData().StandardizedAddress.ZipCode
+	address10 := os.Getenv("BILLING_LINE")
 
 	chrome.Client.Page.MustActivate()
 
 	chrome.Client.Page.MustElement("#firstName0").MustSelectAllText().MustInput(os.Getenv("BILLING_FIRST_NAME"))
 	chrome.Client.Page.MustElement("#lastName0").MustSelectAllText().MustInput(os.Getenv("BILLING_LAST_NAME"))
-	chrome.Client.Page.MustElement("#address10").MustSelectAllText().MustInput(address10)
-	chrome.Client.Page.MustWaitStable().KeyActions().Type(input.ArrowDown).MustDo()
-	chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Enter).MustDo()
-	chrome.Client.Page.MustElement("#address20").MustSelectAllText().MustInput(address20)
-	chrome.Client.Page.MustElement("#city0").MustSelectAllText().MustInput(city0)
-	chrome.Client.Page.MustElement("#postalCode0").MustSelectAllText().MustInput(zip0)
 	chrome.Client.Page.MustElement("#phoneNumber0").MustSelectAllText().MustInput(os.Getenv("BILLING_PHONE"))
 	chrome.Client.Page.MustElement("#email0").MustSelectAllText().MustInput(email)
 
-	chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Tab).MustDo()
+	chrome.Client.Page.MustElement("#address10").MustSelectAllText().MustInput(address10)
+	chrome.Client.Page.MustWaitStable().KeyActions().Type(input.ArrowDown).MustDo()
+	chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Enter).MustDo()
 
 	return true
 

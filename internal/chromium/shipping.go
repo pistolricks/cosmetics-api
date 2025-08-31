@@ -8,7 +8,6 @@ import (
 	addressvalidation "cloud.google.com/go/maps/addressvalidation/apiv1"
 	"cloud.google.com/go/maps/addressvalidation/apiv1/addressvalidationpb"
 	goshopify "github.com/bold-commerce/go-shopify/v4"
-	"github.com/go-rod/rod"
 	"github.com/go-rod/rod/lib/input"
 	"github.com/go-rod/rod/lib/proto"
 	"github.com/nyaruka/phonenumbers"
@@ -96,13 +95,13 @@ func (chrome ChromeClient) InsertShippingInfo(addressClient *addressvalidation.C
 
 	postalAddress := postaladdress.PostalAddress{
 		RegionCode:         shippingAddress.CountryCode,
-		PostalCode:         shippingAddress.Zip,
-		AdministrativeArea: shippingAddress.Province,
-		Locality:           shippingAddress.City,
-		Sublocality:        shippingAddress.City,
-		AddressLines:       lines{shippingAddress.Address1, shippingAddress.Address2},
-		Recipients:         lines{name, shippingAddress.Name},
-		Organization:       shippingAddress.Company,
+		PostalCode:         zip,
+		AdministrativeArea: province,
+		Locality:           city,
+		Sublocality:        city,
+		AddressLines:       lines{address1, address2},
+		Recipients:         lines{name},
+		Organization:       company,
 	}
 
 	req := &addressvalidationpb.ValidateAddressRequest{Address: &postalAddress}
@@ -174,77 +173,9 @@ func (chrome ChromeClient) InsertShippingInfo(addressClient *addressvalidation.C
 		chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Space).MustDo()
 		chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Space).MustDo()
 		chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Tab).MustDo()
-
-	default:
-		address10 := location.Address.FormattedAddress
-
-		address100 := location.GetUspsData().StandardizedAddress.FirstAddressLine
-
-		var address20 string
-
-		if company != "" && location.GetUspsData().StandardizedAddress.SecondAddressLine != "" {
-			address20 = fmt.Sprintf("%s / %s", location.GetUspsData().StandardizedAddress.SecondAddressLine, company)
-		} else if company == "" && location.GetUspsData().StandardizedAddress.SecondAddressLine == "" {
-			address20 = ""
-		} else if company != "" && location.GetUspsData().StandardizedAddress.SecondAddressLine == "" {
-			address20 = fmt.Sprintf("%s", company)
-		} else if company == "" && location.GetUspsData().StandardizedAddress.SecondAddressLine != "" {
-			address20 = fmt.Sprintf("%s", location.GetUspsData().StandardizedAddress.SecondAddressLine)
-		} else {
-			address20 = fmt.Sprintf("%s", location.GetUspsData().StandardizedAddress.SecondAddressLine)
-		}
-
-		city0 := location.GetUspsData().StandardizedAddress.City
-		// state0 := location.GetUspsData().StandardizedAddress.State
-		zip0 := location.GetUspsData().StandardizedAddress.ZipCode
-		chrome.Client.Page.MustElement("#address10").MustSelectAllText().MustInput(address10)
-		chrome.Client.Page.MustWaitStable().KeyActions().Type(input.ArrowDown).MustDo()
-		chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Enter).MustDo()
-		chrome.Client.Page.MustWaitStable().MustElement("#address20").MustSelectAllText().MustInput(address20)
-		chrome.Client.Page.MustWaitStable().MustElement("#city0").MustSelectAllText().MustInput(city0)
-		// chrome.Client.Page.MustElement("#state0").MustSelect(state0)
-		chrome.Client.Page.MustWaitStable().MustElement("#postalCode0").MustSelectAllText().MustInput(zip0)
-		chrome.Client.Page.MustWaitStable().MustElement("#phoneNumber0").MustSelectAllText().MustInput(phone)
-
-		chrome.Client.Page.MustWaitStable().MustElement("#address10").MustSelectAllText().MustInput(address100)
-		chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Escape).MustDo()
-
-		chrome.Client.Page.MustWaitStable().MustElement("#email0").MustSelectAllText().MustInput(email)
-		chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Tab).MustDo()
-		chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Space).MustDo()
-		chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Space).MustDo()
-		chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Tab).MustDo()
-		chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Enter).MustDo()
 	}
 
 	return true
 	/* Need to add Province/State */
 	// chrome.Client.Page.MustElement("#state0").MustSelectAllText().MustInput(province)
-}
-
-func (chrome ChromeClient) ChromeShipping(address10 string, address20 string, city string, state string, zip string, phone string, email string) *rod.Element {
-
-	chrome.Client.Page.MustElement("#address10").MustSelectAllText().MustInput(address10)
-
-	chrome.Client.Page.MustWaitStable().KeyActions().Type(input.ArrowDown).MustDo()
-	chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Enter).MustDo()
-
-	chrome.Client.Page.MustElement("#address20").MustSelectAllText().MustInput(address20)
-
-	chrome.Client.Page.MustElement("#city0").MustSelectAllText().MustInput(city)
-	chrome.Client.Page.MustElement("#state0").MustSelect(state)
-	chrome.Client.Page.MustElement("#postalCode0").MustSelectAllText().MustInput(zip)
-
-	chrome.Client.Page.MustElement("#phoneNumber0").MustSelectAllText().MustInput(phone)
-
-	chrome.Client.Page.MustElement("#email0").MustSelectAllText().MustInput(email)
-
-	chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Tab).MustDo()
-
-	chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Space).MustDo()
-	chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Space).MustDo()
-
-	chrome.Client.Page.MustWaitStable().KeyActions().Type(input.Tab).MustDo()
-
-	return chrome.Client.Page.MustElement("#submitShipping")
 }
