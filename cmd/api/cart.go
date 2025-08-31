@@ -20,7 +20,6 @@ func (app *application) getCartHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
-
 }
 
 func (app *application) updateCartHandler(w http.ResponseWriter, r *http.Request) {
@@ -124,24 +123,9 @@ func (app *application) updateShippingAddress(w http.ResponseWriter, r *http.Req
 
 	fmt.Println(isDone)
 
-	if isDone == true {
-		res, err := riman.GetCart(input.CartKey)
-		if err != nil {
-			app.badRequestResponse(w, r, err)
-			return
-		}
-		fmt.Println(res.MainOrdersFK)
-
-		err = app.writeJSON(w, http.StatusOK, envelope{"rid": res.MainOrdersFK, "order_id": input.Order.Id, "shipment": true}, nil)
-		if err != nil {
-			app.serverErrorResponse(w, r, err)
-		}
-	} else {
-
-		err := app.writeJSON(w, http.StatusOK, envelope{"shipment": true}, nil)
-		if err != nil {
-			app.serverErrorResponse(w, r, err)
-		}
+	err = app.writeJSON(w, http.StatusOK, envelope{"shipment": true}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
 	}
 
 }
