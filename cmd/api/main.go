@@ -222,7 +222,7 @@ func main() {
 	flag.StringVar(&cfg.smtp.sender, "smtp-sender", "Greenlight <no-reply@greenlight.alexedwards.net>", "SMTP sender")
 
 	flag.Func("cors-trusted-origins", "Trusted CORS origins (space separated)", func(val string) error {
-		cfg.cors.trustedOrigins = strings.Fields(val)
+		cfg.cors.trustedOrigins = strings.Fields("https://ollivr.com http://localhost:3000")
 		return nil
 	})
 
