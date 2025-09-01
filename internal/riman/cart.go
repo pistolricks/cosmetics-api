@@ -71,6 +71,36 @@ func AddProductToCart(token string, cartKey string, addProductPayload *AddProduc
 	return cartResponse, err
 }
 
+func PatchRimanUserId(token string, cartKey string, mainFk string) (*Cart, error) {
+
+	cartUrl := fmt.Sprintf("https://cart-api.riman.com/api/v1/shopping/%s", cartKey)
+
+	fmt.Println(cartUrl)
+
+	client := resty.New()
+	defer client.Close()
+
+	res, err := client.R().
+		SetAuthToken(token).
+		SetHeader("Accept", "application/json").
+		SetBody(&Body{
+			"mainFk": mainFk,
+		}).
+		SetResult(&Cart{}).
+		SetError(&CartErrors{}).
+		Patch(cartUrl)
+
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println(res.String())
+	fmt.Println("string | cart")
+	fmt.Println(res.Result().(*Cart))
+
+	return res.Result().(*Cart), err
+}
+
 func PatchLocale(token string, cartKey string, mainFk int) (*Cart, error) {
 
 	cartUrl := fmt.Sprintf("https://cart-api.riman.com/api/v1/shopping/%s", cartKey)

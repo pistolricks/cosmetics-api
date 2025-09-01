@@ -79,6 +79,32 @@ func (app *application) updateCartHandler(w http.ResponseWriter, r *http.Request
 	}
 }
 
+func (app *application) patchRimanUserIdHandler(w http.ResponseWriter, r *http.Request) {
+
+	var input struct {
+		Token   string `json:"token"`
+		CartKey string `json:"cart_key"`
+		MainFk  string `json:"main_fk"`
+	}
+
+	err := app.readJSON(w, r, &input)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	s, err := riman.PatchRimanUserId(input.Token, input.CartKey, input.MainFk)
+
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"cart": s, "riman_order_id": s.MainOrdersFK}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+}
+
 func (app *application) deleteCartProductHandler(w http.ResponseWriter, r *http.Request) {
 
 	var input struct {

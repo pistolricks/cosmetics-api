@@ -36,6 +36,8 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/vendors/products", app.rimanApiListProductsHandler)
 	router.HandlerFunc(http.MethodPost, "/v1/vendors/products/save", app.saveRimanProductsHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/vendors/carts/:cart_key", app.getCartHandler)
+
+	router.HandlerFunc(http.MethodPost, "/v1/vendors/carts/user/patch", app.patchRimanUserIdHandler)
 	router.HandlerFunc(http.MethodPost, "/v1/vendors/carts/products/update", app.updateCartHandler)
 	router.HandlerFunc(http.MethodPost, "/v1/vendors/carts/products/delete", app.deleteCartProductHandler)
 
