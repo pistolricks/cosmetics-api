@@ -37,29 +37,3 @@ func (client FulfillClient) UpdateFulfillment(fulfillmentID uint64, trackingNumb
 
 	return res, nil
 }
-
-func (client FulfillClient) CreateOrderFulfillment(fulfillment goshopify.Fulfillment) (*goshopify.Fulfillment, error) {
-
-	updateFulfillment := goshopify.Fulfillment{
-		LocationId: fulfillment.LocationId,
-		LineItemsByFulfillmentOrder: []goshopify.LineItemByFulfillmentOrder{
-			{
-				FulfillmentOrderId: fulfillment.Id,
-			},
-		},
-		TrackingUrls: []string{
-			"https://shipping.xyz/track.php?num=123456789",
-			"https://anothershipper.corp/track.php?code=abc",
-		},
-		NotifyCustomer: false,
-	}
-
-	res, err := client.Config.Client.Fulfillment.Create(context.Background(), updateFulfillment)
-
-	if err != nil {
-		fmt.Println(err)
-		return nil, nil
-	}
-
-	return res, err
-}
