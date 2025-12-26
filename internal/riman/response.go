@@ -291,6 +291,8 @@ type ProductInformation struct {
 	JoinMaxLifetimeLimitCatCode  string           `json:"joinMaxLifetimeLimitCatCode"`
 	JoinMaxLifetimeLimit         int              `json:"joinMaxLifetimeLimit"`
 	ProductCmsData               []ProductCmsData `json:"productCmsData"`
+	Messages                     []Message        `json:"messages"`
+	SearchName                   *string          `json:"searchName"`
 }
 
 type Order struct {
