@@ -3,6 +3,7 @@ package chromium
 import (
 	"context"
 	"fmt"
+	"os"
 	"strings"
 
 	addressvalidation "cloud.google.com/go/maps/addressvalidation/apiv1"
@@ -10,7 +11,6 @@ import (
 	goshopify "github.com/bold-commerce/go-shopify/v4"
 	"github.com/go-rod/rod/lib/input"
 	"github.com/go-rod/rod/lib/proto"
-	"github.com/nyaruka/phonenumbers"
 	"github.com/pistolricks/cosmetics-api/internal/validator"
 	"google.golang.org/genproto/googleapis/type/postaladdress"
 )
@@ -72,11 +72,13 @@ func (chrome ChromeClient) InsertShippingInfo(addressClient *addressvalidation.C
 
 	//phone := strings.Replace(strings.TrimSpace(shippingAddress.Phone), "+1", "", 1)
 
-	num, err := phonenumbers.Parse(shippingAddress.Phone, "US")
+	//	num, err := phonenumbers.Parse(shippingAddress.Phone, "US")
 
-	national := phonenumbers.Format(num, phonenumbers.E164)
+	//	national := phonenumbers.Format(num, phonenumbers.E164)
 
-	phone := strings.Replace(national, "+1", "", 1)
+	//	phone = strings.Replace(national, "+1", "", 1)
+
+	phone := os.Getenv("BILLING_PHONE")
 
 	// email := strings.TrimSpace(order.Email)
 
