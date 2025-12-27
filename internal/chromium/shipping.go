@@ -118,6 +118,7 @@ func (chrome ChromeClient) InsertShippingInfo(addressClient *addressvalidation.C
 	case true:
 
 		address10 := location.Address.FormattedAddress
+		address10 = strings.Replace(address10, fmt.Sprintf("-%s", location.GetUspsData().StandardizedAddress.ZipCodeExtension), "", 1)
 
 		address100 := location.GetUspsData().StandardizedAddress.FirstAddressLine
 
